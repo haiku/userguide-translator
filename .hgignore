@@ -1,0 +1,4 @@
+syntax: glob
+export
+config.php
+.DS_Store
