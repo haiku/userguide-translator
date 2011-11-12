@@ -23,9 +23,13 @@ if ($src_path and $trans_path and $doc_title) {
 			$doc_title_esc = db_esc($doc_title);
 			$time = time();
 			
+			if(!is_dir(dirname(REF_DIR . '/' . $src_path)))
+				mkdir(dirname(REF_DIR . '/' . $src_path), 0770, true);
+				
 			file_put_contents(REF_DIR . '/' . $src_path,
 				str_replace('{TITLE}', $doc_title, $base_document))
-					or error_box($title, 'Unable to write to the destination directory!');
+					or error_box($title, 'Unable to write to the destination directory!');		
+	
 			
 			// Insert entry in the database
 			db_query('
