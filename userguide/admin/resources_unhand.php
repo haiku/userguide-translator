@@ -2,7 +2,7 @@
 define('IN_TRANSLATE', 1);
 
 $path_prefix = '../';
-require('../inc/common.php');
+require_once('../inc/common.php');
 
 role_needed(ROLE_ADMIN);
 
@@ -39,8 +39,8 @@ if (isset($_POST['delete_selection']) and is_array(@$_POST['del_list'])
 }
 
 
-include('admin_top.php');
-include('../inc/start_html.php');
+require_once('admin_top.php');
+require_once('../inc/start_html.php');
 
 $langs = array();
 $req = db_query('SELECT lang_code FROM ' . DB_LANGS); 
@@ -129,7 +129,11 @@ foreach ($unhandled_paths as $path) {
 </form>
 
 <?php
-include('../inc/end_html.php');
+/* 
+	This is causing a warning because it has been included somwhere else.
+	Disabling this until I can find what's causing it.
+*/
+//require_once('../inc/end_html.php');
 
 function list_files($dir) {
 	$handle = opendir($dir) or die("Unable to open $dir!");
