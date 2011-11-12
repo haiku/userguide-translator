@@ -126,7 +126,7 @@ include('inc/start_html.php');
 <dd><img src="<?=$res_path?>" /></dd>
 </dl>
 
-<form enctype="multipart/form-data" method="post" action="">
+<form enctype="multipart/form-data" method="post" action="<?php echo $_SERVER['REQUEST_URI'];?>">
 <dl class="fieldset">
 <dt><span>Upload new resource</span></dt>
 <dd>
