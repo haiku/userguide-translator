@@ -21,7 +21,7 @@ $a2_logs = array(
 
 define('EXPORT_DIR', 'export/docs');
 define('REF_DIR', 'source_docs');
-define('REP_DIR', 'source_repo');
+define('REP_DIR', 'source_repos');
 define('IMPORT_DIR', 'import');
 
 // HTML tags whose inner HTML has to be translated

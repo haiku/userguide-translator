@@ -17,7 +17,7 @@ Install Subversion
 
 1. Install Subversion.
 2. cd userguide
-3. svnadmin create source_repo
+3. svnadmin create source_repos
 4. mkdir source_docs
 5. cd source_docs
-6. svn co file:///path_to_source_repo .
+6. svn co file:///path_to_source_repos .

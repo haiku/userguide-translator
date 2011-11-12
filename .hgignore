@@ -1,6 +1,6 @@
 syntax: glob
 export
 config.php
-source_docs/*
-source_repo/*
+source_docs
+source_repos
 .DS_Store
