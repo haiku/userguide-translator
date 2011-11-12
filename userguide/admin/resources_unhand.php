@@ -89,7 +89,10 @@ function select_matching() {
 	if (!ext)
 		return;
 	
-	ext = '.' + ext + ']';
+	if (ext.substr(0,1)!='.')
+		ext = '.' + ext;
+		
+	ext = ext + ']';
 	len = ext.length;
 
 	var checkboxes = document.getElementsByClassName('del_path_check');
