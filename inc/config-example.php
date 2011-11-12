@@ -9,7 +9,7 @@ $db_password = '';
 $db_base_name = '';
 
 // Common settings
-$base_url = '';
+$base_url = 'http://i18n-dev.haiku-os.org/userguide';
 
 $use_system_glob = true; // Disable this if it does not work
 
@@ -19,9 +19,10 @@ $a2_logs = array(
 					'Access log'=>'/var/log/apache2/i18n.haiku-os.org-access_log'
 				);
 
-define('EXPORT_DIR', '');
-define('REF_DIR', '');
-define('IMPORT_DIR', '');
+define('EXPORT_DIR', 'export/docs');
+define('REF_DIR', 'source_docs');
+define('REP_DIR', 'source_repo');
+define('IMPORT_DIR', 'import');
 
 // HTML tags whose inner HTML has to be translated
 $translate_tags = array(
