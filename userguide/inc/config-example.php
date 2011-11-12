@@ -13,6 +13,12 @@ $base_url = '';
 
 $use_system_glob = true; // Disable this if it does not work
 
+// Apache log files
+$a2_logs = array(
+					'Error log'=>'/var/log/apache2/i18n.haiku-os.org-error_log',
+					'Access log'=>'/var/log/apache2/i18n.haiku-os.org-access_log'
+				);
+
 define('EXPORT_DIR', '');
 define('REF_DIR', '');
 define('IMPORT_DIR', '');
