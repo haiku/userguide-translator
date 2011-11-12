@@ -1,0 +1,16 @@
+= Create config file
+
+1. Copy inc/config-example.php to inc/config.php.
+3. Edit inc/config.php to match your installation.
+
+= Install database
+
+1. Install MySQL.
+2. Create a database and user.
+3. Import db_structure.sql into the database.
+4. Create a default user with Administrative privileges. Password is SHA1-hashed, no salt.
+
+= Install Subversion
+
+1. Install Subversion.
+2. Todo.
