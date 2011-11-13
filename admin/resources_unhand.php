@@ -77,10 +77,18 @@ unset($file_paths, $db_paths);
 <script type="text/JavaScript">
 function select_all() {
 	var checkboxes = document.getElementsByClassName('del_path_check');
+	var num_of_checkboxes = 0;
+	var num_of_checked = 0;
 	
 	for (i in checkboxes) {
-		checkboxes[i].checked = true;
+		if (num_of_checked<50) {
+			checkboxes[i].checked = true;
+			num_of_checked++;
+		}
+		num_of_checkboxes++;
 	}
+	
+	document.getElementById("match_status").innerHTML = 'Checked ' + num_of_checked +'/' + num_of_checkboxes + '.';
 }
 
 function select_matching() {
@@ -96,11 +104,29 @@ function select_matching() {
 	len = ext.length;
 
 	var checkboxes = document.getElementsByClassName('del_path_check');
-
+	var num_of_checkboxes = 0;
+	var num_of_matched = 0;
+	var num_of_checked = 0;
+	
 	for (i in checkboxes) {
-		if (checkboxes[i].name.substr(-len) == ext)
-			checkboxes[i].checked = true;
+		num_of_checkboxes++;
+		
+		if (checkboxes[i].name != undefined) {
+			if (checkboxes[i].name.substr(-len) == ext) {
+				num_of_matched++;
+				if (num_of_checked<50) {
+					checkboxes[i].checked = true;
+					num_of_checked++;
+				}
+			} else {
+				checkboxes[i].checked = false;
+			}
+		}
 	}
+	
+	document.getElementById("match_status").innerHTML = 'Checked ' + num_of_checked +'/'+ num_of_matched + ' matched resources (' + num_of_checkboxes + ' in total).';
+
+	
 }
 </script>
 <form action="" method="post">
@@ -126,6 +152,7 @@ foreach ($unhandled_paths as $path) {
 <input type="button" value="Select all" onclick="select_all()"/>
 <input type="button" value="Select matching extension:" onclick="select_matching()"/>
 <input type="text" name="match_extension" value="" size="4" />
+<span id="match_status"></span>
 </td>
 </tr>
 </table>
