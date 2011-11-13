@@ -1,5 +1,0 @@
-<IfModule mod_rewrite.c>
-	RewriteEngine on
-	RewriteCond %{REQUEST_URI} ^/userguide/export/ [NC]
-	RewriteRule .* /userguide/export.php?dir=%{REQUEST_URI} [L]
-</IfModule>
