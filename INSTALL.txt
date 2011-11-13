@@ -1,3 +1,8 @@
+Configure Apache
+----------------
+
+1. Enable mod_rewrite.
+
 Create config file
 ------------------
 
