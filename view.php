@@ -2,7 +2,7 @@
 define('IN_TRANSLATE', 1);
 
 require('inc/common.php');
-role_needed(ROLE_UNDEF);
+role_needed(ROLE_TRANSLATOR);
 
 $doc_id = (isset($_GET['doc_id']) ? intval($_GET['doc_id']) : 0);
 $lang = (isset($_GET['l']) ? db_esc($_GET['l']) : '');
