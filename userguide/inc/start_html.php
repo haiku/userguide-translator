@@ -16,8 +16,8 @@ if (!isset($head))
 	<meta http-equiv="Content-Style-Type" content="text/css" />
 	<meta name="robots" content="all" />
 	<title><?php echo $title; ?></title>
-	<link rel="stylesheet" type="text/css" href="<?php echo $path_prefix; ?>shared/styles.css" />
-	<link rel="shortcut icon" href="<?php echo $path_prefix; ?>favicon.ico" type="image/x-icon" />
+	<link rel="stylesheet" type="text/css" href="<?php echo $base_url; ?>/shared/styles.css" />
+	<link rel="shortcut icon" href="<?php echo $base_url; ?>/favicon.ico" type="image/x-icon" />
 <?=$head?></head>
 <body>
 <div id="banner">
