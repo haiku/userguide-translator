@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<title>Edit Translation</title>
+<style type="text/css">
+body {
+	background-color: lightgray;
+	overflow: hidden;
+	font-family: Verdana, Arial, sans-sherif;
+	font-size: .9em;
+}
+
+textarea {
+	font-family: Verdana, Arial, sans-sherif;
+	font-size: .9em;
+}
+
+#info {
+	position: absolute;
+	top: 2px;
+	right: 5px;
+	font-size: 80%;
+	text-align: right;
+}
+
+#info2 {
+	position: absolute;
+	top: 15px;
+	right: 5px;
+	font-size: 80%;
+	text-align: right;
+}
+
+#topleft {
+	position: absolute;
+	left: 5px;
+	right: 50%;
+	top: 5px;
+	height: 30px;
+	margin-right: 5px;
+	font-weight: bold;
+}
+
+#topright {
+	position: absolute;
+	left: 50%;
+	right: 5px;
+	top: 5px;
+	height: 30px;
+	margin-left: 5px;
+	font-weight: bold;
+}
+
+#left {
+	position: absolute;
+	left: 5px;
+	right: 50%;
+	top: 35px;
+	bottom: 35px;
+	margin-right: 5px;
+}
+
+#right {
+	position: absolute;
+	left: 50%;
+	right: 5px;
+	top: 35px;
+	bottom: 35px;
+	margin-left: 5px;
+}
+
+#original, #translated {
+	width: 99%;
+	height: 99%;
+}
+
+#original {
+	border-color: #b6b6b6;
+	border-width: 1px;
+	border-style: solid;
+	background-color: #e6e6e6;
+}
+
+#bottom {
+	position: absolute;
+	left: 10px;
+	right: 10px;
+	height:30px;
+	bottom: 0;
+	text-align: right;
+	overflow: hidden;
+}
+</style>
+<script type="text/javascript">
+function selectText(text) {
+	var pos_start = -1;
+
+	while (true) {
+		var npos = text.indexOf('<', pos_start + 1);
+		if (npos < 0 || text.charAt(npos + 1) == '/')
+			break;
+		pos_start = npos;
+	}
+
+	if (pos_start < 0)
+		return false;
+	
+	var pos_end = text.indexOf('>', pos_start + 1) + 1;
+	
+	if (pos_end <= 0)
+		return false;
+	
+	var pos_cstart = text.indexOf('<', pos_start + 1);
+	
+	if (pos_cstart < 0)
+		pos_cstart = text.length;
+	
+	return [ pos_end, pos_cstart ];	
+	
+}
+
+var last_update_text = '';
+
+function updateEvent() {	
+	var text = document.getElementById('translated').value
+	
+	if (text == last_update_text) {
+		window.setTimeout(5000);
+		last_update_text = text;
+		return;
+	}
+	
+	var previous = window.opener.edited_node.innerHTML;
+	window.opener.edited_node.innerHTML = text;
+	
+	if (window.opener.edited_node.innerText == '')
+		window.opener.edited_node.innerHTML = previous;
+	
+	window.setTimeout(updateEvent, 500);
+}
+
+function refreshAll() {
+	var text = (window.opener.translated_text ? window.opener.translated_text :
+		window.opener.original_text);
+	
+	document.getElementById('original').value = window.opener.original_text;
+	document.getElementById('translated').value = text;
+	
+	document.getElementById('valid_button').value = 
+		'Send ' + window.opener.lang_name + ' Translation';
+	
+	
+	var pos = false;
+	
+	if (text[0] == '<')
+		pos = selectText(text);
+	
+	if (pos)
+		document.getElementById('translated').setSelectionRange(pos[0], pos[1]);
+	else {
+		document.getElementById('translated').focus();
+		document.getElementById('translated').select();
+	}
+	
+	window.setTimeout(updateEvent, 500);
+}
+
+function showGuidelines() {
+	locale = window.opener.lang;
+	if (locale.length == 2)
+		locale = locale + '_' + locale.toUpperCase();
+	window.opener.open('http://dev.haiku-os.org/wiki/i18n/' + locale + '/StyleGuide' , 'StyleGuide',
+	'width=1024,height=600,status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=1');
+}
+
+function showTerminology() {
+	locale = window.opener.lang;
+	if (locale.length == 2)
+		locale = locale + '_' + locale.toUpperCase();
+	window.opener.open('http://dev.haiku-os.org/wiki/i18n/' + locale + '/Terminology' , 'Terminology',
+	'width=1024,height=600,status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=1');
+}
+
+window.onload = refreshAll;
+
+window.onunload = function() {
+	window.opener.endEditionEvent(false);
+}
+</script>
+</head>
+<body>
+<div id="topleft">Original text</div>
+<div id="topright">Translated text</div>
+<form action="#" method="post">
+<div id="left"><textarea id="original" readonly="readonly"></textarea></div>
+<div id="right"><textarea id="translated"></textarea></div>
+<div id="bottom">
+<label style="float:left">
+<input type="checkbox" id="auto_cont" /> Go to next block after validation
+</label>
+<label style="float:left;margin-left:2em;" title="If checked, the translation will be marked as “possibly invalid” and won’t be included into the translation until further review.">
+<input type="checkbox" id="mark_fuzzy" /> Fuzzy
+</label>
+<input type="button" value="Cancel"
+	onclick="window.opener.endEditionEvent(false);" />
+<input id="valid_button" type="button" value="OK"
+	onclick="window.opener.endEditionEvent(true);" />
+</div>
+</form>
+<div id="info"><a href="#" onclick="showGuidelines();return false">Translation Style Guide</a></div>
+<div id="info2"><a href="#" onclick="showTerminology();return false">Translation Terminology</a></div>
+</body>
+</html>

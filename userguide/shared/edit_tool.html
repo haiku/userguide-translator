@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<title>Edit Block</title>
+<style type="text/css">
+body {
+	background-color: lightgray;
+	overflow: hidden;
+	font-family: Verdana, Arial, sans-sherif;
+	font-size: .9em;
+}
+
+textarea {
+	font-family: Verdana, Arial, sans-sherif;
+	font-size: .9em;
+}
+
+#topleft {
+	position: absolute;
+	left: 5px;
+	right: 50%;
+	top: 5px;
+	height: 30px;
+	margin-right: 5px;
+}
+
+#topright {
+	position: absolute;
+	left: 50%;
+	right: 5px;
+	top: 5px;
+	height: 30px;
+	margin-left: 5px;
+}
+
+#left {
+	position: absolute;
+	left: 5px;
+	right: 50%;
+	top: 35px;
+	bottom: 35px;
+	margin-right: 5px;
+}
+
+#right {
+	position: absolute;
+	left: 50%;
+	right: 5px;
+	top: 35px;
+	bottom: 35px;
+	margin-left: 5px;
+}
+
+#original, #modified {
+	width: 99%;
+	height: 99%;
+}
+
+#bottom {
+	position: absolute;
+	left: 10px;
+	right: 10px;
+	height:30px;
+	bottom: 0;
+	text-align: right;
+	overflow: hidden;
+}
+</style>
+<script type="text/javascript">
+function updateEvent() {	
+	var text = document.getElementById('modified').value
+	
+	var previous = window.opener.edited_node.innerHTML;
+	window.opener.edited_node.innerHTML = text;
+	
+	if (window.opener.edited_node.innerText == '')
+		window.opener.edited_node.innerHTML = previous;
+	
+	window.setTimeout(updateEvent, 500);
+}
+
+function refreshAll() {
+	document.getElementById('original').value = window.opener.original_text;
+	document.getElementById('modified').value = window.opener.original_text;
+	
+	window.setTimeout(updateEvent, 500);
+}
+
+window.onload = refreshAll;
+
+window.onunload = function() {
+	window.opener.endEditionEvent(false);
+}
+</script>
+</head>
+<body>
+<div id="topleft">Original version</div>
+<div id="topright">Modified text</div>
+<form action="#" method="post">
+<div id="left"><textarea id="original" readonly="readonly"></textarea></div>
+<div id="right"><textarea id="modified"></textarea></div>
+<div id="bottom">
+<label style="float:left">
+<input type="checkbox" id="not_mark" /> Do not invalidate translations for this item
+</label>
+<input type="button" value="Cancel"
+	onclick="window.opener.endEditionEvent(false);" />
+<input id="valid_button" type="button" value="OK"
+	onclick="window.opener.endEditionEvent(true);" />
+</div>
+</form>
+</body>
+</html>
