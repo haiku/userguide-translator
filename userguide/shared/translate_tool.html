@@ -76,6 +76,13 @@ textarea {
 	height: 99%;
 }
 
+#original {
+	border-color: #b6b6b6;
+	border-width: 1px;
+	border-style: solid;
+	background-color: #e6e6e6;
+}
+
 #bottom {
 	position: absolute;
 	left: 10px;
@@ -184,8 +191,8 @@ window.onunload = function() {
 </script>
 </head>
 <body>
-<div id="topleft">Original Text</div>
-<div id="topright">Translated Text</div>
+<div id="topleft">Original text</div>
+<div id="topright">Translated text</div>
 <form action="#" method="post">
 <div id="left"><textarea id="original" readonly="readonly"></textarea></div>
 <div id="right"><textarea id="translated"></textarea></div>
