@@ -81,7 +81,7 @@ function select_all() {
 	var num_of_checked = 0;
 	
 	for (i in checkboxes) {
-		if (num_of_checked<50) {
+		if (num_of_checked<95) {
 			checkboxes[i].checked = true;
 			num_of_checked++;
 		}
@@ -114,7 +114,7 @@ function select_matching() {
 		if (checkboxes[i].name != undefined) {
 			if (checkboxes[i].name.substr(-len) == ext) {
 				num_of_matched++;
-				if (num_of_checked<50) {
+				if (num_of_checked<95) {
 					checkboxes[i].checked = true;
 					num_of_checked++;
 				}
@@ -149,7 +149,7 @@ foreach ($unhandled_paths as $path) {
 <tr class="bottom">
 <td colspan="2">
 <input type="submit" name="delete_selection" value="Delete selection" />
-<input type="button" value="Select all" onclick="select_all()"/>
+<input type="button" value="Select first 95" onclick="select_all()"/>
 <input type="button" value="Select matching extension:" onclick="select_matching()"/>
 <input type="text" name="match_extension" value="" size="4" />
 <span id="match_status"></span>
