@@ -5,13 +5,6 @@ class a2_log{
 	public $name;
 	public $log;
 	
-	public function is_readable(){
-		if(is_readable($logfile))
-			return true;
-			
-		return false;
-	}
-	
 	public function read_log(){
 		if(!file_exists($this->logfile))
 			return false;
