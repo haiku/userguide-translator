@@ -18,9 +18,13 @@ $num_per_page = 500;
 $num_pages = ceil($num_logs/$num_per_page);
 $page=1;
 
-if(isset($_GET['page']))
-	$page=$_GET['page'];
-
+if(isset($_GET['page']) && is_numeric($_GET['page']))
+	if($_GET['page']>$num_pages){
+		$page=$num_pages;
+	}else{
+		$page=$_GET['page'];
+	}
+	
 for($i=1; $i<$num_pages; $i++){
 	if($page==$i){
 		echo " $i ";
