@@ -306,3 +306,19 @@ function alt_row() {
 		return 'row1';
 	return 'row2';
 }
+
+function DEBUG_LOG($message){
+	if(defined('ENABLE_DEBUGGING') && ENABLE_DEBUGGING==true){
+		if(defined('DEBUG_FILE')){
+			if($filehandle=fopen(DEBUG_FILE, 'a')){
+				if(fwrite($filehandle, '['.date('Y-m-d H:i:s').'] '.$message."\n")){
+					fclose($filehandle);
+					return true;
+				}
+				fclose($filehandle);
+			}
+		}
+	}
+			
+	return false;
+}
