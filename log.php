@@ -9,15 +9,37 @@ include('inc/start_html.php');
 <h1>Latest changes</h1>
 <ul>
 <?php
+
+$db_result = db_query('SELECT count(log_id) as count FROM ' . DB_LOG . ' WHERE 1');
+
+$db_row = db_fetch($db_result);
+$num_logs = $db_row['count'];
+$num_per_page = 500;
+$num_pages = ceil($num_logs/$num_per_page);
+$page=1;
+
+if(isset($_GET['page']))
+	$page=$_GET['page'];
+
+for($i=1; $i<$num_pages; $i++){
+	if($page==$i){
+		echo " $i ";
+	}else{
+		echo "<a href=?page=$i> $i </a>";
+	}
+}
+
 $req = db_query('
 	SELECT l.*, u.username, d.name, d.path_original, x.lang_name
 	FROM ' . DB_USERS . ' u, ' . DB_LOG . ' l
 	LEFT JOIN ' . DB_DOCS . ' d ON l.log_doc = doc_id
 	LEFT JOIN ' . DB_LANGS . ' x ON l.log_trans_lang = lang_code ' . "
 	WHERE l.log_user = u.user_id " . '
-	ORDER BY l.log_time DESC LIMIT 30');
+	ORDER BY l.log_time DESC LIMIT ' . ($page-1)*$num_per_page.', '.$num_per_page);
 
 $time = time();
+
+
 
 while ($row = db_fetch($req)) {
 	$user_id = $row['log_user'];
