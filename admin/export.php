@@ -140,13 +140,31 @@ if (isset($_SESSION['exp_cur_lang']) and isset($_SESSION['exp_langs_loc'])
 						$files .= ' docs/' . $file;
 				}
 			}
-			
-			$pwd = getcwd();
-			chdir('../' . EXPORT_DIR) or die('Unable to chdir!');
-			//chdir('..') or die ('Unable to chdir!');
-			@unlink('userguide.zip');
-			exec('zip -v userguide.zip' . $files);
 
+			DEBUG_LOG('About to start generating userguide.zip...');
+			$pwd = getcwd();
+			DEBUG_LOG('Working directory is ' . $pwd . '.');
+			chdir('../' . EXPORT_DIR) or die('Unable to chdir!');
+			DEBUG_LOG('Changed working directory to ' . getcwd() . '.');
+			
+			if(file_exists('userguide.zip')){
+				DEBUG_LOG('userguiede.zip already exists. Attempting to deleting it...');			
+				if(!unlink('userguide.zip')){
+					DEBUG_LOG('userguiede.zip could not be deleted. Bailing out.');
+					exit;
+				}else{
+					DEBUG_LOG('userguiede.zip was successfully deleted.');
+				}
+			}
+				
+								
+			DEBUG_LOG('Attempting to compress the userguide to userguide.zip.');
+			
+			$export=exec('zip -v userguide.zip' . $files, $output, $return);
+			DEBUG_LOG('Zip output: '.$export);
+			DEBUG_LOG('Zip output: '.serialize($output));
+			DEBUG_LOG('Zip return: '.$return);
+			
 			chdir($pwd) or die('Unable to chdir!');
 			unset($_SESSION['exp_cur_lang']);
 			unset($_SESSION['exp_langs_loc']);
