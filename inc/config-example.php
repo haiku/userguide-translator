@@ -13,8 +13,13 @@ $base_url = 'http://i18n-dev.haiku-os.org/userguide';
 
 $use_system_glob = true; // Disable this if it does not work
 
+// Debug options
+define('ENABLE_DEBUGGING', false);
+define('DEBUG_FILE', '/var/log/userguide/userguide.debug');
+
 // Apache log files
 $a2_logs = array(
+					'Debug log'=>'/var/log/userguide/userguide.debug',
 					'Error log'=>'/var/log/apache2/i18n.haiku-os.org-error_log',
 					'Access log'=>'/var/log/apache2/i18n.haiku-os.org-access_log'
 				);
