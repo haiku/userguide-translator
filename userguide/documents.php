@@ -76,7 +76,7 @@ while ($row = db_fetch($req)) {
 <td><a href="<?=$path?>"><?=$name?></a><br/>
 <a href="<?=$block_edit?>">Block Edit</a> •
 <a href="<?=$path_edit?>">Full Edit</a></td>
-<?
+<?php
 	if ($row['strings_count'] > 0) {
 		foreach ($lang_codes as $lang_id => $lang_code) {
 			$path_trans = $row['path_translations'];
@@ -98,7 +98,7 @@ while ($row = db_fetch($req)) {
 <a href="<?=$translate?>" title="Translate the document">Translate</a><br/>
 (<b style="color:<?=color($percent, $row['count_fuzzy_' . $lang_code])?>"><?=$percent?> %<?=$fuzzy?></b>)
 </td>
-<?
+<?php
 		}
 	} else {
 ?>
@@ -107,7 +107,7 @@ while ($row = db_fetch($req)) {
 	}
 ?>
 </tr>
-<?
+<?php
 }
 ?>
 </tbody>
