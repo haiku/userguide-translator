@@ -98,7 +98,7 @@ while ($row = db_fetch($req)) {
 <a href="<?=$translate?>" title="Translate the document">Translate</a><br/>
 (<b style="color:<?=color($percent, $row['count_fuzzy_' . $lang_code])?>"><?=$percent?> %<?=$fuzzy?></b>)
 </td>
-<?php
+<?
 		}
 	} else {
 ?>
@@ -107,7 +107,7 @@ while ($row = db_fetch($req)) {
 	}
 ?>
 </tr>
-<?php
+<?
 }
 ?>
 </tbody>
