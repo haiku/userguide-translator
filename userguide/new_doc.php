@@ -13,45 +13,45 @@ $doc_title = (isset($_POST['doc_title']) ? unprotect_quotes($_POST['doc_title'])
 if ($src_path and $trans_path and $doc_title) {
 	if (trim($doc_title) and validate_path($src_path) and validate_path(str_replace('{LANG}', '', $trans_path, $count))
 		and $count == 1) {
-			
+
 		if (isset($_POST['confirm_ok'])) {
 			if (file_exists(REF_DIR . '/' . $src_path))
 				error_box($title, 'This document already exists !');
-			
+
 			$src_path = db_esc($src_path);
 			$trans_path = db_esc($trans_path);
 			$doc_title_esc = db_esc($doc_title);
 			$time = time();
-			
+
 			if(!is_dir(dirname(REF_DIR . '/' . $src_path)))
 				mkdir(dirname(REF_DIR . '/' . $src_path), 0770, true);
-				
+
 			file_put_contents(REF_DIR . '/' . $src_path,
 				str_replace('{TITLE}', $doc_title, $base_document))
-					or error_box($title, 'Unable to write to the destination directory!');		
-	
-			
+					or error_box($title, 'Unable to write to the destination directory!');
+
+
 			// Insert entry in the database
 			db_query('
 				INSERT INTO ' . DB_DOCS . '
 				(name, path_original, path_translations) ' . "
 				VALUES ('$doc_title_esc', '$src_path', '$trans_path')");
-		
+
 			$doc_id = db_insert_id();
-			
+
 			include('inc/subversion.php');
 			svn_add(REF_DIR . '/' . $src_path);
 			svn_commit(REF_DIR . '/' . $src_path, 'New document: \"' . $doc_title . '"');
 			svn_update(REF_DIR . '/' . $src_path);
-			
+
 			// Log
 			db_query('
 				INSERT INTO ' . DB_LOG . '
 				(log_user, log_time, log_action, log_doc) ' . "
 				VALUES ($user_id, $time, 'creat', $doc_id)");
-			
+
 			redirect('edit.php?doc_id=' . $doc_id);
-			
+
 		} else if(!isset($_POST['confirm_cancel'])) {
 			$doc_title = htmlspecialchars($doc_title);
 			confirm_box($title, 'Do you really want to add this document ?',

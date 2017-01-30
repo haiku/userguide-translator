@@ -10,10 +10,10 @@ $title = 'Resource upload';
 
 if (isset($_GET['path'])) {
 	$path = get_absolute_path($_GET['path']);
-	
+
 	if (!$path)
 		error_box($title, 'Incorrect path!');
-	
+
 	if (isset($_GET['lang'])) {
 		$req = db_query('SELECT resource_id, path_translated FROM ' . DB_RESOURCES);
 		$id = 0;
@@ -21,10 +21,10 @@ if (isset($_GET['path'])) {
 			if ($path == str_replace('{LANG}', $_GET['lang'], $row['path_translated']))
 				$id = $row['resource_id'];
 		}
-		
+
 		if (!$id)
 			error_box($title, 'Unable to resolve the image path! Is it translatable?');
-		
+
 		redirect('res_upload.php?id=' . $id . '&lang=' . $_GET['lang']);
 	} else {
 		$path = db_esc($path);
@@ -32,7 +32,7 @@ if (isset($_GET['path'])) {
 			SELECT resource_id FROM ' . DB_RESOURCES . "
 			WHERE path_untranslated = '$path'"
 		);
-		
+
 		$row = db_fetch($req);
 		if (!$row) {
 			if ($user_role >= ROLE_AUTHOR) {
@@ -40,10 +40,10 @@ if (isset($_GET['path'])) {
 			}
 			error_box($title, 'Unable to resolve the image path!');
 		}
-		
+
 		redirect('res_upload.php?id=' . $row['resource_id']);
 	}
-	
+
 }
 
 $id = intval(@$_GET['id']);
@@ -69,15 +69,15 @@ if (isset($_GET['lang'])) {
 	$file_path = str_replace('{LANG}', $code, $row['path_translated']);
 	if (!$file_path)
 		error_box($title, "This resource is not translatable.");
-	
+
 	$req = db_query('SELECT lang_name, loc_name FROM ' . DB_LANGS . " WHERE lang_code = '$code'");
 	$row = db_fetch($req);
-	
+
 	if (!$row)
 		error_box($title, "No such language!");
-	
+
 	$language = "$row[lang_name] / $row[loc_name]";
-	
+
 } else {
 	$file_path = $row['path_untranslated'];
 }
@@ -93,9 +93,9 @@ if (!$error and isset($_FILES['new_res']) and $_FILES['new_res']['error'] != UPL
 		$error = get_error($_FILES['new_res']['error']);
 	} else {
 		$temp_path = $_FILES['new_res']['tmp_name'];
-	
+
 		$type = get_image_type($temp_path);
-	
+
 		if (!$type) {
 			$error = 'The uploaded image seems invalid.';
 		} else if ($type != $orig_type and $user_role < ROLE_AUTHOR) {
@@ -143,34 +143,34 @@ function get_image_type($image_path) {
 	$info = @getimagesize($image_path);
 	if (!$info)
 		return false;
-	
+
 	if ($info[0] < 2 or $info[1] < 2)
 		return false;
-	
+
 	return $info['mime'];
 }
 
 function get_error($code) {
 	$fatal = 'Please contact the webmaster.';
-	
+
 	switch ($code) {
 		case UPLOAD_ERR_INI_SIZE:
 		case UPLOAD_ERR_FORM_SIZE:
 			return 'The updated file is too big.';
 		break;
-		
+
 		case UPLOAD_ERR_PARTIAL:
 			return 'The file was only partially sent. Please retry.';
 		break;
-		
+
 		case UPLOAD_ERR_NO_TMP_DIR:
 			return "The temporary dir missing. $fatal";
 		break;
-		
+
 		case UPLOAD_ERR_CANT_WRITE:
 			return "An error occurred while saving the file. $fatal";
 		break;
-		
+
 		default:
 			return "An unknown error occurred. $fatal";
 		break;

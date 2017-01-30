@@ -24,7 +24,7 @@ if(isset($_GET['page']) && is_numeric($_GET['page']))
 	}else{
 		$page=$_GET['page'];
 	}
-	
+
 for($i=1; $i<$num_pages; $i++){
 	if($page==$i){
 		echo " $i ";
@@ -61,31 +61,31 @@ while ($row = db_fetch($req)) {
 	$date = '';
 	if ($time - $log_time < 4 * 60 * 60 * 24) {
 		$delta = getday($time) - getday($log_time);
-		
+
 		if ($delta < 0)
 			$delta += 7;
-	
+
 		if ($delta == 0) {
 			$date = 'Today';
 		} else if ($delta == 1) {
 			$date = 'Yesterday';
 		}
 	}
-	
+
 	if (!$date)
 		$date = 'On ' . gmdate('l, \t\h\e jS \o\f F', $log_time);
-	
-	$hour = gmdate('H:i', $log_time); 
-	
+
+	$hour = gmdate('H:i', $log_time);
+
 	if ($doc_exists) {
 		$doc_url = '<a href="view.php?doc_id=' . $doc_id . '">' . $doc_name .
 			'</a>';
-		$doc_url2 = '<a href="view.php?doc_id=' . $doc_id . '&l=' . 
+		$doc_url2 = '<a href="view.php?doc_id=' . $doc_id . '&l=' .
 			$row['log_trans_lang'] .  '">' . $doc_name . '</a>';
 	} else {
 		$doc_url = $doc_url2 = $doc_name;
 	}
-	
+
 	$action = '';
 	switch ($row['log_action']) {
 		case 'creat':
@@ -108,7 +108,7 @@ while ($row = db_fetch($req)) {
 			"to $row[lang_name] in the document “${doc_url2}”.";
 		break;
 	}
-	
+
 	echo "<li>$date at $hour, <b>$user_name</b> $action</li>";
 }
 

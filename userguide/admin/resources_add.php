@@ -23,34 +23,34 @@ if (isset($_POST['added_resources']) and $src_path
 
 	$added_resources = unprotect_quotes($_POST['added_resources']);
 	$resources = explode(', ', $added_resources);
-	
+
 	$regexp = preg_quote($src_path, '=');
 	$regexp = str_replace('\*', '(.*)', $regexp);
 	$regexp = '=(' . $regexp . ')=';
-	
+
 	foreach ($resources as $resource) {
 		chdir('../' . EXPORT_DIR) or die('Unable to chdir !');
-			
+
 		$dest_path = '';
 		if ($trans_path) {
 			$dest_path = $trans_path;
 			preg_match($regexp, $resource, $matches);
-				
+
 			for ($i = 2 ; $i < count($matches) ; $i++)
 				$dest_path = implode($matches[$i], explode('*', $dest_path, 2));
 		}
-		
+
 		$path_untranslated = db_esc($resource);
 		$path_translated = db_esc($dest_path);
-		
+
 		db_query('
 			INSERT INTO ' . DB_RESOURCES . '
 			(path_untranslated, path_translated)' . "
 			VALUES ('$path_untranslated', '$path_translated')
 		");
-		
+
 	}
-	
+
 	include('../inc/start_html.php');
 	echo '<div class="box-info">The resources were added to the database.</div>' . "\n";
 
@@ -62,59 +62,59 @@ if (isset($_POST['added_resources']) and $src_path
 	}
 
 	$req_ok = true;
-	
+
 	if (strlen($src_path) <= 1)
 		$req_ok = false;
-	
+
 	if (strpos($src_path, '..') !== false)
 		$req_ok = false;
-	
+
 	if ($trans_path) {
 		$pos = strpos($trans_path, '{LANG}');
-		
+
 		if ($pos === false or strpos($trans_path, '{LANG}', $pos + 1) !== false)
 			$req_ok = false;
 
 		if (count_str('*', $src_path) != count_str('*', $trans_path))
 			$req_ok = false;
-		
+
 		if (strpos($trans_path, '..') !== false)
 			$req_ok = false;
 	}
-	
+
 	if ($req_ok and strpos($src_path, '*') !== false) {
 		chdir('../' . EXPORT_DIR) or die('Unable to chdir !');
 		$files_list = my_glob($src_path);
-		
+
 		if (!is_array($files_list))
 			die('It seems your ISP disabled the "glob" function. <br/>' .
 				'Set $use_system_glob to false in inc/config.php.');
-		
+
 		$rsrc_list = array_diff($files_list, $in_db);
 		if (!empty($rsrc_list)) {
 			$text = 'About to add ' . count($rsrc_list);
 			$text .= (count($rsrc_list) == 1 ? ' resource' : ' resources');
 			$text .= " : \n<ul>\n";
-			
+
 			foreach($rsrc_list as $doc) {
 				$text .= '<li>' . htmlspecialchars($doc) . "</li>\n";
 			}
-			
+
 			$text .= "</ul>\n";
 			$text .= "This process can take a long time. Please be patient.\n";
-			
+
 			$added_resources = implode(', ', array_map('htmlspecialchars',
 				$rsrc_list));
 			$src_path = htmlspecialchars($src_path);
 			$trans_path = htmlspecialchars($trans_path);
-			
+
 			confirm_box($title, $text, 'Cancel', 'Add these resources',
 <<<EOD
 <input type="hidden" name="added_resources" value="$added_resources" />
 <input type="hidden" name="src_path" value="$src_path" />
 <input type="hidden" name="trans_path" value="$trans_path" />
 EOD
-);			
+);
 		} else {
 			include('../inc/start_html.php');
 			if (!empty($files_list))
@@ -126,25 +126,25 @@ EOD
 		}
 	} else if ($req_ok and isset($_FILES['src_file'])) {
 		include('../inc/start_html.php');
-		
+
 		$file = $_FILES['src_file'];
-		
+
 		$path_untranslated = db_esc($src_path);
 		$path_translated = db_esc($trans_path);
-		
+
 		$req = db_query('
 			SELECT resource_id FROM ' . DB_RESOURCES . "
 			WHERE path_untranslated = '$path_untranslated'
 		");
-		
+
 		$already_exists = file_exists('../' . EXPORT_DIR . '/' . $src_path);
 		$has_file = ($file['error'] == UPLOAD_ERR_NO_FILE ? false : true);
-		
+
 		if (db_fetch($req)) {
 			echo '<div class="box-warning">This resource is already registered. Use the resource manager to upload a new file.</div>' . "\n";
 		} else {
 			if ($already_exists and $has_file) {
-				echo '<div class="box-warning">An unregistred file with this name already exists.' . 
+				echo '<div class="box-warning">An unregistred file with this name already exists.' .
 					' Please add it to the managed resources list (without uploading a new file), ' .
 					' and then use the resource manager to replace the file.</div>' . "\n";
 			} else if (!$already_exists and !$has_file) {
@@ -161,7 +161,7 @@ EOD
 						(path_untranslated, path_translated)' . "
 						VALUES ('$path_untranslated', '$path_translated')
 					");
-					
+
 					if ($path_translated) {
 						echo '<div class="box-info">The localizable resource was successfully added.' .
 						'<br/>The file may be missing from the translations. ' .
@@ -173,7 +173,7 @@ EOD
 				}
 			}
 		}
-	
+
 	} else {
 		include('../inc/start_html.php');
 		echo '<div class="box-stop">Adding document(s) failed: Incorrect ' .
@@ -233,25 +233,25 @@ function make_path($path) {
 
 function get_error($code) {
 	$fatal = 'Please contact the webmaster.';
-	
+
 	switch ($code) {
 		case UPLOAD_ERR_INI_SIZE:
 		case UPLOAD_ERR_FORM_SIZE:
 			return 'The updated file is too big.';
 		break;
-		
+
 		case UPLOAD_ERR_PARTIAL:
 			return 'The file was only partially sent. Please retry.';
 		break;
-		
+
 		case UPLOAD_ERR_NO_TMP_DIR:
 			return "The temporary dir missing. $fatal";
 		break;
-		
+
 		case UPLOAD_ERR_CANT_WRITE:
 			return "An error occurred while saving the file. $fatal";
 		break;
-		
+
 		default:
 			return "An unknown error occurred. $fatal";
 		break;

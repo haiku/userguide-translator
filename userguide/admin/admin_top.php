@@ -1,6 +1,6 @@
 <?php
 $top = <<<EOD
-<a href="../documents.php">Return to the main page</a> | 
+<a href="../documents.php">Return to the main page</a> |
 <a href="index.php">Index</a>
 • <a href="langs.php">Languages</a>
 • <a href="users.php">Users</a>

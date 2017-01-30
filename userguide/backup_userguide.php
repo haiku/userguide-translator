@@ -20,10 +20,10 @@ foreach($files as $file) {
 function get_files($path, $exclude_list) {
 	$matches = array();
 	$dir = opendir($path ? $path : '.') or die("Unable to open path $path!");
-	
+
 	if ($path)
 		$path .= '/';
-	
+
 	while ($item = readdir($dir)) {
 		if ($item != '.' and $item != '..' and !in_array($item, $exclude_list)) {
 			if (is_dir($path . $item)) {
@@ -31,11 +31,11 @@ function get_files($path, $exclude_list) {
 			} else {
 				$matches[] = $path . $item;
 			}
-		}	
+		}
 	}
-	
-	closedir($dir);	
-	
+
+	closedir($dir);
+
 	return $matches;
 }
 

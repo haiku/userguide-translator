@@ -67,7 +67,7 @@ if ($metas) {
 
 $node = append_sibling($doc->createTextNode("\n\t"), $node);
 $base = $doc->createElement('base');
-$base->setAttribute('href', $base_url . '/' . EXPORT_DIR . '/' . 
+$base->setAttribute('href', $base_url . '/' . EXPORT_DIR . '/' .
 	($path_trans == '.' ? '' : $path_trans . '/'));
 $node = append_sibling($base, $node);
 $node = append_sibling($doc->createTextNode("\t"), $node);
@@ -90,17 +90,17 @@ function replace_translations($doc, $node) {
 			if ($child->hasAttribute(ATTR_TRANS_ID)) {
 				$id = $child->getAttribute(ATTR_TRANS_ID);
 				$child->removeAttribute(ATTR_TRANS_ID);
-				
+
 				if (isset($translations[$id]) and $translations[$id]) {
-					
+
 					while ($child->hasChildNodes())
 						$child->removeChild($child->firstChild);
-					
+
 					$temp_doc = new DOMDocument();
 					$temp_doc->loadXML('<?xml version="1.0" encoding="UTF-8"?>'
 						. '<code>' . $translations[$id] . '</code>')
 						or die("String ID $id has XML errors !");
-					
+
 					foreach ($temp_doc->firstChild->childNodes as $sub_child) {
 						$child->appendChild($doc->importNode($sub_child, true));
 					}
@@ -116,6 +116,6 @@ function append_sibling(DOMNode $new_node, DOMNode $ref) {
 	if ($ref->nextSibling)
 		return $ref->parentNode->insertBefore($new_node, $ref->nextSibling);
 
-	return $ref->parentNode->appendChild($newnode); 
+	return $ref->parentNode->appendChild($newnode);
 }
 

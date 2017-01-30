@@ -10,7 +10,7 @@ if ($user_logged_in)
 	redirect('documents.php');
 ?>
 <h1>Haiku User Guide Translations</h1>
-<p>If you're looking for the actual documentation for Haiku, please visit the pages of the 
+<p>If you're looking for the actual documentation for Haiku, please visit the pages of the
 <a href="http://www.haiku-os.org/docs/userguide/en/contents.html">Official Haiku User Guide</a>
 of the Haiku project.</p>
 <p>If you would like to help with translation, visit our

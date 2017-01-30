@@ -38,35 +38,35 @@ function update_id($id) {
 
 	$sql = 'UPDATE ' . DB_DOCS . ' SET ';
 	$first = true;
-	
+
 	foreach ($lang_codes as $lang_code) {
 		$req = db_query('
 			SELECT COUNT(*) FROM ' . DB_STRINGS . "
 			WHERE doc_id = $id AND `translation_$lang_code` <> ''
 			AND unused_since IS NULL AND is_fuzzy_$lang_code = 0"
 		);
-		
+
 		$row = db_fetch($req);
 		$count = $row['COUNT(*)'];
 		db_free($req);
-		
+
 		$req = db_query('
 			SELECT COUNT(*) FROM ' . DB_STRINGS . "
 			WHERE doc_id = $id AND `translation_$lang_code` <> ''
 			AND unused_since IS NULL AND is_fuzzy_$lang_code = 1"
 		);
-		
+
 		$row = db_fetch($req);
 		$fuzzy = $row['COUNT(*)'];
 		db_free($req);
-		
+
 		$sql .= ($first ? '' : ', ');
 		$sql .= "count_$lang_code=$count, count_fuzzy_$lang_code=$fuzzy";
-		
+
 		$first = false;
 	}
-	
+
 	$sql .= " WHERE doc_id=$id";
-	
+
 	db_query($sql);
 }

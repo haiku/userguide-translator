@@ -11,16 +11,16 @@ var count = 0;
 
 function pingServer() {
 	var xml_http = new XMLHttpRequest();
-	
+
 	xml_http.open('GET', base_url + '/edit.php?ping_id=' + doc_id);
 	xml_http.send(null);
-	
+
 	window.setTimeout(pingServer, ping_delay * 1000);
 }
 
 function keyDownAction() {
 	var e = event;
-	
+
 	if(e.which == 9) {
 		insertText("\t", '');
 		return false;
@@ -35,7 +35,7 @@ function keyUpAction() {
 		window.clearTimeout(update_timer);
 		update_timer = window.setTimeout(updateStatus, update_delay);
 	}
-	
+
 	getCaretPosition();
 }
 
@@ -64,26 +64,26 @@ function togglePreview() {
 function getCaretPosition() {
 	var pos = editor.selectionStart;
 	var line = 0, column = 0;
-	
+
 	while (true) {
 		if (pos == 0)
 			break;
-	
+
 		pos = editor.value.lastIndexOf("\n", pos - 1);
 		if (pos < 0)
 			break;
-		
+
 		if (column == 0)
-			column = editor.selectionStart - pos; 
-		
+			column = editor.selectionStart - pos;
+
 		line++;
 	}
 
 	if (column == 0)
 		column = editor.selectionStart + 1;
-	
+
 	document.getElementById('row').value = line + 1;
-	document.getElementById('col').value = column;	
+	document.getElementById('col').value = column;
 }
 
 function insertText(before, after) {
@@ -93,14 +93,14 @@ function insertText(before, after) {
 		var sel_start = editor.selectionStart;
 		var sel_end = editor.selectionEnd;
 		var scroll = editor.scrollTop;
-		
+
 		if (sel_end == 1 || sel_end == 2)
 			sel_end = sel_length;
-		
+
 		var part1 = editor.value.substring(0, sel_start);
 		var part2 = editor.value.substring(sel_start, sel_end);
 		var part3 = editor.value.substring(sel_end, sel_length);
-		
+
 		editor.value = part1 + before + part2 + after + part3;
 		editor.selectionStart = sel_end + before.length;
 		editor.selectionEnd = editor.selectionStart;
@@ -109,15 +109,15 @@ function insertText(before, after) {
 	} catch (err) {
 		editor.value += before + after;
 	}
-	
+
 	return false;
 }
 
 function closeAlert() {
 	document.getElementById('warning_box').style.display = "none";
-	
+
 	to_close = document.getElementsByClassName("warning");
-	
+
 	for (i = to_close.length - 1 ; i >= 0 ; i--) {
 		to_close[i].className = "no-warning";
 	}
@@ -129,22 +129,22 @@ window.onload = function() {
 	editor.onkeydown = keyDownAction;
 	editor.onfocus = getCaretPosition;
 	editor.onmouseup = getCaretPosition;
-	
-	var functions_ok = 0;	
-	
+
+	var functions_ok = 0;
+
 	if (window.XMLHttpRequest)
 		functions_ok++;
-	
+
 	if (functions_ok != 1) {
 		window.alert('Your browser does not support XML HTTP requests. ' +
 			'You will not be protected against concurrent edits!');
 	} else {
 		window.setTimeout(pingServer, ping_delay * 1000);
 	}
-	
+
 	preview_button = document.getElementById('preview');
 	preview_button.onclick = togglePreview;
-	
+
 	updateStatus();
 }
 

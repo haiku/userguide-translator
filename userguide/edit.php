@@ -23,7 +23,7 @@ $doc_id = (isset($_GET['doc_id']) ? intval($_GET['doc_id']) : 0);
 $req = db_query('
 	SELECT d.name, d.path_original, d.path_translations, d.edited_by,
 		d.edit_time, u.username
-	FROM ' . DB_DOCS . ' d 
+	FROM ' . DB_DOCS . ' d
 	LEFT JOIN ' . DB_USERS . ' u
 		ON d.edited_by = u.user_id '. "
 	WHERE d.doc_id = $doc_id");
@@ -76,15 +76,15 @@ $rev_id = (isset($_GET['rev']) ? $_GET['rev'] : '');
 if ($rev_id == 'list') {
 	include('inc/subversion.php');
 	$log = svn_log($file_path);
-	
+
 	include('inc/start_html.php');
 	echo "Revisions for this document:\n<dl>\n";
-	
+
 	foreach ($log as $rev => $data) {
 		echo "<dt><a href=\"edit.php?doc_id=$doc_id&rev=$rev\">Revision $rev</a> ($data[date])</dt>\n";
 		echo '<dd>' . htmlspecialchars($data['msg']) . "</dd>\n";
 	}
-	
+
 	echo "</dl>\n";
 	include('inc/end_html.php');
 	exit;
@@ -94,11 +94,11 @@ $rev_id = intval($rev_id);
 
 if (isset($_POST['text'])) {
 	$text = unprotect_quotes($_POST['text']);
-	
+
 	$blocks = array();
-	
+
 	validate_edit($text, $file_path, $blocks);
-	
+
 	if (!$error) {
 		include('inc/start_html.php');
 ?>
@@ -183,7 +183,7 @@ Do not invalidate translations for this item</label>
 <input type="hidden" name="sum" value="<?=$sum?>" />
 </form>
 <?php
-		
+
 		include('inc/end_html.php');
 		exit;
 	}
@@ -194,27 +194,27 @@ Do not invalidate translations for this item</label>
 } else if (isset($_POST['submit_edit']) and isset($_POST['text64'])
 	and isset($_POST['sum'])) {
 	ignore_user_abort(true);
-	
+
 	$text = unprotect_quotes($_POST['text64']);
 	$text = base64_decode($text);
-	
+
 	if (md5($text) != $_POST['sum'])
 		die('The XML document was corrupt.');
-	
+
 	$blocks_md5 = array();
 	$req = db_query('
 		SELECT string_id, source_md5 FROM ' . DB_STRINGS . "
 		WHERE doc_id = $doc_id");
 	while ($row = db_fetch($req)) {
 		$blocks_md5[$row['source_md5']] = $row['string_id'];
-	}	
+	}
 	db_free($req);
-	
+
 	$edited_doc = new DOMDocument();
 
 	if (!@$edited_doc->loadXML($text))
 		die('Error parsing the XML document !');
-		
+
 	$req = db_query('SELECT lang_code FROM ' . DB_LANGS);
 	$r_norm = 'doc_id';
 	$r_fuzzy = '';
@@ -226,7 +226,7 @@ Do not invalidate translations for this item</label>
 		$r_to_fuzzy .= ($r_to_fuzzy ? ', ' : '') . '1';
 	}
 	db_free($req);
-	
+
 	// Mark all blocks as unused (used blocks will be reenabled later)
 	db_query('
 		UPDATE ' . DB_STRINGS . "
@@ -240,14 +240,14 @@ Do not invalidate translations for this item</label>
 	$req = db_query('
 		SELECT COUNT(*) FROM ' . DB_STRINGS . "
 		WHERE doc_id = $doc_id AND unused_since IS NULL");
-		
+
 	$row = db_fetch($req);
 	$count = $row['COUNT(*)'];
 	db_free($req);
 
 	db_query('UPDATE ' . DB_DOCS . "
 		SET strings_count = $count, is_dirty = 1 WHERE doc_id = $doc_id");
-	
+
 	// Log
 	db_query('
 		INSERT INTO ' . DB_LOG . '
@@ -261,7 +261,7 @@ Do not invalidate translations for this item</label>
 
 	// Commit
 	$comment = 'Document ' . $doc_name . ' edited by ' . $user_name . ':';
-	if (isset($_POST['comment']) && $_POST['comment']) 
+	if (isset($_POST['comment']) && $_POST['comment'])
 		$comment .= $_POST['comment'];
 	else
 		$comment .= '[No log message]';
@@ -269,7 +269,7 @@ Do not invalidate translations for this item</label>
 	svn_update($file_path);
 	svn_commit($file_path, $comment);
 	svn_update($file_path);
-	
+
 	redirect('update_stats.php?redir_to=block_edit.php%3Fdoc_id%3D' . $doc_id);
 	exit;
 
@@ -284,12 +284,12 @@ Do not invalidate translations for this item</label>
 	} else {
 		$rev_id = "$current (current)";
 	}
-		
+
 	$top = 'Revision: <b>' . $rev_id . '</b>. <a href="edit.php?doc_id=' . $doc_id . '&rev=list">Load another…</a>';
-	
+
 	if ($text === false)
 		$text = file_get_contents($file_path);
-	
+
 	if ($text === false)
 		error_box($title, 'Error: Unable to open the document !');
 }
@@ -363,46 +363,46 @@ include('inc/end_html.php');
 
 function validate_edit($text, $file_path, &$blocks) {
 	global $error, $translate_tags;
-	
-	// Check XML well-formedness	
+
+	// Check XML well-formedness
 	$edited_doc = new DOMDocument();
 	set_error_handler('catch_messages');
 	$status = $edited_doc->loadXML($text);
 	restore_error_handler();
-	
+
 	if ($error or !$status) {
 		if (!$error)
 			$error = 'DOMDocument::loadXML returned failure status.';
-		
+
 		$error = "Error parsing the edited XML document:<br/>\n$error";
 		return;
 	}
-	
+
 	// Load the original document
 	$orig_doc = new DOMDocument();
 	@$orig_doc->load($file_path) or die('Unable to load the original file!');
-	
+
 	$orig_inners = array();
-	$orig_outers = array();	
+	$orig_outers = array();
 	get_translate_ids($orig_doc, $orig_inners, $orig_outers);
-	
+
 	$blocks = array(
 		'add'	=> array(),
 		'mod'	=> array(),
 		'del'	=> array(),
 		'rev'	=> array(),
 	);
-	
+
 	$used_ids = array();
-	
+
 	validate($edited_doc, $orig_inners, $orig_outers, $translate_tags, $blocks,
 		$used_ids);
-	
+
 	// Search for now unused translation IDs
 	foreach ($used_ids as $used_id) {
 		unset($orig_outers[$used_id]);
 	}
-	$blocks['del'] = $orig_outers;	
+	$blocks['del'] = $orig_outers;
 }
 
 function get_translate_ids($node, &$orig_inners, &$orig_outers) {
@@ -427,7 +427,7 @@ function validate($node, &$orig_inners, &$orig_outers, $tags, &$blocks,
 		if ($child instanceOf DOMElement) {
 			if (isset($tags[$child->tagName])) {
 				if (is_array($tags[$child->tagName])) {
-					validate($child, $orig_inners, $orig_outers, 
+					validate($child, $orig_inners, $orig_outers,
 						$tags[$child->tagName], $blocks, $used_ids);
 				} else {
 					// This block should be tagged
@@ -435,20 +435,20 @@ function validate($node, &$orig_inners, &$orig_outers, $tags, &$blocks,
 						$id = intval($child->getAttribute(ATTR_TRANS_ID));
 						$inner_html = DOMinnerHTML($child);
 						$ok = true;
-						
+
 						if (!isset($orig_inners[$id])) {
 							// It refers to an ID that is not used in the current document
 							// So it is probably a revert
-							
+
 							$blocks['add'][] = DOMouterHTML($child);
-							
+
 						} else if ($inner_html != $orig_inners[$id]) {
 							// This block was already existing and was modified
-							
+
 							if ((isset($blocks['mod'][$id])	and $blocks['mod'][$id]['i'] != $inner_html)
 								or (!isset($blocks['mod'][$id]) and in_array($id, $used_ids)))
 								$ok = false;
-							
+
 							$blocks['mod'][$id] = array(
 								'p' => $orig_outers[$id],
 								'n' => DOMouterHTML($child),
@@ -457,7 +457,7 @@ function validate($node, &$orig_inners, &$orig_outers, $tags, &$blocks,
 						} else if (isset($blocks['mod'][$id])) {
 							$ok = false;
 						}
-						
+
 						if (!$ok) {
 							$error = <<<EOD
 The block with translate ID $id is used more than once in the page, but has not
@@ -470,22 +470,22 @@ You have two options:
 EOD;
 							break;
 						}
-						
+
 						$used_ids[] = $id;
 					} else if (trim($child->nodeValue, "  \t\n\r\0\x0B") != '') {
 						// It is a new block
 						$blocks['add'][] = DOMouterHTML($child);
 					}
-				}				
+				}
 			} else if ($child->hasAttribute(ATTR_TRANS_ID)) {
 				// The block is tagged but not translatable !
 				$tag_name = $child->tagName;
 				$id = $child->getAttribute(ATTR_TRANS_ID);
 				$line = '?';
-				
+
 				if (method_exists($child, 'getLineNo'))
 					$line = $child->getLineNo();
-				
+
 				$error .= "The &lt;$tag_name&gt; block at line $line has " .
 					'a translation ID (' . ATTR_TRANS_ID . '), but is not ' .
 					"translatable.<br/>\n";
@@ -507,13 +507,13 @@ function update_translations($node, $tags) {
 				$id_attr = ($child->hasAttribute(ATTR_TRANS_ID) ?
 					intval($child->getAttribute(ATTR_TRANS_ID)) : 0);
 				$id_cont = (isset($blocks_md5[$md5]) ? $blocks_md5[$md5] : 0);
-				
+
 				if ($id_attr == 0 and $id_cont == 0) {
 					// New block
 					db_query('
 						INSERT INTO '. DB_STRINGS . '
 						(doc_id, source_md5) ' . "
-						VALUES ($doc_id, '$md5')");		
+						VALUES ($doc_id, '$md5')");
 					$id = db_insert_id();
 					$blocks_md5[$md5] = $id;
 					$child->setAttribute(ATTR_TRANS_ID, $id);
@@ -527,11 +527,11 @@ function update_translations($node, $tags) {
 				} else {
 					// ID in the DB, but the block was modified
 					$fuzzy = !isset($_POST['noinval'][$id_attr]);
-					$update = 'source_md5, ' . $r_norm . 
+					$update = 'source_md5, ' . $r_norm .
 						(($fuzzy and $r_fuzzy) ? ', ' . $r_fuzzy : '');
-					$up_to = "'$md5', " . 
+					$up_to = "'$md5', " .
 						$r_norm . (($fuzzy and $r_to_fuzzy) ? ', ' . $r_to_fuzzy : '');
-					
+
 					db_query('
 					INSERT INTO ' . DB_STRINGS . "
 					($update)
@@ -548,7 +548,7 @@ function update_translations($node, $tags) {
 
 function catch_messages($errno, $errstr, $errfile, $errline) {
 	global $error;
-	
+
 	if (preg_match('/^DOMDocument::loadXML\(\) \[.*\]: (.*) in .*?(,.*)$/',
 		$errstr, $matches)) {
 		$error .= $matches[1] . ' in current document'.
@@ -561,12 +561,12 @@ function catch_messages($errno, $errstr, $errfile, $errline) {
 function replace_innerHTML($node, $new_inner) {
 	while ($node->hasChildNodes())
 		$node->removeChild($node->firstChild);
-					
+
 		$temp_doc = new DOMDocument();
 		@$temp_doc->loadXML('<?xml version="1.0" encoding="UTF-8"?>'
 			. '<code>' . $new_inner . '</code>')
 			or die('Error replacing inner HTML!');
-					
+
 		foreach ($temp_doc->firstChild->childNodes as $sub_child) {
 			$node->appendChild($doc->importNode($sub_child, true));
 		}

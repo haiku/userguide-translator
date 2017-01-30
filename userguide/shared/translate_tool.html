@@ -106,64 +106,64 @@ function selectText(text) {
 
 	if (pos_start < 0)
 		return false;
-	
+
 	var pos_end = text.indexOf('>', pos_start + 1) + 1;
-	
+
 	if (pos_end <= 0)
 		return false;
-	
+
 	var pos_cstart = text.indexOf('<', pos_start + 1);
-	
+
 	if (pos_cstart < 0)
 		pos_cstart = text.length;
-	
-	return [ pos_end, pos_cstart ];	
-	
+
+	return [ pos_end, pos_cstart ];
+
 }
 
 var last_update_text = '';
 
-function updateEvent() {	
+function updateEvent() {
 	var text = document.getElementById('translated').value
-	
+
 	if (text == last_update_text) {
 		window.setTimeout(5000);
 		last_update_text = text;
 		return;
 	}
-	
+
 	var previous = window.opener.edited_node.innerHTML;
 	window.opener.edited_node.innerHTML = text;
-	
+
 	if (window.opener.edited_node.innerText == '')
 		window.opener.edited_node.innerHTML = previous;
-	
+
 	window.setTimeout(updateEvent, 500);
 }
 
 function refreshAll() {
 	var text = (window.opener.translated_text ? window.opener.translated_text :
 		window.opener.original_text);
-	
+
 	document.getElementById('original').value = window.opener.original_text;
 	document.getElementById('translated').value = text;
-	
-	document.getElementById('valid_button').value = 
+
+	document.getElementById('valid_button').value =
 		'Send ' + window.opener.lang_name + ' Translation';
-	
-	
+
+
 	var pos = false;
-	
+
 	if (text[0] == '<')
 		pos = selectText(text);
-	
+
 	if (pos)
 		document.getElementById('translated').setSelectionRange(pos[0], pos[1]);
 	else {
 		document.getElementById('translated').focus();
 		document.getElementById('translated').select();
 	}
-	
+
 	window.setTimeout(updateEvent, 500);
 }
 

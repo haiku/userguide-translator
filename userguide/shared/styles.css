@@ -26,18 +26,18 @@ body {
 
 /* link colors and text decoration */
 
-a:link { 
-	font-weight: bold; 
-	text-decoration: none; 
+a:link {
+	font-weight: bold;
+	text-decoration: none;
 	color: #dc3c01;
 }
-a:visited { 
-	font-weight: bold; 
-	text-decoration: none; 
+a:visited {
+	font-weight: bold;
+	text-decoration: none;
 	color: #892601;
 }
-a:hover, a:active { 
-	text-decoration: underline; 
+a:hover, a:active {
+	text-decoration: underline;
 	color: #ff4500;
 }
 
@@ -86,7 +86,7 @@ h4 a:hover, a:active {
 	letter-spacing: 3px;
 	font-family: Myriad Pro,Myriad Web Pro Regular,Lucida Grande,Geneva,Trebuchet MS,sans-serif;
 	font-weight: normal;
-	font-size: 16px;	
+	font-size: 16px;
 }
 
 div.nav {
@@ -113,8 +113,8 @@ div.nav span {
 	font-size: 0.8em;
 }
 
-div.nav span a.uplink { 
-	font-weight: normal; 
+div.nav span a.uplink {
+	font-weight: normal;
 }
 
 /* main content */
@@ -152,13 +152,13 @@ table.index td {
 	padding: 5px 20px;
 }
 
-table.index a:link, table.index a:visited { 
-	font-weight: normal; 
-	text-decoration: none; 
+table.index a:link, table.index a:visited {
+	font-weight: normal;
+	text-decoration: none;
 	color: #dc3c01;
 }
-table.index a:hover, table.index a:active { 
-	text-decoration: underline; 
+table.index a:hover, table.index a:active {
+	text-decoration: underline;
 	color: #ff4500;
 }
 
@@ -182,7 +182,7 @@ table.compact tbody {
 /* Common declarations */
 .box-info, .box-stop, .box-warning {
 	-webkit-border-radius: 10px;
-	-khtml-border-radius: 10px;	
+	-khtml-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
 	border-style: dotted;
@@ -300,7 +300,7 @@ pre.terminal {			/* Terminal output*/
 }
 .key {				/* Shortcut (separate with &#160; */
 	-webkit-border-radius: 3px;
-	-khtml-border-radius: 3px;	
+	-khtml-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
 	border-color: #c7c7c7;
@@ -324,11 +324,11 @@ pre.terminal {			/* Terminal output*/
 	#banner {
 		display:none;
 	}
-	
+
 	div.nav {
 		display:none;
 	}
-	
+
 	/* some links we want to print the url along with (CSS2) */
 	a.printurl:after {
 		content: " <" attr(href) ">";
@@ -377,7 +377,7 @@ table.list th {
 	color: black;
 	background: -webkit-gradient(linear, left top, left bottom, from(#F7F7F7), to(#C6C6C6));
 	background: -moz-linear-gradient(left top, left bottom, from(#F7F7F7), to(#C6C6C6));
-	background-color: #C6C6C6;	
+	background-color: #C6C6C6;
 	border: 1px solid #999999;
 	padding-left: 2px;
 	padding-right: 2px;
@@ -408,7 +408,7 @@ table.list tr.bottom {
 	color: black;
 	background: -webkit-gradient(linear, left top, left bottom, from(#F7F7F7), to(#C6C6C6));
 	background: -moz-linear-gradient(left top, left bottom, from(#F7F7F7), to(#C6C6C6));
-	background-color: #E7E7E7;	
+	background-color: #E7E7E7;
 	border: 1px solid #999999;
 }
 

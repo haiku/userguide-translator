@@ -69,22 +69,22 @@ textarea {
 }
 </style>
 <script type="text/javascript">
-function updateEvent() {	
+function updateEvent() {
 	var text = document.getElementById('modified').value
-	
+
 	var previous = window.opener.edited_node.innerHTML;
 	window.opener.edited_node.innerHTML = text;
-	
+
 	if (window.opener.edited_node.innerText == '')
 		window.opener.edited_node.innerHTML = previous;
-	
+
 	window.setTimeout(updateEvent, 500);
 }
 
 function refreshAll() {
 	document.getElementById('original').value = window.opener.original_text;
 	document.getElementById('modified').value = window.opener.original_text;
-	
+
 	window.setTimeout(updateEvent, 500);
 }
 

@@ -17,49 +17,49 @@ if (isset($_POST['translate_doc']) and isset($_POST['translate_string'])
 	$text = unprotect_quotes($_POST['translate_text']);
 	$source_text = unprotect_quotes($_POST['translate_source']);
 	$is_fuzzy = ($_POST['is_fuzzy'] ? 1 : 0);
-	
+
 	$req = db_query('SELECT 1 FROM ' . DB_LANGS . " WHERE lang_code = '$lang'");
 
 	if (!$text or db_num_rows($req) != 1)
 		die('No text or incorrect lang');
-	
+
 	db_free($req);
-	
+
 	$req = db_query('
 		SELECT source_md5 FROM ' . DB_STRINGS . "
 		WHERE string_id = $string_id");
-	
+
 	$row = db_fetch($req);
 	db_free($req);
-	
+
 	$orig_md5 = md5($source_text);
-	
+
 	if (!$row)
 		die('Incorrect source ID!');
-		
+
 	if ($row['source_md5'] != $orig_md5)
 		die('The source text seems to have changed since you opened the translation page.');
-	
+
 	$trans_doc = new DOMDocument();
 	set_error_handler('xml_error_handler');
-	$status = $trans_doc->loadXML('<?xml version="1.0" encoding="UTF-8"?>' . 
+	$status = $trans_doc->loadXML('<?xml version="1.0" encoding="UTF-8"?>' .
 		'<code>' . $text . '</code>');
 	restore_error_handler();
-	
+
 	if (!$status || $xml_msg)
-		die("badxml $xml_msg");	
-	
+		die("badxml $xml_msg");
+
 	if (!check_xml_tags($text, $source_text))
 		die('diffxml');
-	
+
 	$text = db_esc($text);
 	$lang = db_esc($lang);
-	
+
 	db_query('
 		UPDATE ' . DB_STRINGS . "
-		SET translation_$lang='$text', is_fuzzy_$lang = $is_fuzzy		
+		SET translation_$lang='$text', is_fuzzy_$lang = $is_fuzzy
 		WHERE source_md5 = '$orig_md5'");
-	
+
 	$req = db_query('SELECT doc_id FROM ' . DB_STRINGS . " WHERE source_md5 = '$orig_md5'");
 	$updated_ids = array();
 	while ($row = db_fetch($req)) {
@@ -67,14 +67,14 @@ if (isset($_POST['translate_doc']) and isset($_POST['translate_string'])
 		$updated_ids[] = $up_id;
 		update_id($up_id);
 	}
-	
+
 	$ids_list = implode(', ', $updated_ids);
-	
+
 	db_query('
 		UPDATE ' . DB_DOCS . "
 		SET is_dirty_$lang = 1
 		WHERE doc_id IN ($ids_list)");
-	
+
 	// Log
 	$time = time();
 	$delay = $time - 5 * 60;
@@ -83,19 +83,19 @@ if (isset($_POST['translate_doc']) and isset($_POST['translate_string'])
 		SET log_trans_number = log_trans_number + 1' . "
 		WHERE log_user = $user_id AND log_time > $delay AND log_doc = $doc_id
 			AND log_action = 'trans' AND log_trans_lang = '$lang' LIMIT 1");
-	
+
 	if (!db_affected_rows())
 		db_query('
 			INSERT INTO ' . DB_LOG . '
 			(log_user, log_time, log_action, log_doc, log_trans_number,
 				log_trans_lang) ' . "
 			VALUES ($user_id, $time, 'trans', $doc_id, 1, '$lang')");
-	
+
 	db_query('
 		UPDATE ' . DB_USERS . '
 		SET num_translations = num_translations + 1 ' . "
 		WHERE user_id = $user_id");
-	
+
 	exit('ok');
 }
 
@@ -152,7 +152,7 @@ $js .= "var is_fuzzy = new Array();\n";
 
 while ($row = db_fetch($req)) {
 	$id = $row['string_id'];
-	
+
 	$translated = str_replace('\\', '\\\\', $row[$col_name]);
 	$translated = str_replace('"', '\"', $translated);
 	$translated = str_replace("\n", '\n', $translated);
@@ -160,7 +160,7 @@ while ($row = db_fetch($req)) {
 
 	$js .= "translated_strings[$id] = \"$translated\";\n";
 	if ($row[$col_fuzzy])
-		$js .= "is_fuzzy[$id] = 1;\n"; 
+		$js .= "is_fuzzy[$id] = 1;\n";
 }
 
 $js .= get_source_strings($doc);
@@ -235,31 +235,31 @@ function get_source_strings($node) {
 				$id = intval($child->getAttribute(ATTR_TRANS_ID));
 				if (isset($used_ids[$id]))
 					continue;
-				
+
 				$used_ids[$id] = true;
-				
+
 				$text = DOMInnerHTML($child);
-				
+
 				$text = str_replace('\\', '\\\\', $text);
 				$text = str_replace('"', '\"', $text);
 				$text = str_replace("\n", '\n', $text);
-				
+
 				$to_return .= "source_strings[$id] = \"$text\";\n";
 			} else {
 				$to_return .= get_source_strings($child);
 			}
 		}
 	}
-	
+
 	return $to_return;
 }
 
 function xml_error_handler($errno, $errstr, $errfile, $errline) {
 	global $xml_msg;
-	
+
 	$err = (preg_match('/^DOMDocument::loadXML\(\) \[.*\]: (.*)$/',
 		$errstr, $matches) ? $matches[1] : $errstr);
-	
+
 	$xml_msg .= htmlspecialchars_decode($err) . "\n";
 }
 
@@ -281,14 +281,14 @@ function check_xml_tags($text_original, $text_translation) {
 
 			return false;
 		}
-	
+
 		foreach ($tag_attributes as $tag_attribute) {
 			$tags_original[$tag_name] = preg_replace("!$tag_attribute=\"[^\"]*\" ?!", '',
 				$tags_original[$tag_name]);
 			$tags_translation[$tag_name] = preg_replace("!$tag_attribute=\"[^\"]*\" ?!", '',
 				$tags_translation[$tag_name]);
 		}
-		
+
 		if ($tags_original[$tag_name] != $tags_translation[$tag_name])
 			return false;
 	}
@@ -300,23 +300,23 @@ function check_xml_tags($text_original, $text_translation) {
 function extract_tags($text) {
 	$matches = array();
 	$tags = array();
-	
+
 	preg_match_all('!<([^/][^ >]*)( ([^>]*?))?>!', $text, $matches, PREG_SET_ORDER);
-	
+
 	foreach ($matches as $match) {
 		$tag_name = $match[1];
-		
+
 		if (substr($tag_name, -1, 1) == '/') // autoclosing tag
 			$tag_name = substr($tag_name, 0, strlen($tag_name) - 1);
-		
+
 		$tag_attr = (isset($match[3]) ? $match[3] : '');
-		
+
 		if (!isset($tags[$tag_name]))
 			$tags[$tag_name] = array();
-		
+
 		$tags[$tag_name][] = $tag_attr;
 	}
-			
+
 	return $tags;
 }
 
@@ -324,7 +324,7 @@ function append_sibling(DOMNode $new_node, DOMNode $ref) {
 	if ($ref->nextSibling)
 		return $ref->parentNode->insertBefore($new_node, $ref->nextSibling);
 
-	return $ref->parentNode->appendChild($newnode); 
+	return $ref->parentNode->appendChild($newnode);
 }
 
 function update_id($id) {
@@ -340,35 +340,35 @@ function update_id($id) {
 
 	$sql = 'UPDATE ' . DB_DOCS . ' SET ';
 	$first = true;
-	
+
 	foreach ($lang_codes as $lang_code) {
 		$req = db_query('
 			SELECT COUNT(*) FROM ' . DB_STRINGS . "
 			WHERE doc_id = $id AND `translation_$lang_code` <> ''
 			AND unused_since IS NULL AND is_fuzzy_$lang_code = 0"
 		);
-		
+
 		$row = db_fetch($req);
 		$count = $row['COUNT(*)'];
 		db_free($req);
-		
+
 		$req = db_query('
 			SELECT COUNT(*) FROM ' . DB_STRINGS . "
 			WHERE doc_id = $id AND `translation_$lang_code` <> ''
 			AND unused_since IS NULL AND is_fuzzy_$lang_code = 1"
 		);
-		
+
 		$row = db_fetch($req);
 		$fuzzy = $row['COUNT(*)'];
 		db_free($req);
-		
+
 		$sql .= ($first ? '' : ', ');
 		$sql .= "count_$lang_code=$count, count_fuzzy_$lang_code=$fuzzy";
-		
+
 		$first = false;
 	}
-	
+
 	$sql .= " WHERE doc_id=$id";
-	
+
 	db_query($sql);
 }

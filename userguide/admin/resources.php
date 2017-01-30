@@ -12,23 +12,23 @@ include('admin_top.php');
 // Delete resources
 if (isset($_POST['delete_selection']) and is_array(@$_POST['del_list'])
 	and !empty($_POST['del_list'])) {
-	
-	$del_list = array_map('intval', array_keys($_POST['del_list']));	
+
+	$del_list = array_map('intval', array_keys($_POST['del_list']));
 	$del_list = implode(', ', $del_list);
-	
+
 	confirm_box($title, 'Do you really want to delete the selected resources ?',
 		'Cancel', 'Delete',
 		'<input type="hidden" name="del_list" value="' . $del_list . '" />');
 } else if(isset($_POST['del_list']) and isset($_POST['confirm_ok'])) {
-	$del_list = explode(', ', $_POST['del_list']);	
+	$del_list = explode(', ', $_POST['del_list']);
 	$del_list = array_map('intval', $del_list);
 	$del_list = implode(', ', $del_list);
-	
+
 	db_query('
 		DELETE FROM ' . DB_RESOURCES . "
 		WHERE resource_id IN ($del_list)
 	");
-	
+
 	redirect('resources_unhand.php');
 }
 
@@ -71,12 +71,12 @@ while ($row = db_fetch($req)) {
 	$name = basename($row['path_untranslated']);
 	$colspan = ($path_trans ? 1 : $len);
 	$style = (file_exists($path_untrans) ? '' : ' style="color:#FF0000;font-weight:bold;text-decoration:line-through"');
-	
+
 	echo '<tr class="' . alt_row() . '">' . "\n";
 	echo "<td><input type=\"checkbox\" name=\"del_list[$res_id]\" /></td>\n";
 	echo "<td colspan=\"$colspan\"><a$style href=\"$path_untrans\">$row[path_untranslated]</a><br/>";
 	echo "<a href=\"../res_upload.php?id=$res_id\">Upload…</a></td>\n";
-	
+
 	if ($path_trans) {
 		foreach ($lang_codes as $lang_id => $lang_code) {
 			$loc_name = basename($path_trans);
@@ -85,14 +85,14 @@ while ($row = db_fetch($req)) {
 			else
 				$loc_name = str_replace('{LANG}', $lang_code, $loc_name);
 
-			
+
 			$path_loc = '../' . EXPORT_DIR . '/' . str_replace('{LANG}', $lang_code, $path_trans);
 			$style = (file_exists($path_loc) ? '' : ' style="color:#FF0000;font-weight:bold;text-decoration:line-through"');
 			echo "<td><a$style href=\"$path_loc\">$loc_name</a><br/>\n";
 			echo "<a href=\"../res_upload.php?id=$res_id&amp;lang=$lang_code\">Upload…</a></td>\n";
 		}
 	}
-	
+
 	echo "</tr>\n";
 }
 ?>

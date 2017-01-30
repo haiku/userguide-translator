@@ -14,38 +14,38 @@ $time = time();
 // Delete documents
 if (isset($_POST['delete_selection']) and is_array(@$_POST['del_list'])
 	and !empty($_POST['del_list'])) {
-	
-	$del_list = array_map('intval', array_keys($_POST['del_list']));	
+
+	$del_list = array_map('intval', array_keys($_POST['del_list']));
 	$del_list = implode(', ', $del_list);
-	
+
 	confirm_box($title, 'Do you really want to delete the selected documents ?',
 		'Cancel', 'Delete',
 		'<input type="hidden" name="del_list" value="' . $del_list . '" />');
 } else if(isset($_POST['del_list']) and isset($_POST['confirm_ok'])) {
-	$del_list = explode(', ', $_POST['del_list']);	
+	$del_list = explode(', ', $_POST['del_list']);
 	$del_list = array_map('intval', $del_list);
-	
+
 	include_once('../inc/subversion.php');
-	
+
 	foreach ($del_list as $delete_id) {
 		$delete_id = intval($delete_id);
-		
+
 		$req = db_query('
 			SELECT path_original, name FROM ' . DB_DOCS . "
 			WHERE doc_id = $delete_id");
-		
+
 		$row = db_fetch($req);
-		
+
 		if (!$row)
 			continue;
-		
+
 		if (file_exists('../' . REF_DIR . '/' . $row['path_original'])) {
 			svn_del('../' . REF_DIR . '/' . $row['path_original']);
 		}
-		
+
 		db_query('DELETE FROM ' . DB_DOCS . " WHERE doc_id = $delete_id");
 		db_query('DELETE FROM ' . DB_STRINGS . " WHERE doc_id = $delete_id");
-		
+
 		// Log
 		$name = db_esc($row['name']);
 		db_query('
@@ -66,7 +66,7 @@ if (isset($_POST['submit_names']) and isset($_POST['name'])
 		$new_name = db_esc(unprotect_quotes($new_name));
 		$new_disabled = (isset($_POST['dis_list'][$id]) ? 1 : 0);
 		$id = intval($id);
-		
+
 		db_query('
 			UPDATE ' . DB_DOCS . " SET name = '$new_name', is_disabled = $new_disabled
 			WHERE doc_id = $id");
@@ -86,7 +86,7 @@ include('../inc/start_html.php');
 $req = db_query('SELECT doc_id, name, path_original, path_translations, is_disabled ' . '
 	FROM ' . DB_DOCS);
 
-while ($row = db_fetch($req)) { 
+while ($row = db_fetch($req)) {
 	$disabled_checked = ($row['is_disabled'] ?  ' checked="checked"' : '');
 ?>
 <tr class="<?=alt_row()?>">

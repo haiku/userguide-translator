@@ -31,12 +31,12 @@ if (!isset($_SESSION['form_salt']) or !$_SESSION['form_salt'])
 
 $fs = $_SESSION['form_salt'];
 
-if (isset($_POST['old_pass' . $fs]) and isset($_POST['new_pass' . $fs]) 
+if (isset($_POST['old_pass' . $fs]) and isset($_POST['new_pass' . $fs])
 	and trim($_POST['new_pass' . $fs]) and isset($_POST['con_pass' . $fs])) {
 	if ($_POST['new_pass' . $fs] == $_POST['con_pass' . $fs]) {
 		$old_pass = sha1($_POST['old_pass' . $fs]);
 		$new_pass = sha1($_POST['new_pass' . $fs]);
-		
+
 		$req = db_query('
 			UPDATE ' . DB_USERS . "
 			SET user_password = '$new_pass'
@@ -47,7 +47,7 @@ if (isset($_POST['old_pass' . $fs]) and isset($_POST['new_pass' . $fs])
 			$_SESSION['user_pass'] = $new_pass;
 			box('info', 'Password updated successfully.');
 		}
-		
+
 	} else {
 		box('warning', 'The new password and confirmation must match.');
 	}

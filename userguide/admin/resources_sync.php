@@ -24,7 +24,7 @@ $req = db_query('
 while ($row = db_fetch($req)) {
 	$path_untrans = $row['path_untranslated'];
 	$path_trans = $row['path_translated'];
-	
+
 	foreach ($lang_codes as $lang_id => $lang_code) {
 		$path_loc = str_replace('{LANG}', $lang_code, $path_trans);
 		if (!file_exists($path_loc)) {

@@ -12,11 +12,11 @@ $del = (isset($_GET['del']) ? unprotect_quotes($_GET['del']) : '');
 if (isset($_GET['del']) and strlen($del) >= 2 and strlen($del) <= 5) {
 	if (isset($_POST['confirm_ok'])) {
 		$lang_code = db_esc(unprotect_quotes($_GET['del']));
-		
+
 		db_query('DELETE FROM ' . DB_LANGS . "
 			WHERE lang_code = '$lang_code'"
 		);
-		
+
 		if (db_affected_rows() > 0) {
 			db_query('ALTER TABLE ' . DB_DOCS . "
 				DROP `count_$lang_code`");
@@ -28,7 +28,7 @@ if (isset($_GET['del']) and strlen($del) >= 2 and strlen($del) <= 5) {
 				DROP `translation_$lang_code`");
 			db_query('ALTER TABLE ' . DB_STRINGS . "
 				DROP `is_fuzzy_$lang_code`");
-			
+
 		}
 		redirect('langs.php');
 	} else if (isset($_POST['confirm_cancel'])) {
@@ -48,9 +48,9 @@ $lang_name = '';
 $lang_loc_name = '';
 
 if (isset($_POST['update_status'])) {
-	$dis_list = ((isset($_POST['dis_list']) and is_array($_POST['dis_list'])) ? 
+	$dis_list = ((isset($_POST['dis_list']) and is_array($_POST['dis_list'])) ?
 		array_map('escape_lang', array_keys($_POST['dis_list'])) : array());
-	
+
 	db_query('UPDATE ' . DB_LANGS . ' SET is_disabled = 0 WHERE TRUE');
 	if (count($dis_list)) {
 		db_query('
@@ -58,16 +58,16 @@ if (isset($_POST['update_status'])) {
 			SET is_disabled = 1
 			WHERE lang_code = ' . implode(' OR lang_code = ', $dis_list));
 	}
-	
+
 } else if (isset($_POST['lang_code']) and isset($_POST['lang_name'])
 	and isset($_POST['lang_loc_name'])) {
 	$lang_code = unprotect_quotes($_POST['lang_code']);
 	$lang_name = unprotect_quotes($_POST['lang_name']);
 	$lang_loc_name = unprotect_quotes($_POST['lang_loc_name']);
 
-	if (strlen($lang_name) > 1 and strlen($lang_loc_name) > 1 
+	if (strlen($lang_name) > 1 and strlen($lang_loc_name) > 1
 		and validate_lang_code($lang_code)) {
-		
+
 		$lang_code = db_esc($lang_code);
 		$lang_name = db_esc($lang_name);
 		$lang_loc_name = db_esc($lang_loc_name);
@@ -86,13 +86,13 @@ if (isset($_POST['update_status'])) {
 			ADD `translation_$lang_code` TEXT collate utf8_bin NOT NULL");
 		db_query('ALTER TABLE ' . DB_STRINGS . "
 			ADD `is_fuzzy_$lang_code` BOOL NOT NULL DEFAULT '0'");
-		
+
 		$lang_code = '';
 		$lang_name = '';
 		$lang_loc_name = '';
-		
+
 		echo '<div class="box-info">New language added successfully.</div>';
-		
+
 	} else {
 		echo '<div class="box-stop">Adding language failed: Incorrect ' .
 		'parameters.</div>';
@@ -160,33 +160,33 @@ include('../inc/end_html.php');
 
 function validate_lang_code($code) {
 	$len = strlen($code);
-	
+
 	if ($len < 2)
 		return false;
-	
+
 	// Two first characters: must be lowercase
 	if ($code[0] < 'a' or $code[0] > 'z' or $code[1] < 'a' or $code[1] > 'z')
 		return false;
-	
+
 	if ($len == 2) // Two-chars: OK
 		return true;
-	
+
 	if ($len != 5) // Not five-chars, not OK
 		return false;
-	
+
 	if ($code[2] != '_')
 		return false;
-	
+
 	if ($code[3] < 'A' or $code[3] > 'Z' or $code[4] < 'A' or $code[4] > 'Z')
 		return false;
-	
+
 	return true;
 }
 
 function escape_lang($code) {
 	if (!validate_lang_code($code))
 		return "''";
-	
+
 	return "'$code'";
 }
 

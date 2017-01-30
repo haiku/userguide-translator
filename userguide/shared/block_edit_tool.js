@@ -12,61 +12,61 @@ var original_text;
 function endEditionEvent(clickOK) {
 	if (window.edited_node == null)
 		return;
-	
+
 	var id = window.edited_node.getAttribute(attr_trans_id);
 	var next_node = null;
-	
+
 	var new_text = edit_window.document.getElementById('modified').value;
-	
+
 	if (clickOK && new_text) {
 		var not_mark = edit_window.document.getElementById('not_mark').checked;
-		
+
 		source_strings[id] = new_text;
-		
+
 		var send_ok = false;
-		
+
 		var xml_http = new XMLHttpRequest();
-	
+
 		var encoded_text = encodeURI(new_text).replace(/&/g, '%26');
-	
+
 		xml_http.open('POST', base_url + '/block_edit.php', false);
 		xml_http.setRequestHeader('Content-Type',
 			'application/x-www-form-urlencoded');
-		xml_http.send('edit_doc=' + doc_id + '&edit_string=' + id + 
+		xml_http.send('edit_doc=' + doc_id + '&edit_string=' + id +
 			'&edit_text=' + encoded_text + '&dont_mark_fuzzy=' + (not_mark ? '1' : '0'));
-		
+
 		edit_window.focus();
-		
+
 		var resp = xml_http.responseText;
-		
+
 		if (resp.substring(0, 7) == 'badxml ')
 			edit_window.alert('The server rejected the translation because of XML ' +
-				"parsing errors :\n" + xml_http.responseText.substring(3) + 
+				"parsing errors :\n" + xml_http.responseText.substring(3) +
 				"\n" + 'Check the XML tags used in your translation.');
 		else if (resp.substring(0, 6) == 'interr')
 			edit_window.alert('The original XML code seems corrupt. Please contact ' +
 			'an administrator.' + "\n");
 		else if (resp.substring(0, 2) != 'ok')
-			edit_window.alert('There was an error sending the translation. Please ' + 
+			edit_window.alert('There was an error sending the translation. Please ' +
 			'retry.' + "\n" + xml_http.responseText);
 		else
 			send_ok = true;
-		
+
 		for (var i = 0 ; i < linked_nodes[id].length ; i++) {
 			linked_nodes[id][i].innerHTML = new_text;
 			linked_nodes[id][i].style.backgroundColor = null;
 		}
-		
+
 		if (!send_ok) {
 			edit_window.focus();
 			return;
 		}
-		
+
 	} else {
 		window.edited_node.innerHTML = source_strings[id];
 	}
-	
-	edit_window.close();	
+
+	edit_window.close();
 	edit_window = null;
 	window.edited_node = null;
 
@@ -78,10 +78,10 @@ function endEditionEvent(clickOK) {
 
 function pingServer() {
 	var xml_http = new XMLHttpRequest();
-	
+
 	xml_http.open('GET', base_url + '/edit.php?ping_id=' + doc_id);
 	xml_http.send(null);
-	
+
 	window.setTimeout(pingServer, ping_delay * 1000);
 }
 
@@ -98,15 +98,15 @@ function mouseClickEvent(e) {
 		edit_window.focus();
 		return false;
 	}
-	
+
 	window.edited_node = this;
-	
+
 	var id = this.getAttribute(attr_trans_id);
-	
+
 	edit_window = window.open(base_url + '/shared/edit_tool.html',
 		'Edit Block', 'width=600,height=300,toolbar=0,status=0');
 	window.original_text = source_strings[id];
-	
+
 	return true;
 }
 
@@ -117,7 +117,7 @@ function imgMouseClickEvent(e) {
 	}
 	window.open('/res_upload.php?path=' + encodeURIComponent(src),
 		src, 'width=800,height=600,status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=1');
-	
+
 	return true;
 }
 
@@ -128,7 +128,7 @@ function setProperties(node) {
 	if (node.getAttribute) { // Avoid special nodes
 		if (node.getAttribute(attr_trans_id) != null) {
 			var id = node.getAttribute(attr_trans_id);
-			
+
 			if (source_strings[id]) {
 				node.style.border = '1px dotted ' + color_border;
 				node.onmouseover = mouseOverEvent;
@@ -141,7 +141,7 @@ function setProperties(node) {
 					linked_nodes[id].push(node);
 				}
 			}
-			
+
 			return;
 		} else if (node.tagName.toLowerCase() == "img") {
 			node.style.padding = "2px";
@@ -158,22 +158,22 @@ function setProperties(node) {
 }
 
 window.onload = function() {
-	var functions_ok = 0;	
-	
+	var functions_ok = 0;
+
 	if (window.XMLHttpRequest)
 		functions_ok++;
 
 	if (encodeURI)
 		functions_ok++;
-	
+
 	if (functions_ok != 2) {
 		window.alert('Your browser does not support some JavaScript ' +
-			'functions which are needed for this page to work correctly. ' + 
+			'functions which are needed for this page to work correctly. ' +
 			"\nBrowser known to work : Safari 4, Firefox/BeZillaBrowser 2.x, " + "3.x.");
 		return;
 	} else {
 		window.setTimeout(pingServer, ping_delay * 1000);
 	}
-	
+
 	setProperties(document.getElementsByTagName('body')[0]);
 }

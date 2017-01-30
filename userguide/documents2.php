@@ -19,15 +19,15 @@ $ltop = '';
 if ($user_logged_in) {
 	$top = 'Logged as <b>' . htmlspecialchars($user_name) .
 		'</b> <a href="?logout">[Logout]</a> <a href="user.php">[Settings]</a>';
-	
+
 	if ($user_role >= ROLE_AUTHOR)
 		$ltop .= ' <a href="new_doc.php">Create New Document</a>';
-	
+
 	if ($user_role == ROLE_ADMIN)
 		$ltop .= ($ltop ? ' • ' : '') .'<a href="admin/">Administration</a>';
 	else if ($user_role == ROLE_LANG_MANAGER)
 		$ltop .= ($ltop ? ' • ' : '') .'<a href="admin/users_lite.php">User Administration</a>';
-	
+
 } else
 	$top = '<a href="?login">[Log In]</a> ';
 
@@ -84,7 +84,7 @@ if ($sel_lang) { // Specific status page
 		$name = htmlspecialchars($name);
 		$gen_path_trans = REF_DIR . '/' . str_replace('{LANG}', $sel_lang, $row['path_translations']);
 		$translate_path = 'translate.php?doc_id=' . $doc_id . '&amp;l=' . $sel_lang;
-		
+
 		$count = intval($row['strings_count']);
 		$percent = round(100 * intval($row['count_' . $sel_lang]) / $count, 0);
 		$fuzzy_count = intval($row['count_fuzzy_' . $sel_lang]);
@@ -116,7 +116,7 @@ if ($sel_lang) { // Specific status page
 	}
 	echo "\n</tr>\n";
 	$sql .= ' FROM ' . DB_DOCS . ' ORDER BY name ASC';
-	
+
 	$req = db_query($sql);
 	while ($row = db_fetch($req)) {
 		$doc_id = $row['doc_id'];
@@ -151,13 +151,13 @@ include('inc/end_html.php');
 function color($percent, $fuzzy_count) {
 	if ($percent == 100)
 		return 'green';
-	
+
 	if ($fuzzy_count > 0)
 		return 'orange';
-	
+
 	if ($percent == 0)
 		return 'black';
-	
+
 	return 'red';
 }
 ?>

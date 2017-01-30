@@ -319,6 +319,6 @@ function DEBUG_LOG($message){
 			}
 		}
 	}
-			
+
 	return false;
 }
