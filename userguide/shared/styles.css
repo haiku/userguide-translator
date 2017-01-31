@@ -512,8 +512,8 @@ label[for] {
 	height:99%;
 	border: 0;
 	font-size: 9pt;
-	font-family: Monaco, sherif;
-	outline:0;
+	font-family: "Deja Vu Mono", Consolas, "Courier New", monospace, fixed;
+	outline: 0;
 }
 
 #edit_bottom {
