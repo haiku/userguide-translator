@@ -1,6 +1,4 @@
 <?php
-define('IN_TRANSLATE', true);
-
 ignore_user_abort(true);
 
 require('inc/common.php');

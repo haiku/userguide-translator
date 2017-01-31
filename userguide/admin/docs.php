@@ -1,6 +1,4 @@
 <?php
-define('IN_TRANSLATE', 1);
-
 $path_prefix = '../';
 require_once('../inc/common.php');
 

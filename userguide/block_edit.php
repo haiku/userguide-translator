@@ -1,5 +1,4 @@
 <?php
-define('IN_TRANSLATE', 1);
 require_once('inc/common.php');
 
 $edit_delay = 181; // in second, max delay between pings

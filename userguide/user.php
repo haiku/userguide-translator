@@ -1,5 +1,4 @@
 <?php
-define('IN_TRANSLATE', 1);
 require_once('inc/common.php');
 
 if (!$user_logged_in)

@@ -1,6 +1,4 @@
 <?php
-define('IN_TRANSLATE', 1);
-
 require('inc/common.php');
 role_needed(ROLE_TRANSLATOR);
 

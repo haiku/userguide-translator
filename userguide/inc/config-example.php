@@ -1,7 +1,4 @@
 <?php
-if (!defined('IN_TRANSLATE'))
-	exit;
-
 // Database access
 $db_server = '';
 $db_username = '';

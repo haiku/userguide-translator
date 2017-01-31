@@ -1,7 +1,4 @@
 <?php
-if (!defined('IN_TRANSLATE'))
-	exit;
-
 // These functions are used when generating the original and the translated
 // documents. They allow making some tweaks to them
 // Global variables defined :

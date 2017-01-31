@@ -1,7 +1,4 @@
 <?php
-if (!defined('IN_TRANSLATE'))
-	exit;
-
 if (PHP_VERSION_ID < 50500) {
 	// We need PHP 5.5 or better, for array_column.
 	print("<h1>Error: PHP version too old.</h1>Need <code>5.5.0</code>, have <code>" . phpversion() .

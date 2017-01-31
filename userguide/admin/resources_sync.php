@@ -1,6 +1,5 @@
 <?php
 header('Content-type: text/plain;charset=utf8');
-define('IN_TRANSLATE', 1);
 
 $path_prefix = '../';
 require('../inc/common.php');

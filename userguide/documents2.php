@@ -1,5 +1,4 @@
 <?php
-define('IN_TRANSLATE', 1);
 require_once('inc/common.php');
 
 if ($_SERVER['QUERY_STRING'] == 'login' and !$user_logged_in)

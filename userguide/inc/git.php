@@ -1,8 +1,5 @@
 <?php
 
-if (!defined('IN_TRANSLATE'))
-	exit;
-
 function git_pull($path) {
 	if (1) return; // Pull/push disabled for now.
 	$path = escapeshellarg($path);
