@@ -11,12 +11,12 @@ if (isset($_POST['translate_doc']) and isset($_POST['translate_string'])
 
 	$doc_id = intval($_POST['translate_doc']);
 	$string_id = intval($_POST['translate_string']);
-	$lang = db_esc($_POST['translate_lang']);
-	$text = unprotect_quotes($_POST['translate_text']);
-	$source_text = unprotect_quotes($_POST['translate_source']);
+	$lang = ctype_alnum($_POST['translate_lang']) ? $_POST['translate_lang'] : '';
+	$text = $_POST['translate_text'];
+	$source_text = $_POST['translate_source'];
 	$is_fuzzy = ($_POST['is_fuzzy'] ? 1 : 0);
 
-	$req = db_query('SELECT 1 FROM ' . DB_LANGS . " WHERE lang_code = '$lang'");
+	$req = db_query('SELECT 1 FROM ' . DB_LANGS . " WHERE lang_code = ?", array($lang));
 
 	if (!$text or db_num_rows($req) != 1)
 		die('No text or incorrect lang');
@@ -25,7 +25,7 @@ if (isset($_POST['translate_doc']) and isset($_POST['translate_string'])
 
 	$req = db_query('
 		SELECT source_md5 FROM ' . DB_STRINGS . "
-		WHERE string_id = $string_id");
+		WHERE string_id = ?", array($string_id));
 
 	$row = db_fetch($req);
 	db_free($req);
@@ -50,15 +50,12 @@ if (isset($_POST['translate_doc']) and isset($_POST['translate_string'])
 	if (!check_xml_tags($text, $source_text))
 		die('diffxml');
 
-	$text = db_esc($text);
-	$lang = db_esc($lang);
-
 	db_query('
 		UPDATE ' . DB_STRINGS . "
-		SET translation_$lang='$text', is_fuzzy_$lang = $is_fuzzy
-		WHERE source_md5 = '$orig_md5'");
+		SET translation_$lang=?, is_fuzzy_$lang = ?
+		WHERE source_md5 = ?", array($text, $is_fuzzy, $orig_md5));
 
-	$req = db_query('SELECT doc_id FROM ' . DB_STRINGS . " WHERE source_md5 = '$orig_md5'");
+	$req = db_query('SELECT doc_id FROM ' . DB_STRINGS . " WHERE source_md5 = ?", array($orig_md5));
 	$updated_ids = array();
 	while ($row = db_fetch($req)) {
 		$up_id = intval($row['doc_id']);
@@ -67,7 +64,6 @@ if (isset($_POST['translate_doc']) and isset($_POST['translate_string'])
 	}
 
 	$ids_list = implode(', ', $updated_ids);
-
 	db_query('
 		UPDATE ' . DB_DOCS . "
 		SET is_dirty_$lang = 1
@@ -76,33 +72,34 @@ if (isset($_POST['translate_doc']) and isset($_POST['translate_string'])
 	// Log
 	$time = time();
 	$delay = $time - 5 * 60;
-	db_query('
+	$result = db_query('
 		UPDATE ' . DB_LOG . '
 		SET log_trans_number = log_trans_number + 1' . "
-		WHERE log_user = $user_id AND log_time > $delay AND log_doc = $doc_id
-			AND log_action = 'trans' AND log_trans_lang = '$lang' LIMIT 1");
+		WHERE log_user = ? AND log_time > ? AND log_doc = ?
+			AND log_action = 'trans' AND log_trans_lang = ? LIMIT 1",
+		array($user_id, $delay, $doc_id, $lang));
 
-	if (!db_affected_rows())
+	if (!db_num_rows($result))
 		db_query('
 			INSERT INTO ' . DB_LOG . '
 			(log_user, log_time, log_action, log_doc, log_trans_number,
 				log_trans_lang) ' . "
-			VALUES ($user_id, $time, 'trans', $doc_id, 1, '$lang')");
+			VALUES (?, ?, ?, ?, ?, ?)", array($user_id, $time, 'trans', $doc_id, 1, $lang));
 
 	db_query('
 		UPDATE ' . DB_USERS . '
 		SET num_translations = num_translations + 1 ' . "
-		WHERE user_id = $user_id");
+		WHERE user_id = ?", array($user_id));
 
 	exit('ok');
 }
 
 $doc_id = (isset($_GET['doc_id']) ? intval($_GET['doc_id']) : 0);
-$lang = (isset($_GET['l']) ? db_esc($_GET['l']) : '');
+$lang = (isset($_GET['l']) ? (ctype_alnum($_GET['l']) ? $_GET['l'] : '') : '');
 
 $req = db_query('
 	SELECT lang_name FROM ' . DB_LANGS . "
-	WHERE lang_code = '$lang'");
+	WHERE lang_code = ?", array($lang));
 $row = db_fetch($req);
 db_free($req);
 
@@ -113,7 +110,7 @@ $lang_name = $row['lang_name'];
 
 $req = db_query('
 	SELECT path_original, path_translations FROM ' . DB_DOCS . "
-	WHERE doc_id = $doc_id");
+	WHERE doc_id = ?", array($doc_id));
 $row = db_fetch($req);
 db_free($req);
 
@@ -134,8 +131,8 @@ $col_fuzzy = 'is_fuzzy_' . $lang;
 $req = db_query('
 	SELECT string_id, ' . $col_name  . ', ' . $col_fuzzy . '
 	FROM ' . DB_STRINGS . "
-	WHERE doc_id = $doc_id" . '
-	ORDER BY string_id');
+	WHERE doc_id = ?" . '
+	ORDER BY string_id', array($doc_id));
 
 // Build the JavaScript array that will hold the source and translation strings
 $js = '';
@@ -342,9 +339,9 @@ function update_id($id) {
 	foreach ($lang_codes as $lang_code) {
 		$req = db_query('
 			SELECT COUNT(*) FROM ' . DB_STRINGS . "
-			WHERE doc_id = $id AND `translation_$lang_code` <> ''
-			AND unused_since IS NULL AND is_fuzzy_$lang_code = 0"
-		);
+			WHERE doc_id = ? AND `translation_$lang_code` <> ''
+			AND unused_since IS NULL AND is_fuzzy_$lang_code = 0",
+		array($id));
 
 		$row = db_fetch($req);
 		$count = $row['COUNT(*)'];
@@ -352,9 +349,9 @@ function update_id($id) {
 
 		$req = db_query('
 			SELECT COUNT(*) FROM ' . DB_STRINGS . "
-			WHERE doc_id = $id AND `translation_$lang_code` <> ''
-			AND unused_since IS NULL AND is_fuzzy_$lang_code = 1"
-		);
+			WHERE doc_id = ? AND `translation_$lang_code` <> ''
+			AND unused_since IS NULL AND is_fuzzy_$lang_code = 1",
+		array($id));
 
 		$row = db_fetch($req);
 		$fuzzy = $row['COUNT(*)'];
@@ -366,7 +363,7 @@ function update_id($id) {
 		$first = false;
 	}
 
-	$sql .= " WHERE doc_id=$id";
+	$sql .= " WHERE doc_id=?";
 
-	db_query($sql);
+	db_query($sql, array($id));
 }

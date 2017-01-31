@@ -40,9 +40,9 @@ function update_id($id) {
 	foreach ($lang_codes as $lang_code) {
 		$req = db_query('
 			SELECT COUNT(*) FROM ' . DB_STRINGS . "
-			WHERE doc_id = $id AND `translation_$lang_code` <> ''
-			AND unused_since IS NULL AND is_fuzzy_$lang_code = 0"
-		);
+			WHERE doc_id = ? AND `translation_$lang_code` <> ''
+			AND unused_since IS NULL AND is_fuzzy_$lang_code = 0",
+		array($id));
 
 		$row = db_fetch($req);
 		$count = $row['COUNT(*)'];
@@ -50,9 +50,9 @@ function update_id($id) {
 
 		$req = db_query('
 			SELECT COUNT(*) FROM ' . DB_STRINGS . "
-			WHERE doc_id = $id AND `translation_$lang_code` <> ''
-			AND unused_since IS NULL AND is_fuzzy_$lang_code = 1"
-		);
+			WHERE doc_id = ? AND `translation_$lang_code` <> ''
+			AND unused_since IS NULL AND is_fuzzy_$lang_code = 1",
+		array($id));
 
 		$row = db_fetch($req);
 		$fuzzy = $row['COUNT(*)'];
@@ -64,7 +64,7 @@ function update_id($id) {
 		$first = false;
 	}
 
-	$sql .= " WHERE doc_id=$id";
+	$sql .= " WHERE doc_id=?";
 
-	db_query($sql);
+	db_query($sql, array($id));
 }

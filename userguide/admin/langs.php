@@ -6,16 +6,15 @@ role_needed(ROLE_ADMIN);
 
 // Delete languages
 $title = 'Languages';
-$del = (isset($_GET['del']) ? unprotect_quotes($_GET['del']) : '');
+$del = (isset($_GET['del']) ? $_GET['del'] : '');
 if (isset($_GET['del']) and strlen($del) >= 2 and strlen($del) <= 5) {
 	if (isset($_POST['confirm_ok'])) {
-		$lang_code = db_esc(unprotect_quotes($_GET['del']));
+		$lang_code = ctype_alnum($_GET['del']) ? $_GET['del'] : '';
 
-		db_query('DELETE FROM ' . DB_LANGS . "
-			WHERE lang_code = '$lang_code'"
-		);
+		$result = db_query('DELETE FROM ' . DB_LANGS . "
+			WHERE lang_code = ?", array($lang_code));
 
-		if (db_affected_rows() > 0) {
+		if (db_num_rows($result) > 0) {
 			db_query('ALTER TABLE ' . DB_DOCS . "
 				DROP `count_$lang_code`");
 			db_query('ALTER TABLE ' . DB_DOCS . "
@@ -26,7 +25,6 @@ if (isset($_GET['del']) and strlen($del) >= 2 and strlen($del) <= 5) {
 				DROP `translation_$lang_code`");
 			db_query('ALTER TABLE ' . DB_STRINGS . "
 				DROP `is_fuzzy_$lang_code`");
-
 		}
 		redirect('langs.php');
 	} else if (isset($_POST['confirm_cancel'])) {
@@ -59,21 +57,19 @@ if (isset($_POST['update_status'])) {
 
 } else if (isset($_POST['lang_code']) and isset($_POST['lang_name'])
 	and isset($_POST['lang_loc_name'])) {
-	$lang_code = unprotect_quotes($_POST['lang_code']);
-	$lang_name = unprotect_quotes($_POST['lang_name']);
-	$lang_loc_name = unprotect_quotes($_POST['lang_loc_name']);
+	$lang_code = $_POST['lang_code'];
+	$lang_name = $_POST['lang_name'];
+	$lang_loc_name = $_POST['lang_loc_name'];
 
 	if (strlen($lang_name) > 1 and strlen($lang_loc_name) > 1
 		and validate_lang_code($lang_code)) {
 
-		$lang_code = db_esc($lang_code);
-		$lang_name = db_esc($lang_name);
-		$lang_loc_name = db_esc($lang_loc_name);
+		$lang_code = ctype_alnum($lang_code) ? $lang_code : '';
 
 		db_query('
 			INSERT INTO ' . DB_LANGS . '
 			(lang_code, lang_name, loc_name) ' . "
-			VALUES ('$lang_code', '$lang_name', '$lang_loc_name')");
+			VALUES (?, ?, ?)", array($lang_code, $lang_name, $lang_loc_name));
 		db_query('ALTER TABLE ' . DB_DOCS . "
 			ADD `count_$lang_code` INT UNSIGNED NOT NULL DEFAULT '0'");
 		db_query('ALTER TABLE ' . DB_DOCS . "
@@ -90,7 +86,6 @@ if (isset($_POST['update_status'])) {
 		$lang_loc_name = '';
 
 		echo '<div class="box-info">New language added successfully.</div>';
-
 	} else {
 		echo '<div class="box-stop">Adding language failed: Incorrect ' .
 		'parameters.</div>';

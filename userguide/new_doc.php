@@ -5,9 +5,9 @@ role_needed(ROLE_AUTHOR);
 
 $title = 'Create New Document';
 
-$src_path = (isset($_POST['src_path']) ? unprotect_quotes($_POST['src_path']) : '');
-$trans_path = (isset($_POST['trans_path']) ? unprotect_quotes($_POST['trans_path']) : '');
-$doc_title = (isset($_POST['doc_title']) ? unprotect_quotes($_POST['doc_title']) : '');
+$src_path = (isset($_POST['src_path']) ? $_POST['src_path'] : '');
+$trans_path = (isset($_POST['trans_path']) ? $_POST['trans_path'] : '');
+$doc_title = (isset($_POST['doc_title']) ? $_POST['doc_title'] : '');
 
 if ($src_path and $trans_path and $doc_title) {
 	if (trim($doc_title) and validate_path($src_path) and validate_path(str_replace('{LANG}', '', $trans_path, $count))
@@ -17,9 +17,6 @@ if ($src_path and $trans_path and $doc_title) {
 			if (file_exists(REF_DIR . '/' . $src_path))
 				error_box($title, 'This document already exists !');
 
-			$src_path = db_esc($src_path);
-			$trans_path = db_esc($trans_path);
-			$doc_title_esc = db_esc($doc_title);
 			$time = time();
 
 			if(!is_dir(dirname(REF_DIR . '/' . $src_path)))
@@ -29,26 +26,25 @@ if ($src_path and $trans_path and $doc_title) {
 				str_replace('{TITLE}', $doc_title, $base_document))
 					or error_box($title, 'Unable to write to the destination directory!');
 
-
 			// Insert entry in the database
 			db_query('
 				INSERT INTO ' . DB_DOCS . '
 				(name, path_original, path_translations) ' . "
-				VALUES ('$doc_title_esc', '$src_path', '$trans_path')");
+				VALUES (?, ?, ?)", array($doc_title, $src_path, $trans_path));
 
 			$doc_id = db_insert_id();
 
 			require_once('inc/git.php');
 			git_pull(REF_DIR . '/');
 			git_add(REF_DIR . '/' . $src_path);
-			git_commit(REF_DIR . '/', 'New document: \"' . $doc_title . '"');
+			git_commit(REF_DIR . '/', 'New document: "' . $doc_title . '"');
 			git_push(REF_DIR . '/');
 
 			// Log
 			db_query('
 				INSERT INTO ' . DB_LOG . '
 				(log_user, log_time, log_action, log_doc) ' . "
-				VALUES ($user_id, $time, 'creat', $doc_id)");
+				VALUES (?, ?, ?, ?)", array($user_id, $time, 'creat', $doc_id));
 
 			redirect('edit.php?doc_id=' . $doc_id);
 

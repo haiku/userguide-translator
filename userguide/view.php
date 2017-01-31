@@ -3,12 +3,12 @@ require('inc/common.php');
 role_needed(ROLE_TRANSLATOR);
 
 $doc_id = (isset($_GET['doc_id']) ? intval($_GET['doc_id']) : 0);
-$lang = (isset($_GET['l']) ? db_esc($_GET['l']) : '');
+$lang = (isset($_GET['l']) ? (ctype_alnum($_GET['l']) ? $_GET['l'] : '') : '');
 
 if ($lang) {
 	$req = db_query('
 		SELECT lang_name FROM ' . DB_LANGS . "
-		WHERE lang_code = '$lang'");
+		WHERE lang_code = ?", array($lang));
 	$row = db_fetch($req);
 	db_free($req);
 
@@ -17,7 +17,7 @@ if ($lang) {
 
 $req = db_query('
 	SELECT path_original, path_translations FROM ' . DB_DOCS . "
-	WHERE doc_id = $doc_id");
+	WHERE doc_id = ?", array($doc_id));
 $row = db_fetch($req);
 db_free($req);
 
@@ -34,8 +34,8 @@ if ($lang) {
 
 	$req = db_query('
 		SELECT string_id, ' . $col_name  . ' FROM ' . DB_STRINGS . "
-		WHERE doc_id = $doc_id
-	");
+		WHERE doc_id = ?
+	", array($doc_id));
 
 	$translations = array();
 	while ($row = db_fetch($req)) {

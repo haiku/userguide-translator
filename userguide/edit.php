@@ -12,8 +12,8 @@ if (isset($_GET['ping_id'])) {
 	$ping_id = intval($_GET['ping_id']);
 	db_query('
 		UPDATE ' . DB_DOCS . "
-		SET edit_time = $time
-		WHERE doc_id = $ping_id AND edited_by = $user_id");
+		SET edit_time = ?
+		WHERE doc_id = ? AND edited_by = ?", array($time, $ping_id, $user_id));
 	exit;
 }
 
@@ -25,7 +25,7 @@ $req = db_query('
 	FROM ' . DB_DOCS . ' d
 	LEFT JOIN ' . DB_USERS . ' u
 		ON d.edited_by = u.user_id '. "
-	WHERE d.doc_id = $doc_id");
+	WHERE d.doc_id = ?", array($doc_id));
 
 $row = db_fetch($req);
 db_free($req);
@@ -49,8 +49,8 @@ $base_dir = dirname($base_url . '/' . EXPORT_DIR . '/' . $row['path_original']);
 
 db_query('
 	UPDATE ' . DB_DOCS . "
-	SET edited_by = $user_id, edit_time = $time
-	WHERE doc_id = $doc_id");
+	SET edited_by = ?, edit_time = ?
+	WHERE doc_id = ?", array($user_id, $time, $doc_id));
 
 $head = <<<EOD
 	<script type="text/JavaScript">
@@ -92,7 +92,7 @@ if ($rev_id == 'list') {
 $rev_id = ctype_alnum($rev_id) ? $rev_id : '';
 
 if (isset($_POST['text'])) {
-	$text = unprotect_quotes($_POST['text']);
+	$text = $_POST['text'];
 
 	$blocks = array();
 
@@ -187,14 +187,14 @@ Do not invalidate translations for this item</label>
 		exit;
 	}
 } else if (isset($_POST['cont_edit']) and isset($_POST['text64'])) {
-	$text = unprotect_quotes($_POST['text64']);
+	$text = $_POST['text64'];
 	$text = base64_decode($text);
 
 } else if (isset($_POST['submit_edit']) and isset($_POST['text64'])
 	and isset($_POST['sum'])) {
 	ignore_user_abort(true);
 
-	$text = unprotect_quotes($_POST['text64']);
+	$text = $_POST['text64'];
 	$text = base64_decode($text);
 
 	if (md5($text) != $_POST['sum'])
@@ -203,7 +203,7 @@ Do not invalidate translations for this item</label>
 	$blocks_md5 = array();
 	$req = db_query('
 		SELECT string_id, source_md5 FROM ' . DB_STRINGS . "
-		WHERE doc_id = $doc_id");
+		WHERE doc_id = ?", array($doc_id));
 	while ($row = db_fetch($req)) {
 		$blocks_md5[$row['source_md5']] = $row['string_id'];
 	}
@@ -229,8 +229,8 @@ Do not invalidate translations for this item</label>
 	// Mark all blocks as unused (used blocks will be reenabled later)
 	db_query('
 		UPDATE ' . DB_STRINGS . "
-		SET unused_since = $time
-		WHERE doc_id = $doc_id AND unused_since IS NULL");
+		SET unused_since = ?
+		WHERE doc_id = ? AND unused_since IS NULL", array($time, $doc_id));
 
 	update_translations($edited_doc, $translate_tags);
 
@@ -238,25 +238,25 @@ Do not invalidate translations for this item</label>
 
 	$req = db_query('
 		SELECT COUNT(*) FROM ' . DB_STRINGS . "
-		WHERE doc_id = $doc_id AND unused_since IS NULL");
+		WHERE doc_id = ? AND unused_since IS NULL", array($doc_id));
 
 	$row = db_fetch($req);
 	$count = $row['COUNT(*)'];
 	db_free($req);
 
 	db_query('UPDATE ' . DB_DOCS . "
-		SET strings_count = $count, is_dirty = 1 WHERE doc_id = $doc_id");
+		SET strings_count = ?, is_dirty = 1 WHERE doc_id = ?", array($count, $doc_id));
 
 	// Log
 	db_query('
 		INSERT INTO ' . DB_LOG . '
 		(log_user, log_time, log_action, log_doc) ' . "
-		VALUES ($user_id, $time, 'mod', $doc_id)");
+		VALUES (?, ?, ?, ?)", array($user_id, $time, 'mod', $doc_id));
 
 	db_query('
 		UPDATE ' . DB_USERS . '
 		SET num_edits = num_edits + 1 ' . "
-		WHERE user_id = $user_id");
+		WHERE user_id = ?", array($user_id));
 
 	// Commit
 	$comment = 'Document ' . $doc_name . ' edited by ' . $user_name . ':';
@@ -513,7 +513,7 @@ function update_translations($node, $tags) {
 					db_query('
 						INSERT INTO '. DB_STRINGS . '
 						(doc_id, source_md5) ' . "
-						VALUES ($doc_id, '$md5')");
+						VALUES (?, ?)", array($doc_id, $md5));
 					$id = db_insert_id();
 					$blocks_md5[$md5] = $id;
 					$child->setAttribute(ATTR_TRANS_ID, $id);
@@ -523,7 +523,7 @@ function update_translations($node, $tags) {
 					db_query('
 						UPDATE ' . DB_STRINGS . "
 						SET unused_since = NULL
-						WHERE string_id = $id_cont");
+						WHERE string_id = ?", array($id_cont));
 				} else {
 					// ID in the DB, but the block was modified
 					$fuzzy = !isset($_POST['noinval'][$id_attr]);
@@ -536,7 +536,7 @@ function update_translations($node, $tags) {
 					INSERT INTO ' . DB_STRINGS . "
 					($update)
 						SELECT $up_to FROM " . DB_STRINGS . "
-						WHERE string_id = $id_attr");
+						WHERE string_id = ?", array($id_attr));
 					$id = db_insert_id();
 					$blocks_md5[$md5] = $id;
 					$child->setAttribute(ATTR_TRANS_ID, $id);

@@ -27,7 +27,7 @@ if (isset($_POST['delete_selection']) and is_array(@$_POST['del_list'])
 	foreach ($del_list as $delete_id) {
 		$delete_id = intval($delete_id);
 
-		db_query('DELETE FROM ' . DB_USERS . " WHERE user_id = $delete_id");
+		db_query('DELETE FROM ' . DB_USERS . " WHERE user_id = ?", array($delete_id));
 	}
 }
 
@@ -47,8 +47,8 @@ if (isset($_POST['submit_roles']) and isset($_POST['user_role'])
 		$new_user_role = $roles_to_db[$new_role];
 
 		db_query('
-			UPDATE ' . DB_USERS . " SET user_role = '$new_user_role'
-			WHERE user_id = $id");
+			UPDATE ' . DB_USERS . " SET user_role = ?
+			WHERE user_id = ?", array($new_user_role, $id));
 	}
 }
 
@@ -58,7 +58,7 @@ if (isset($_GET['reset']) and intval($_GET['reset']) != 0) {
 	if ($reset_id == $user_id)
 		error_box($title, 'That’s not a good idea...');
 
-	$req = db_query('SELECT username FROM ' . DB_USERS . " WHERE user_id = $reset_id");
+	$req = db_query('SELECT username FROM ' . DB_USERS . " WHERE user_id = ?", array($reset_id));
 	$reset_name = db_fetch($req);
 	db_free($req);
 	if (!$reset_name)
@@ -67,13 +67,13 @@ if (isset($_GET['reset']) and intval($_GET['reset']) != 0) {
 
 	if (isset($_POST['reset_password']) and isset($_POST['reset_email'])
  		and strpos($_POST['reset_email'], '@', 1) !== false) {
- 		$reset_email = unprotect_quotes($_POST['reset_email']);
+ 		$reset_email = $_POST['reset_email'];
  		$new_password = generate_password();
  		$hashed_pass = sha1($new_password);
 
  		db_query('UPDATE ' . DB_USERS . "
- 			SET user_password = '$hashed_pass'
- 			WHERE user_id = $reset_id");
+ 			SET user_password = ?
+ 			WHERE user_id = ?", array($hashed_pass, $reset_id));
 
  		if (reset_password_email($reset_name, $reset_email, $new_password)) {
  			include_once('../inc/start_html.php');
@@ -113,15 +113,14 @@ $new_user_email = '';
 
 if (isset($_POST['new_user_name']) and isset($_POST['new_user_role'])
  	and isset($_POST['new_user_email'])) {
-	$new_user_name = unprotect_quotes($_POST['new_user_name']);
+	$new_user_name = $_POST['new_user_name'];
 	$new_user_role = intval($_POST['new_user_role']);
-	$new_user_email = unprotect_quotes($_POST['new_user_email']);
+	$new_user_email = $_POST['new_user_email'];
 
 	if (strlen($new_user_name) > 1 and $new_user_role >= ROLE_UNDEF
 		and $new_user_role <= ROLE_MAX
 		and ($new_user_email == '' or strpos($new_user_email, '@', 1) !== false)) {
 
-		$new_user_name = db_esc($new_user_name);
 		$new_user_pass = generate_password();
 		$hashed_pass = sha1($new_user_pass);
 		$roles_to_db = array_flip($db_roles);
@@ -130,7 +129,7 @@ if (isset($_POST['new_user_name']) and isset($_POST['new_user_role'])
 		db_query('
 			INSERT INTO ' . DB_USERS . '
 			(username, user_password, user_role) ' . "
-			VALUES ('$new_user_name', '$hashed_pass', '$new_user_role')");
+			VALUES (?, ?, ?)", array($new_user_name, $hashed_pass, $new_user_role));
 
 
 		$status = '';

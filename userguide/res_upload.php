@@ -25,11 +25,9 @@ if (isset($_GET['path'])) {
 
 		redirect('res_upload.php?id=' . $id . '&lang=' . $_GET['lang']);
 	} else {
-		$path = db_esc($path);
 		$req = db_query('
 			SELECT resource_id FROM ' . DB_RESOURCES . "
-			WHERE path_untranslated = '$path'"
-		);
+			WHERE path_untranslated = ?", array($path));
 
 		$row = db_fetch($req);
 		if (!$row) {
@@ -49,8 +47,7 @@ $error = '';
 
 $req = db_query('
 	SELECT path_untranslated, path_translated FROM ' . DB_RESOURCES . "
-	WHERE resource_id = $id
-");
+	WHERE resource_id = ?", array($id));
 
 $row = db_fetch($req);
 
@@ -63,12 +60,12 @@ $language = 'Original';
 $file_path = '';
 
 if (isset($_GET['lang'])) {
-	$code = db_esc($_GET['lang']);
+	$code = $_GET['lang'];
 	$file_path = str_replace('{LANG}', $code, $row['path_translated']);
 	if (!$file_path)
 		error_box($title, "This resource is not translatable.");
 
-	$req = db_query('SELECT lang_name, loc_name FROM ' . DB_LANGS . " WHERE lang_code = '$code'");
+	$req = db_query('SELECT lang_name, loc_name FROM ' . DB_LANGS . " WHERE lang_code = ?", array($code));
 	$row = db_fetch($req);
 
 	if (!$row)

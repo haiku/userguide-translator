@@ -13,8 +13,8 @@ if (isset($_GET['ping_id'])) {
 	$ping_id = intval($_GET['ping_id']);
 	db_query('
 		UPDATE ' . DB_DOCS . "
-		SET edit_time = $time
-		WHERE doc_id = $ping_id AND edited_by = $user_id");
+		SET edit_time = ?
+		WHERE doc_id = ? AND edited_by = ?", array($time, $ping_id, $user_id));
 	exit;
 }
 
@@ -24,7 +24,7 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 
 	$doc_id = intval($_POST['edit_doc']);
 	$string_id = intval($_POST['edit_string']);
-	$text = unprotect_quotes($_POST['edit_text']);
+	$text = $_POST['edit_text'];
 	$dont_mark_fuzzy = ($_POST['dont_mark_fuzzy'] ? 1 : 0);
 
 	$new_block = new DOMDocument();
@@ -39,7 +39,7 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 	// Update the document
 	$req = db_query('
 		SELECT path_original, name FROM ' . DB_DOCS . "
-		WHERE doc_id = $doc_id");
+		WHERE doc_id = ?", array($doc_id));
 	$row = db_fetch($req);
 	db_free($req);
 
@@ -53,7 +53,7 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 	$blocks_md5 = array();
 	$req = db_query('
 		SELECT string_id, source_md5 FROM ' . DB_STRINGS . "
-		WHERE doc_id = $doc_id");
+		WHERE doc_id = ?", array($doc_id));
 	while ($row = db_fetch($req)) {
 		$blocks_md5[$row['source_md5']] = $row['string_id'];
 	}
@@ -78,12 +78,12 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 		db_query('
 			UPDATE ' . DB_STRINGS . "
 			SET unused_since = NULL
-			WHERE string_id = $blocks_md5[$md5]");
+			WHERE string_id = ?", array($blocks_md5[$md5]));
 
 		db_query('
 			UPDATE ' . DB_STRINGS . "
-			SET unused_since = $time
-			WHERE string_id = $string_id");
+			SET unused_since = ?
+			WHERE string_id = ?", array($time, $string_id));
 
 	} else {
 		$r_norm = 'doc_id';
@@ -104,43 +104,41 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 			INSERT INTO ' . DB_STRINGS . "
 			($update)
 				SELECT $up_to FROM " . DB_STRINGS . "
-				WHERE string_id = $string_id");
+				WHERE string_id = ?", array($string_id));
 		$new_id = db_insert_id();
 		replace_block_id($doc, $doc, $string_id, $new_block, $new_id)
 			or die('unable to replace');
 
 		db_query('
 			UPDATE ' . DB_STRINGS . "
-			SET unused_since = $time
-			WHERE string_id = $string_id");
+			SET unused_since = ?
+			WHERE string_id = ?", array($time, $string_id));
 	}
-
 
 	$doc->save(REF_DIR . '/' . $path_original);
 
 	db_query('UPDATE ' . DB_DOCS . '
 		SET is_dirty = 1 ' . "
-		WHERE doc_id = $doc_id");
+		WHERE doc_id = ?", array($doc_id));
 
 	// Log
 	$delay = $time - 5 * 60;
-	db_query('
+	$result = db_query('
 		UPDATE ' . DB_LOG . '
 		SET log_trans_number = log_trans_number + 1' . "
-		WHERE log_user = $user_id AND log_time > $delay AND log_doc = $doc_id
-			AND log_action = 'ed_block' LIMIT 1");
+		WHERE log_user = ? AND log_time > ? AND log_doc = ?
+			AND log_action = 'ed_block' LIMIT 1", array($user_id, $delay, $doc_id));
 
-	if (!db_affected_rows())
+	if (!db_num_rows($result))
 		db_query('
 			INSERT INTO ' . DB_LOG . '
 			(log_user, log_time, log_action, log_doc, log_trans_number) ' . "
-			VALUES ($user_id, $time, 'ed_block', $doc_id, 1)");
+			VALUES (?, ?, ?, ?, ?)", array($user_id, $time, 'ed_block', $doc_id, 1));
 
 	db_query('
 		UPDATE ' . DB_USERS . '
 		SET num_edits = num_edits + 1 ' . "
-		WHERE user_id = $user_id");
-
+		WHERE user_id = ?", array($user_id));
 
 	require_once('inc/git.php');
 	git_pull(dirname(REF_DIR . '/' . $path_original));
@@ -159,7 +157,7 @@ $req = db_query('
 	FROM ' . DB_DOCS . ' d
 	LEFT JOIN ' . DB_USERS . ' u
 		ON d.edited_by = u.user_id '. "
-	WHERE d.doc_id = $doc_id");
+	WHERE d.doc_id = ?", array($doc_id));
 
 $row = db_fetch($req);
 db_free($req);
@@ -175,8 +173,8 @@ if ($row['edited_by'] != $user_id and $row['edit_time'] + $edit_delay > $time) {
 
 db_query('
 	UPDATE ' . DB_DOCS . "
-	SET edited_by = $user_id, edit_time = $time
-	WHERE doc_id = $doc_id");
+	SET edited_by = ?, edit_time = ?
+	WHERE doc_id = ?", array($user_id, $time, $doc_id));
 
 $path_original = $row['path_original'];
 

@@ -24,10 +24,10 @@ function start_hook() {
 		$req2 = db_query('
 			SELECT DISTINCT u.username, u.real_name, l.log_trans_lang
 			FROM translate_users u, translate_log l ' . "
-			WHERE l.log_doc = $id
-				AND l.log_action = 'trans'
+			WHERE l.log_doc = ?
+				AND l.log_action = ?
 				AND l.log_user = u.user_id
-		");
+		", array($id, 'trans'));
 
 		while ($row2 = db_fetch($req2)) {
 			$lang = $row2['log_trans_lang'];

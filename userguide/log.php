@@ -42,8 +42,6 @@ $req = db_query('
 
 $time = time();
 
-
-
 while ($row = db_fetch($req)) {
 	$user_id = $row['log_user'];
 	$user_name = $row['username'];

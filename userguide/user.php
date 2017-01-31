@@ -10,19 +10,18 @@ include('inc/start_html.php');
 
 $req = db_query('
 	SELECT real_name FROM ' . DB_USERS . "
-	WHERE user_id = $user_id");
+	WHERE user_id = ?", array($user_id));
 
 $row = db_fetch($req);
 db_free($req);
 $real_name = $row['real_name'];
 
 if (isset($_POST['update_profile']) and isset($_POST['real_name'])) {
-	$real_name = unprotect_quotes($_POST['real_name']);
-	$real_name_esc = db_esc($real_name);
+	$real_name = $_POST['real_name'];
 	db_query('
 		UPDATE ' . DB_USERS . "
-		SET real_name = '$real_name_esc'
-		WHERE user_id = $user_id");
+		SET real_name = ?
+		WHERE user_id = ?", array($real_name, $user_id));
 }
 
 if (!isset($_SESSION['form_salt']) or !$_SESSION['form_salt'])
@@ -38,15 +37,14 @@ if (isset($_POST['old_pass' . $fs]) and isset($_POST['new_pass' . $fs])
 
 		$req = db_query('
 			UPDATE ' . DB_USERS . "
-			SET user_password = '$new_pass'
-			WHERE user_id = $user_id AND user_password = '$old_pass'");
-		if (!db_affected_rows($req) and $old_pass != $new_pass) {
+			SET user_password = ?
+			WHERE user_id = ? AND user_password = ?", array($new_pass, $user_id, $old_pass));
+		if (!db_num_rows($req) and $old_pass != $new_pass) {
 			box('warning', 'Incorrect old password.');
 		} else {
 			$_SESSION['user_pass'] = $new_pass;
 			box('info', 'Password updated successfully.');
 		}
-
 	} else {
 		box('warning', 'The new password and confirmation must match.');
 	}

@@ -14,21 +14,20 @@ include_once('../inc/start_html.php');
 $new_user_name = '';
 $new_user_email = '';
 
-if (isset($_POST['new_user_name'])  	and isset($_POST['new_user_email'])) {
-	$new_user_name = unprotect_quotes($_POST['new_user_name']);
-	$new_user_email = unprotect_quotes($_POST['new_user_email']);
+if (isset($_POST['new_user_name']) and isset($_POST['new_user_email'])) {
+	$new_user_name = $_POST['new_user_name'];
+	$new_user_email = $_POST['new_user_email'];
 
 	if (strlen($new_user_name) > 1
 		and ($new_user_email == '' or strpos($new_user_email, '@', 1) !== false)) {
 
-		$new_user_name = db_esc($new_user_name);
 		$new_user_pass = generate_password();
 		$hashed_pass = sha1($new_user_pass);
 
 		db_query('
 			INSERT INTO ' . DB_USERS . '
 			(username, user_password, user_role) ' . "
-			VALUES ('$new_user_name', '$hashed_pass', 'translator')");
+			VALUES (?, ?, ?)", array($new_user_name, $hashed_pass, 'translator'));
 
 		$status = '';
 		if ($new_user_email) {

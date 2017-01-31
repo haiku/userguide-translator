@@ -22,17 +22,17 @@ if (!is_dir('../' . IMPORT_DIR) or !is_readable('../' . IMPORT_DIR))
 	error_box($title, 'The import directory is missing or unreadable!');
 
 if (isset($_POST['src_path']))
-	$src_path = unprotect_quotes($_POST['src_path']);
+	$src_path = $_POST['src_path'];
 
 if (isset($_POST['trans_path']))
-	$trans_path = unprotect_quotes($_POST['trans_path']);
+	$trans_path = $_POST['trans_path'];
 
 if (isset($_POST['add_documents']) and $src_path and $trans_path
 	and isset($_POST['confirm_ok'])) {
 
 	ignore_user_abort(true);
 
-	$add_documents = unprotect_quotes($_POST['add_documents']);
+	$add_documents = $_POST['add_documents'];
 	$documents = explode(', ', $add_documents);
 
 	$count = 0;
@@ -74,15 +74,13 @@ if (isset($_POST['add_documents']) and $src_path and $trans_path
 			break;
 		}
 
-		$doc_esc = db_esc($document);
-		$dest_path = db_esc($dest_path);
-		$doc_title = db_esc(get_title($doc_path));
+		$doc_title = get_title($doc_path);
 
 		// Insert entry in the database
 		db_query('
 			INSERT INTO ' . DB_DOCS . '
 			(name, path_original, path_translations) ' . "
-			VALUES ('$doc_title', '$doc_esc', '$dest_path')");
+			VALUES (?, ?, ?)", array($doc_title, $document, $dest_path));
 
 		$doc_id = db_insert_id();
 
@@ -90,7 +88,7 @@ if (isset($_POST['add_documents']) and $src_path and $trans_path
 		db_query('
 			INSERT INTO ' . DB_LOG . '
 			(log_user, log_time, log_action, log_doc) ' . "
-			VALUES ($user_id, $time, 'creat', $doc_id)");
+			VALUES (?, ?, ?, ?)", array($user_id, $time, 'creat', $doc_id));
 
 		// Generate and save the tagged file
 		$insert_ids = array();
@@ -106,8 +104,8 @@ if (isset($_POST['add_documents']) and $src_path and $trans_path
 
 		db_query('
 			UPDATE ' . DB_DOCS . "
-			SET strings_count = $num_translations
-			WHERE doc_id = $doc_id");
+			SET strings_count = ?
+			WHERE doc_id = ?", array($num_translations, $doc_id));
 	}
 
 	git_commit('../' . REF_DIR, 'Imported documents.');
@@ -269,9 +267,8 @@ function mark_translation($node, $tags, $doc_id) {
 					$req = db_query('
 						INSERT INTO ' . DB_STRINGS . '
 						(doc_id, source_md5) ' . "
-						VALUES ($doc_id, '$md5')"
-					);
-
+						VALUES (?, ?)",
+					array($doc_id, $md5));
 
 					$id = db_insert_id();
 					$insert_ids[$md5] = $id;

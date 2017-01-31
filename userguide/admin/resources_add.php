@@ -11,15 +11,15 @@ $src_path = '';
 $trans_path = '';
 
 if (isset($_POST['src_path']))
-	$src_path = unprotect_quotes($_POST['src_path']);
+	$src_path = $_POST['src_path'];
 
 if (isset($_POST['trans_path']))
-	$trans_path = unprotect_quotes($_POST['trans_path']);
+	$trans_path = $_POST['trans_path'];
 
 if (isset($_POST['added_resources']) and $src_path
 	and isset($_POST['confirm_ok'])) {
 
-	$added_resources = unprotect_quotes($_POST['added_resources']);
+	$added_resources = $_POST['added_resources'];
 	$resources = explode(', ', $added_resources);
 
 	$regexp = preg_quote($src_path, '=');
@@ -38,15 +38,14 @@ if (isset($_POST['added_resources']) and $src_path
 				$dest_path = implode($matches[$i], explode('*', $dest_path, 2));
 		}
 
-		$path_untranslated = db_esc($resource);
-		$path_translated = db_esc($dest_path);
+		$path_untranslated = $resource;
+		$path_translated = $dest_path;
 
 		db_query('
 			INSERT INTO ' . DB_RESOURCES . '
 			(path_untranslated, path_translated)' . "
-			VALUES ('$path_untranslated', '$path_translated')
-		");
-
+			VALUES (?, ?)
+		", array($path_untranslated, $path_translated));
 	}
 
 	include('../inc/start_html.php');
@@ -127,13 +126,13 @@ EOD
 
 		$file = $_FILES['src_file'];
 
-		$path_untranslated = db_esc($src_path);
-		$path_translated = db_esc($trans_path);
+		$path_untranslated = $src_path;
+		$path_translated = $trans_path;
 
 		$req = db_query('
 			SELECT resource_id FROM ' . DB_RESOURCES . "
-			WHERE path_untranslated = '$path_untranslated'
-		");
+			WHERE path_untranslated = ?
+		", array($path_untranslated));
 
 		$already_exists = file_exists('../' . EXPORT_DIR . '/' . $src_path);
 		$has_file = ($file['error'] == UPLOAD_ERR_NO_FILE ? false : true);
@@ -157,8 +156,8 @@ EOD
 					db_query('
 						INSERT INTO ' . DB_RESOURCES . '
 						(path_untranslated, path_translated)' . "
-						VALUES ('$path_untranslated', '$path_translated')
-					");
+						VALUES (?, ?)
+					", array($path_untranslated, $path_translated));
 
 					if ($path_translated) {
 						echo '<div class="box-info">The localizable resource was successfully added.' .
@@ -171,7 +170,6 @@ EOD
 				}
 			}
 		}
-
 	} else {
 		include('../inc/start_html.php');
 		echo '<div class="box-stop">Adding document(s) failed: Incorrect ' .
@@ -182,8 +180,7 @@ EOD
 }
 
 if (isset($_GET['src_path']))
-	$src_path = unprotect_quotes($_GET['src_path']);
-
+	$src_path = $_GET['src_path'];
 ?>
 <br/>
 <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post" enctype="multipart/form-data">

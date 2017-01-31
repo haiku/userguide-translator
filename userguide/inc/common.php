@@ -53,16 +53,18 @@ $user_name = 'Anonymous';
 $user_id = 0;
 
 // Connect to the DB
-mysql_connect($db_server, $db_username, $db_password)
-	or die('Unable to connect to the database : ' . mysql_error());
-mysql_select_db($db_base_name)
-	or die('Unable to select the database : ' . mysql_error());
+$db_h = null;
+try {
+	$db_h = new PDO("mysql:host=$db_server;dbname=$db_base_name;charset=utf8",
+		$db_username, $db_password);
+	$db_h->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // TODO: REMOVE!
+} catch (PDOException $e) {
+	error_box('Failed to connect to the database!',
+		'<b>Failed to connect to the database!</b><br>' . $e->getMessage());
+}
 
 // Be paranoid
 unset($db_server, $db_username, $db_password, $db_base_name);
-
-mysql_query('SET NAMES utf8')
-	or die('Unable to set the charset : ' . mysql_error());
 
 // Init user management
 session_start();
@@ -70,11 +72,11 @@ session_start();
 if (isset($_POST['username']) and isset($_POST['password'])
 	and isset($_POST['redirect'])) {
 
-	$user_name = db_esc($_POST['username']);
-	$password = db_esc(sha1($_POST['password']));
+	$user_name = $_POST['username'];
+	$password = sha1($_POST['password']);
 
 	$req = db_query('SELECT user_id FROM ' . DB_USERS . "
-		WHERE username = '$user_name' AND user_password = '$password'");
+		WHERE username = ? AND user_password = ?", array($user_name, $password));
 
 	$row = db_fetch($req);
 	db_free($req);
@@ -96,13 +98,13 @@ if (isset($_SESSION['user_id']) and isset($_SESSION['user_name'])
 
 	global $user_role, $user_logged_in, $user_name, $user_id;
 
-	$db_user_name = db_esc($_SESSION['user_name']);
-	$db_password = db_esc($_SESSION['user_pass']);
+	$db_user_name = $_SESSION['user_name'];
+	$db_password = $_SESSION['user_pass'];
 	$user_id = intval($_SESSION['user_id']);
 
 	$req = db_query('SELECT user_role FROM ' . DB_USERS . "
-		WHERE username = '$db_user_name' AND user_password = '$db_password'
-			AND user_id = $user_id");
+		WHERE username = ? AND user_password = ? AND user_id = ?",
+		array($db_user_name, $db_password, $user_id));
 
 	$row = db_fetch($req);
 	db_free($req);
@@ -128,41 +130,31 @@ function role_needed($role) {
 	}
 }
 
-function db_query($query, $die_if_error = true) {
-	$result = mysql_query($query);
+function db_query($query, $args = array(), $die_if_error = true) {
+	global $db_h;
+	$result = $db_h->prepare($query);
 
-	if ($die_if_error && !$result)
-		die('SQL error : ' . mysql_error() . '(' . $query . ')');
+	if (!$result->execute($args) && $die_if_error)
+		die('SQL error: ' . $db_h->errorInfo()[2] . '(' . $query . ')');
 
 	return $result;
 }
 
 function db_fetch($result) {
-	return mysql_fetch_array($result);
+	return $result->fetch();
 }
 
 function db_insert_id() {
-	return mysql_insert_id();
+	global $db_h;
+	return $db_h->lastInsertId();
 }
 
 function db_num_rows($result) {
-	return mysql_num_rows($result);
-}
-
-function db_affected_rows() {
-	return mysql_affected_rows();
+	return $result->rowCount();
 }
 
 function db_free($result) {
-	mysql_free_result($result);
-}
-
-function db_esc($string) {
-	return mysql_real_escape_string($string);
-}
-
-function unprotect_quotes($string) {
-	return (get_magic_quotes_gpc() == 1 ? stripslashes($string) : $string);
+	$result->closeCursor();
 }
 
 function redirect($url) {
@@ -230,7 +222,6 @@ function error_box($title, $message) {
 	include($path_prefix . 'inc/end_html.php');
 
 	die();
-
 }
 
 function count_str($needle, $haystack) {

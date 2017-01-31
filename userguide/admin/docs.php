@@ -30,7 +30,7 @@ if (isset($_POST['delete_selection']) and is_array(@$_POST['del_list'])
 
 		$req = db_query('
 			SELECT path_original, name FROM ' . DB_DOCS . "
-			WHERE doc_id = $delete_id");
+			WHERE doc_id = ?", array($delete_id));
 
 		$row = db_fetch($req);
 
@@ -45,19 +45,19 @@ if (isset($_POST['delete_selection']) and is_array(@$_POST['del_list'])
 			git_push(dirname($path));
 		}
 
-		db_query('DELETE FROM ' . DB_DOCS . " WHERE doc_id = $delete_id");
-		db_query('DELETE FROM ' . DB_STRINGS . " WHERE doc_id = $delete_id");
+		db_query('DELETE FROM ' . DB_DOCS . " WHERE doc_id = ?", array($delete_id));
+		db_query('DELETE FROM ' . DB_STRINGS . " WHERE doc_id = ?", array($delete_id));
 
 		// Log
-		$name = db_esc($row['name']);
+		$name = $row['name'];
 		db_query('
 			INSERT INTO ' . DB_LOG . '
 			(log_user, log_time, log_action, log_doc, log_del_doc_title) ' . "
-			VALUES ($user_id, $time, 'del', $delete_id, '$name')");
+			VALUES (?, ?, ?, ?, ?)", array($user_id, $time, 'del', $delete_id, $name));
 		db_query('
 			UPDATE ' . DB_LOG . "
-			SET log_del_doc_title = '$name'
-			WHERE log_doc = $delete_id");
+			SET log_del_doc_title = ?
+			WHERE log_doc = ?", array($name, $delete_id));
 	}
 }
 
@@ -65,13 +65,12 @@ if (isset($_POST['delete_selection']) and is_array(@$_POST['del_list'])
 if (isset($_POST['submit_names']) and isset($_POST['name'])
 	and is_array($_POST['name'])) {
 	foreach ($_POST['name'] as $id => $new_name) {
-		$new_name = db_esc(unprotect_quotes($new_name));
 		$new_disabled = (isset($_POST['dis_list'][$id]) ? 1 : 0);
 		$id = intval($id);
 
 		db_query('
-			UPDATE ' . DB_DOCS . " SET name = '$new_name', is_disabled = $new_disabled
-			WHERE doc_id = $id");
+			UPDATE ' . DB_DOCS . " SET name = ?, is_disabled = ?
+			WHERE doc_id = ?", array($new_name, $new_disabled, $id));
 	}
 }
 

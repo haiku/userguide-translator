@@ -132,7 +132,7 @@ function select_matching() {
 <tr>
 <th style="width:20px">&nbsp;</th><th>File name</th>
 </tr>
-<?
+<?php
 foreach ($unhandled_paths as $path) {
 	$path = htmlspecialchars($path);
 	$enc = urlencode($path);
