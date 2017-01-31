@@ -1,11 +1,11 @@
 <?php
 require_once('inc/common.php');
 
-if ($_SERVER['QUERY_STRING'] == 'login' and !$user_logged_in)
+if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] == 'login' and !$user_logged_in)
 	login_box('', 'documents.php');
 else if (!$user_logged_in)
 	redirect('.');
-else if($_SERVER['QUERY_STRING'] == 'logout') {
+else if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] == 'logout') {
 	unset($_SESSION['user_id']);
 	unset($_SESSION['user_name']);
 	unset($_SESSION['user_pass']);

@@ -16,8 +16,8 @@ $insert_ids = array();
 
 $time = time();
 
-define('IMPORT_DIR', 'import');
-
+if (!defined("IMPORT_DIR"))
+	error_box($title, 'The import directory is not set!');
 if (!is_dir('../' . IMPORT_DIR) or !is_readable('../' . IMPORT_DIR))
 	error_box($title, 'The import directory is missing or unreadable!');
 
