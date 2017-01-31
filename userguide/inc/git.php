@@ -64,7 +64,7 @@ function git_cat($thepath, $commit) {
 	$path = escapeshellarg(basename($thepath));
 	$repo = escapeshellarg(dirname($thepath));
 
-	$output = run_command("pushd $path && git show $commit:./$path 2>&1 && popd");
+	$output = run_command("pushd $repo && git show $commit:./$path 2>&1 && popd");
 
 	if (!$output)
 		return false;
