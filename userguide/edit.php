@@ -319,25 +319,25 @@ if ($error) {
 <button onclick="return insertText('&lt;i&gt;', '&lt;/i&gt;')"><em>I</em></button>
 <button onclick="return insertText('&lt;p&gt;\n', '&lt;/p&gt;\n')">¶</button>
 <select onchange="selectTitle(this);">
-<option value="">Title</option>
+<option value="" disabled="" selected="">Title</option>
 <option value="h1">Level 1</option>
 <option value="h2">Level 2</option>
 <option value="h3">Level 3</option>
 <option value="h4">Level 4</option>
 </select>
 <select onchange="selectBox(this);">
-<option value="">Box</option>
+<option value="" disabled="" selected="">Box</option>
 <option value="box-info">Info (Little note)</option>
 <option value="box-warning">Warning (Don't mess this up)</option>
 <option value="box-stop">Stop (Danger, Will Robinson!)</option>
 </select>
 <select onchange="selectPref(this);">
-<option value="">Preformatted</option>
+<option value="" disabled="" selected="">Preformatted</option>
 <option value="text">Text</option>
 <option value="term">Terminal</option>
 </select>
 <select onchange="selectSpan(this);">
-<option value="">Inline</option>
+<option value="" disabled="" selected="">Inline</option>
 <option value="path">Path</option>
 <option value="cli">Command-line Application</option>
 <option value="menu">Menu</option>
