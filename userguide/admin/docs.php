@@ -25,7 +25,7 @@ if (isset($_POST['delete_selection']) and is_array(@$_POST['del_list'])
 	$del_list = explode(', ', $_POST['del_list']);
 	$del_list = array_map('intval', $del_list);
 
-	require_once('../inc/subversion.php');
+	require_once('../inc/git.php');
 
 	foreach ($del_list as $delete_id) {
 		$delete_id = intval($delete_id);
@@ -40,7 +40,11 @@ if (isset($_POST['delete_selection']) and is_array(@$_POST['del_list'])
 			continue;
 
 		if (file_exists('../' . REF_DIR . '/' . $row['path_original'])) {
-			svn_del('../' . REF_DIR . '/' . $row['path_original']);
+			$path = '../' . REF_DIR . '/' . $row['path_original'];
+			git_pull(dirname($path));
+			git_rm($path);
+			git_commit(dirname($path), 'Deleting file.'); // TODO: maybe batch this
+			git_push(dirname($path));
 		}
 
 		db_query('DELETE FROM ' . DB_DOCS . " WHERE doc_id = $delete_id");

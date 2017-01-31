@@ -74,14 +74,14 @@ $file_path = REF_DIR . '/' . $row['path_original'];
 $rev_id = (isset($_GET['rev']) ? $_GET['rev'] : '');
 
 if ($rev_id == 'list') {
-	require_once('inc/subversion.php');
-	$log = svn_log($file_path);
+	require_once('inc/git.php');
+	$log = git_log($file_path);
 
 	include('inc/start_html.php');
 	echo "Revisions for this document:\n<dl>\n";
 
-	foreach ($log as $rev => $data) {
-		echo "<dt><a href=\"edit.php?doc_id=$doc_id&rev=$rev\">Revision $rev</a> ($data[date])</dt>\n";
+	foreach ($log as $data) {
+		echo "<dt><a href=\"edit.php?doc_id=$doc_id&rev=$data[commit]\">Revision $data[commit]</a> ($data[date])</dt>\n";
 		echo '<dd>' . htmlspecialchars($data['msg']) . "</dd>\n";
 	}
 
@@ -90,7 +90,7 @@ if ($rev_id == 'list') {
 	exit;
 }
 
-$rev_id = intval($rev_id);
+$rev_id = ctype_alnum($rev_id) ? $rev_id : '';
 
 if (isset($_POST['text'])) {
 	$text = unprotect_quotes($_POST['text']);
@@ -265,22 +265,23 @@ Do not invalidate translations for this item</label>
 		$comment .= $_POST['comment'];
 	else
 		$comment .= '[No log message]';
-	require_once('inc/subversion.php');
-	svn_update($file_path);
-	svn_commit($file_path, $comment);
-	svn_update($file_path);
+	require_once('inc/git.php');
+	git_pull(dirname($file_path));
+	git_add($file_path);
+	git_commit(dirname($file_path), $comment);
+	git_push(dirname($file_path));
 
 	redirect('update_stats.php?redir_to=block_edit.php%3Fdoc_id%3D' . $doc_id);
 	exit;
 
 } else {
 	$text = false;
-	require_once('inc/subversion.php');
-	$revs = array_keys(svn_log($file_path));
-	$current = max($revs);
+	require_once('inc/git.php');
+	$revs = git_log($file_path);
+	$current = $revs[0]['commit'];
 
-	if ($rev_id and $rev_id < $current and in_array($rev_id, $revs)) {
-		$text = svn_cat($file_path, $rev_id);
+	if ($rev_id and $rev_id != $current and array_search($rev_id, array_column($revs, 'commit'))) {
+		$text = git_cat($file_path, $rev_id);
 	} else {
 		$rev_id = "$current (current)";
 	}

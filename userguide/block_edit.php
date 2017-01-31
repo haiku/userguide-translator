@@ -143,11 +143,12 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 		WHERE user_id = $user_id");
 
 
-	require_once('inc/subversion.php');
-	svn_update(REF_DIR . '/' . $path_original);
-	svn_commit(REF_DIR . '/' . $path_original,
+	require_once('inc/git.php');
+	git_pull(dirname(REF_DIR . '/' . $path_original));
+	git_add(REF_DIR . '/' . $path_original);
+	git_commit(dirname(REF_DIR . '/' . $path_original),
 		'Block edit by ' . $user_name . ' in document ' . $doc_name . '.');
-	svn_update(REF_DIR . '/' . $path_original);
+	git_push(dirname(REF_DIR . '/' . $path_original));
 
 	exit('ok');
 }

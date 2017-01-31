@@ -10,11 +10,10 @@ Install database
 3. Import db_structure.sql into the database.
 4. Create a default user with Administrative privileges. Password is SHA1-hashed, no salt.
 
-Install Subversion
+Install Git
 ------------------
-1. Install Subversion.
-2. cd userguide
-3. svnadmin create source_repos
-4. mkdir source_docs
-5. cd source_docs
-6. svn co file:///path_to_source_repos .
+1. Install Git.
+2. mkdir source_docs && cd source_docs
+3. git init .
+
+(TODO: need info on svn->git migration.)

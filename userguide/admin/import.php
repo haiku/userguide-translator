@@ -3,7 +3,7 @@ define('IN_TRANSLATE', 1);
 
 $path_prefix = '../';
 require_once('../inc/common.php');
-require_once('../inc/subversion.php');
+require_once('../inc/git.php');
 
 role_needed(ROLE_ADMIN);
 
@@ -45,7 +45,7 @@ if (isset($_POST['add_documents']) and $src_path and $trans_path
 	$regexp = str_replace('\*', '(.*)', $regexp);
 	$regexp = '=(' . $regexp . ')=';
 
-	svn_update('../' . REF_DIR);
+	git_pull('../' . REF_DIR);
 
 	foreach ($documents as $document) {
 		$doc_path = '../' . IMPORT_DIR . '/' . $document;
@@ -102,7 +102,7 @@ if (isset($_POST['add_documents']) and $src_path and $trans_path
 		make_path($path_name);
 
 		$doc->save($tagged_path) or die("Error: unable to save $tagged_path !");
-		svn_add($tagged_path);
+		git_add($tagged_path);
 
 		$imported[$document] = $num_translations;
 
@@ -112,7 +112,8 @@ if (isset($_POST['add_documents']) and $src_path and $trans_path
 			WHERE doc_id = $doc_id");
 	}
 
-	svn_commit('../' . REF_DIR, 'Imported documents.');
+	git_commit('../' . REF_DIR, 'Imported documents.');
+	git_push('../' . REF_DIR);
 
 	include('../inc/start_html.php');
 	if (!empty($imported)) {
@@ -319,11 +320,8 @@ function make_path($path) {
 	if (!file_exists($path)) {
 		make_path(dirname($path));
 		mkdir($path);
-		svn_add($path);
 	} else if (!is_dir($path)) {
 		error_box("Error creating path: $path exists and is not a directory!");
-	} else if ($path == '.' && !is_dir('.svn')) {
-		svn_add($path);
 	}
 }
 ?>
