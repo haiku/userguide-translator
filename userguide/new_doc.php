@@ -1,6 +1,6 @@
 <?php
 define('IN_TRANSLATE', 1);
-include('inc/common.php');
+require_once('inc/common.php');
 
 role_needed(ROLE_AUTHOR);
 
@@ -39,7 +39,7 @@ if ($src_path and $trans_path and $doc_title) {
 
 			$doc_id = db_insert_id();
 
-			include('inc/subversion.php');
+			require_once('inc/subversion.php');
 			svn_add(REF_DIR . '/' . $src_path);
 			svn_commit(REF_DIR . '/' . $src_path, 'New document: \"' . $doc_title . '"');
 			svn_update(REF_DIR . '/' . $src_path);

@@ -1,6 +1,6 @@
 <?php
 define('IN_TRANSLATE', 1);
-include('inc/common.php');
+require_once('inc/common.php');
 
 $edit_delay = 181; // in second, max delay between pings
 
@@ -143,7 +143,7 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 		WHERE user_id = $user_id");
 
 
-	include('inc/subversion.php');
+	require_once('inc/subversion.php');
 	svn_update(REF_DIR . '/' . $path_original);
 	svn_commit(REF_DIR . '/' . $path_original,
 		'Block edit by ' . $user_name . ' in document ' . $doc_name . '.');

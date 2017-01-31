@@ -1,6 +1,6 @@
 <?php
 define('IN_TRANSLATE', 1);
-include('inc/common.php');
+require_once('inc/common.php');
 
 if ($_SERVER['QUERY_STRING'] == 'login' and !$user_logged_in)
 	login_box('', 'documents.php');

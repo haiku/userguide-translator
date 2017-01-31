@@ -1,6 +1,6 @@
 <?php
 define('IN_TRANSLATE', 1);
-include('inc/common.php');
+require_once('inc/common.php');
 
 $edit_delay = 181; // in second, max delay between pings
 
@@ -74,7 +74,7 @@ $file_path = REF_DIR . '/' . $row['path_original'];
 $rev_id = (isset($_GET['rev']) ? $_GET['rev'] : '');
 
 if ($rev_id == 'list') {
-	include('inc/subversion.php');
+	require_once('inc/subversion.php');
 	$log = svn_log($file_path);
 
 	include('inc/start_html.php');
@@ -265,7 +265,7 @@ Do not invalidate translations for this item</label>
 		$comment .= $_POST['comment'];
 	else
 		$comment .= '[No log message]';
-	include 'inc/subversion.php';
+	require_once('inc/subversion.php');
 	svn_update($file_path);
 	svn_commit($file_path, $comment);
 	svn_update($file_path);
@@ -275,7 +275,7 @@ Do not invalidate translations for this item</label>
 
 } else {
 	$text = false;
-	include('inc/subversion.php');
+	require_once('inc/subversion.php');
 	$revs = array_keys(svn_log($file_path));
 	$current = max($revs);
 

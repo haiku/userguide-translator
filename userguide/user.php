@@ -1,6 +1,6 @@
 <?php
 define('IN_TRANSLATE', 1);
-include('inc/common.php');
+require_once('inc/common.php');
 
 if (!$user_logged_in)
 	redirect('documents.php');

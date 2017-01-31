@@ -1,6 +1,6 @@
 <?php
 define('IN_TRANSLATE', 1);
-include('inc/common.php');
+require_once('inc/common.php');
 
 $title = 'Log';
 $top = '<a href="documents.php">Return to index</a>';

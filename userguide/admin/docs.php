@@ -2,7 +2,7 @@
 define('IN_TRANSLATE', 1);
 
 $path_prefix = '../';
-require('../inc/common.php');
+require_once('../inc/common.php');
 
 role_needed(ROLE_ADMIN);
 
@@ -25,7 +25,7 @@ if (isset($_POST['delete_selection']) and is_array(@$_POST['del_list'])
 	$del_list = explode(', ', $_POST['del_list']);
 	$del_list = array_map('intval', $del_list);
 
-	include_once('../inc/subversion.php');
+	require_once('../inc/subversion.php');
 
 	foreach ($del_list as $delete_id) {
 		$delete_id = intval($delete_id);

@@ -2,8 +2,8 @@
 define('IN_TRANSLATE', 1);
 
 $path_prefix = '../';
-require('../inc/common.php');
-require('../inc/subversion.php');
+require_once('../inc/common.php');
+require_once('../inc/subversion.php');
 
 role_needed(ROLE_ADMIN);
 
