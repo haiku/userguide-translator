@@ -146,12 +146,12 @@ if (isset($_SESSION['exp_cur_lang']) and isset($_SESSION['exp_langs_loc'])
 			DEBUG_LOG('Changed working directory to ' . getcwd() . '.');
 
 			if(file_exists('userguide.zip')){
-				DEBUG_LOG('userguiede.zip already exists. Attempting to deleting it...');
+				DEBUG_LOG('userguide.zip already exists. Attempting to deleting it...');
 				if(!unlink('userguide.zip')){
-					DEBUG_LOG('userguiede.zip could not be deleted. Bailing out.');
+					DEBUG_LOG('userguide.zip could not be deleted. Bailing out.');
 					exit;
 				}else{
-					DEBUG_LOG('userguiede.zip was successfully deleted.');
+					DEBUG_LOG('userguide.zip was successfully deleted.');
 				}
 			}
 
