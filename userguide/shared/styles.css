@@ -514,6 +514,8 @@ label[for] {
 	font-size: 9pt;
 	font-family: "Deja Vu Mono", Consolas, "Courier New", monospace, fixed;
 	outline: 0;
+	tab-size: 4;
+	-moz-tab-size: 4;
 }
 
 #edit_bottom {
