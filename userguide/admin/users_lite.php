@@ -39,7 +39,7 @@ if (isset($_POST['new_user_name']) and isset($_POST['new_user_email'])) {
 		}
 
 		echo '<div class="box-info"><b>' . htmlspecialchars($new_user_name) .
-		'</b> added successfully. His password is “' . $new_user_pass .
+		'</b> added successfully. Their password is “' . $new_user_pass .
 		"”.\n<br/>$status</div>";
 
 		$new_user_name = '';
