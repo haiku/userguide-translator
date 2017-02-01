@@ -115,7 +115,7 @@ function imgMouseClickEvent(e) {
 	if (base_local != '.') {
 		src = base_local + '/' + src;
 	}
-	window.open('/res_upload.php?path=' + encodeURIComponent(src),
+	window.open(base_url + '/res_upload.php?path=' + encodeURIComponent(src),
 		src, 'width=800,height=600,status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=1');
 
 	return true;
