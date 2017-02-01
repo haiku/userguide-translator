@@ -11,7 +11,7 @@ if (isset($_POST['translate_doc']) and isset($_POST['translate_string'])
 
 	$doc_id = intval($_POST['translate_doc']);
 	$string_id = intval($_POST['translate_string']);
-	$lang = ctype_alnum($_POST['translate_lang']) ? $_POST['translate_lang'] : '';
+	$lang = validate_lang($_POST['translate_lang']);
 	$text = $_POST['translate_text'];
 	$source_text = $_POST['translate_source'];
 	$is_fuzzy = ($_POST['is_fuzzy'] ? 1 : 0);
@@ -95,7 +95,7 @@ if (isset($_POST['translate_doc']) and isset($_POST['translate_string'])
 }
 
 $doc_id = (isset($_GET['doc_id']) ? intval($_GET['doc_id']) : 0);
-$lang = (isset($_GET['l']) ? (ctype_alnum($_GET['l']) ? $_GET['l'] : '') : '');
+$lang = (isset($_GET['l']) ? validate_lang($_GET['l']) : '');
 
 $req = db_query('
 	SELECT lang_name FROM ' . DB_LANGS . "

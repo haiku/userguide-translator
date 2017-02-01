@@ -3,7 +3,7 @@ require('inc/common.php');
 role_needed(ROLE_TRANSLATOR);
 
 $doc_id = (isset($_GET['doc_id']) ? intval($_GET['doc_id']) : 0);
-$lang = (isset($_GET['l']) ? (ctype_alnum($_GET['l']) ? $_GET['l'] : '') : '');
+$lang = (isset($_GET['l']) ? validate_lang($_GET['l']) : '');
 
 if ($lang) {
 	$req = db_query('

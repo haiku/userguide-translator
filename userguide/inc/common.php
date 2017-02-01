@@ -134,6 +134,14 @@ function role_needed($role) {
 	}
 }
 
+function validate_lang($lang) {
+	$aValid = array('-', '_');
+	if (!ctype_alnum(str_replace($aValid, '', $lang))) {
+		return '';
+	}
+	return $lang;
+}
+
 function db_query($query, $args = array(), $die_if_error = true) {
 	global $db_h;
 	$result = $db_h->prepare($query);

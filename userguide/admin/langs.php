@@ -9,7 +9,7 @@ $title = 'Languages';
 $del = (isset($_GET['del']) ? $_GET['del'] : '');
 if (isset($_GET['del']) and strlen($del) >= 2 and strlen($del) <= 5) {
 	if (isset($_POST['confirm_ok'])) {
-		$lang_code = ctype_alnum($_GET['del']) ? $_GET['del'] : '';
+		$lang_code = validate_lang($_GET['del']);
 
 		$result = db_query('DELETE FROM ' . DB_LANGS . "
 			WHERE lang_code = ?", array($lang_code));
@@ -64,7 +64,7 @@ if (isset($_POST['update_status'])) {
 	if (strlen($lang_name) > 1 and strlen($lang_loc_name) > 1
 		and validate_lang_code($lang_code)) {
 
-		$lang_code = ctype_alnum($lang_code) ? $lang_code : '';
+		$lang_code = validate_lang($lang_code);
 
 		db_query('
 			INSERT INTO ' . DB_LANGS . '
