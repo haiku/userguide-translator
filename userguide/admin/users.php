@@ -254,13 +254,14 @@ function generate_password() {
 
 
 function new_account_email($username, $email, $password) {
+	global $base_url;
 	$to = "$email";
 	$date = date('r');
 	$subject = 'Your account on the Haiku Documentation Translate Tool';
 	$version = phpversion();
 
 	$headers = <<<EOH
-From: Haiku Documentation Translate Tool <noreply@haiku-os.org>
+From: Haiku Documentation Translate Tool <noreply@i18n.haiku-os.org>
 Date: $date
 User-Agent: PHP/$version
 EOH;
@@ -279,20 +280,21 @@ Password: $password
 You can change your password in the settings panel.
 
 -------------------
-Haiku Documentation Translate Tool - http://i18n.haiku-os.org/userguide
+Haiku Documentation Translate Tool - $base_url
 EOM;
 
 	return mail($to, $subject, $message, $headers);
 }
 
 function reset_password_email($username, $email, $password) {
+	global $base_url;
 	$to = "$username <$email>";
 	$date = date('r');
 	$subject = 'Haiku Documentation Translate Tool — Password Reset';
 	$version = phpversion();
 
 	$headers = <<<EOH
-From: Haiku Documentation Translate Tool <noreply@userguide.haikuzone.net>
+From: Haiku Documentation Translate Tool <noreply@i18n.haiku-os.org>
 Date: $date
 User-Agent: PHP/$version
 EOH;
@@ -310,7 +312,7 @@ Password: $password
 You can change your password in the settings panel.
 
 -------------------
-Haiku Documentation Translate Tool - userguide.haikuzone.net
+Haiku Documentation Translate Tool - $base_url
 EOM;
 
 	return mail($to, $subject, $message, $headers);
