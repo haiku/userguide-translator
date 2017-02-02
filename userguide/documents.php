@@ -24,9 +24,6 @@ if ($user_logged_in) {
 
 	if ($user_role == ROLE_ADMIN)
 		$ltop .= ($ltop ? ' • ' : '') .'<a href="admin/">Administration</a>';
-	else if ($user_role == ROLE_LANG_MANAGER)
-		$ltop .= ($ltop ? ' • ' : '') .'<a href="admin/users_lite.php">User Administration</a>';
-
 } else
 	$top = '<a href="?login">[Log In]</a> ';
 
