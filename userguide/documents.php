@@ -65,7 +65,7 @@ while ($row = db_fetch($req)) {
 	$name = $row['name'] ? $row['name'] : $row['path_original'];
 	$name = htmlspecialchars($name);
 ?>
-<tr class="<?=alt_row()?>">
+<tr>
 <td><a href="<?=$path?>"><?=$name?></a><br/>
 <a href="<?=$block_edit?>">Block Edit</a> •
 <a href="<?=$path_edit?>">Full Edit</a></td>

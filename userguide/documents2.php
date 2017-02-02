@@ -89,7 +89,7 @@ if ($sel_lang) { // Specific status page
 			$status .= " — $fuzzy_count fuzzy";
 		$status .= '</b>';
 ?>
-<tr class="<?=alt_row()?>">
+<tr>
 <td><?=$name?></td>
 <td><a href="<?=$path_trans?>">View</a> • <a href="<?=$gen_path_trans?>">View Exported</a>
 <?php if ($count) { ?>• <a href="<?=$translate_path?>">Translate</a> (Progress: <?=$status?>) <?php } ?>
@@ -136,7 +136,7 @@ if ($sel_lang) { // Specific status page
 			$columns = '<td colspan="' . $count_langs . '">This document is not translatable.</td>';
 		}
 ?>
-<tr class="<?=alt_row()?>">
+<tr>
 <td><a href="view.php?doc_id=<?=$doc_id?>"><?=$name?></a> • <a href="<?=$gen_path_trans?>">View Exported</a></td><?=$columns?>
 </tr>
 <?php

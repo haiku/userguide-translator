@@ -137,7 +137,7 @@ foreach ($unhandled_paths as $path) {
 	$path = htmlspecialchars($path);
 	$enc = urlencode($path);
 ?>
-<tr class="<?=alt_row()?>">
+<tr>
 <td><input type="checkbox" class="del_path_check" name="del_list[<?=$path?>]" /></td>
 <td><?=$path?></td>
 </tr>

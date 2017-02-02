@@ -107,7 +107,7 @@ if (db_num_rows($req) > 0) {
 		$loc_name_r = htmlspecialchars($row['loc_name']);
 		$disabled_checked = ($row['is_disabled'] ?  ' checked="checked"' : '');
 ?>
-<tr class="<?=alt_row()?>">
+<tr>
 <td><?=$lang_name_r?></td>
 <td><?=$loc_name_r?></td>
 <td style="text-align:center"><input type="checkbox" name="dis_list[<?=$lang_code_r?>]"<?=$disabled_checked?> /></td>

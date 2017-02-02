@@ -388,19 +388,17 @@ table.list td {
 	padding-right: 5px;
 }
 
-table.list tr.row1 {
+table.list tr:nth-child(even) {
 	background-color: #ECECEC;
 }
-
-table.list tr.row1:hover {
+table.list tr:nth-child(even):hover {
 	background-color: #F6F4D0;
 }
 
-table.list tr.row2 {
+table.list tr:nth-child(odd) {
 	background-color: #E1E1E1;
 }
-
-table.list tr.row2:hover {
+table.list tr:nth-child(odd):hover {
 	background-color: #F6F4D0;
 }
 

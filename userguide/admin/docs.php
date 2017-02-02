@@ -90,7 +90,7 @@ $req = db_query('SELECT doc_id, name, path_original, path_translations, is_disab
 while ($row = db_fetch($req)) {
 	$disabled_checked = ($row['is_disabled'] ?  ' checked="checked"' : '');
 ?>
-<tr class="<?=alt_row()?>">
+<tr>
 <td><input type="checkbox" name="del_list[<?=$row['doc_id']?>]" /></td>
 <td><input type="text" class="textbox" name="name[<?=$row['doc_id']?>]"
 	value="<?=htmlspecialchars($row['name'])?>" maxlength="64" size="40" /></td>

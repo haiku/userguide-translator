@@ -113,7 +113,7 @@ if (isset($_POST['text'])) {
 <?php
 			foreach ($blocks['add'] as $added_block) {
 ?>
-<tr class="<?=alt_row()?>">
+<tr>
 <td><code><?=nl2br(htmlspecialchars($added_block))?></code></td>
 </tr>
 <?php
@@ -134,7 +134,7 @@ if (isset($_POST['text'])) {
 				$original_block = nl2br(htmlspecialchars($modif_block['p']));
 				$modified_block = nl2br(htmlspecialchars($modif_block['n']));
 ?>
-<tr class="<?=alt_row()?>">
+<tr>
 <td><code><?=$original_block?></code></td>
 <td><code><?=$modified_block?></code></td>
 </tr>
@@ -158,7 +158,7 @@ Do not invalidate translations for this item</label>
 <?php
 			foreach ($blocks['del'] as $del_block) {
 ?>
-<tr class="<?=alt_row()?>">
+<tr>
 <td><code><?=nl2br(htmlspecialchars($del_block))?></code></td>
 </tr>
 <?php

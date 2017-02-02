@@ -163,7 +163,7 @@ $req = db_query('SELECT * FROM ' . DB_USERS . ' ORDER BY UCASE(username)');
 while ($row = db_fetch($req)) {
 	if ($row['user_id'] == $user_id) {
 ?>
-<tr class="<?=alt_row()?>">
+<tr>
 <td>&nbsp;</td>
 <td><?=htmlspecialchars($row['username'])?></td>
 <td><?=htmlspecialchars($row['email'])?></td>
@@ -174,7 +174,7 @@ while ($row = db_fetch($req)) {
 <?php
 	} else {
 ?>
-<tr class="<?=alt_row()?>">
+<tr>
 <td><input type="checkbox" name="del_list[<?=$row['user_id']?>]" /></td>
 <td><?=htmlspecialchars($row['username'])?></td>
 <td><?=htmlspecialchars($row['email'])?></td>

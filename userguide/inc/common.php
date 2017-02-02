@@ -312,14 +312,6 @@ function DOMouterHTML($domElement) {
 	return $domElement->ownerDocument->saveXML($domElement);
 }
 
-function alt_row() {
-	static $even = false;
-	$even = !$even;
-	if ($even)
-		return 'row1';
-	return 'row2';
-}
-
 function DEBUG_LOG($message){
 	if(defined('ENABLE_DEBUGGING') && ENABLE_DEBUGGING==true){
 		if(defined('DEBUG_FILE')){

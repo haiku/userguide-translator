@@ -70,7 +70,7 @@ while ($row = db_fetch($req)) {
 	$colspan = ($path_trans ? 1 : $len);
 	$style = (file_exists($path_untrans) ? '' : ' style="color:#FF0000;font-weight:bold;text-decoration:line-through"');
 
-	echo '<tr class="' . alt_row() . '">' . "\n";
+	echo '<tr>' . "\n";
 	echo "<td><input type=\"checkbox\" name=\"del_list[$res_id]\" /></td>\n";
 	echo "<td colspan=\"$colspan\"><a$style href=\"$path_untrans\">$row[path_untranslated]</a><br/>";
 	echo "<a href=\"../res_upload.php?id=$res_id\">Upload…</a></td>\n";
