@@ -57,10 +57,7 @@ db_free($req);
 </thead>
 <tbody>
 <?php
-$req = db_query('
-	SELECT * FROM ' . DB_DOCS . '
-	ORDER BY name ASC
-');
+$req = db_query('SELECT * FROM ' . DB_DOCS . ' ORDER BY name ASC');
 
 while ($row = db_fetch($req)) {
 	$doc_id = $row['doc_id'];
@@ -90,7 +87,6 @@ while ($row = db_fetch($req)) {
 			$fuzzy = '';
 			if ($row['count_fuzzy_' . $lang_code])
 				$fuzzy = ' - ' . $row['count_fuzzy_' . $lang_code] . ' fuzzy';
-
 ?>
 <td>
 <a href="<?=$current?>" title="View latest version">View</a> •

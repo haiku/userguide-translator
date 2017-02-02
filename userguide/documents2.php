@@ -4,12 +4,12 @@ require_once('inc/common.php');
 if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] == 'login' and !$user_logged_in)
 	login_box('', 'documents.php');
 else if (!$user_logged_in)
-	redirect('/');
-else if(isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] == 'logout') {
+	redirect('.');
+else if (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] == 'logout') {
 	unset($_SESSION['user_id']);
 	unset($_SESSION['user_name']);
 	unset($_SESSION['user_pass']);
-	redirect('/');
+	redirect('.');
 }
 
 $title = 'Documentation Translate Tool';
@@ -34,7 +34,7 @@ $ltop .= ($ltop ? ' • ' : '') .'<a href="log.php">Changelog</a>';
 
 include('inc/start_html.php');
 
-$sel_lang = (isset($_GET['l']) ? $_GET['l'] :  '');
+$sel_lang = (isset($_GET['l']) ? validate_lang($_GET['l']) :  '');
 
 echo "<h1>Translation status</h1>\nDisplay: ";
 if ($sel_lang)
@@ -94,7 +94,7 @@ if ($sel_lang) { // Specific status page
 ?>
 <tr class="<?=alt_row()?>">
 <td><?=$name?></td>
-<td><a href="<?=$path_trans?>">View</a> • <a href="<?=$gen_path_trans?>">View Archived</a>
+<td><a href="<?=$path_trans?>">View</a> • <a href="<?=$gen_path_trans?>">View Exported</a>
 <?php if ($count) { ?>• <a href="<?=$translate_path?>">Translate</a> (Progress: <?=$status?>) <?php } ?>
 </td>
 </tr>
@@ -107,7 +107,7 @@ if ($sel_lang) { // Specific status page
 <table class="list">
 <tr>
 <th>English (original)</th><?php
-	$sql = 'SELECT doc_id, name, strings_count';
+	$sql = 'SELECT doc_id, name, strings_count, path_translations';
 	$count_langs = count($language_names);
 	foreach($language_names as $code => $name) {
 		$sql .= ", count_$code, count_fuzzy_$code";
@@ -121,10 +121,11 @@ if ($sel_lang) { // Specific status page
 		$doc_id = $row['doc_id'];
 		$name = htmlspecialchars($row['name']);
 		$path = 'view.php?doc_id=' . $doc_id;
+		$gen_path_trans = REF_DIR . '/' . str_replace('{LANG}', "en", $row['path_translations']);
 		$count = intval($row['strings_count']);
 		$columns = '';
 		if ($count) {
-			foreach($language_names as $code => $unused) {
+			foreach ($language_names as $code => $unused) {
 				$percent = round(100 * intval($row['count_' . $code]) / $count, 0);
 				$fuzzy_count = intval($row['count_fuzzy_' . $code]);
 				$columns .= '<td><a href="view.php?doc_id=' . $doc_id .
@@ -139,7 +140,7 @@ if ($sel_lang) { // Specific status page
 		}
 ?>
 <tr class="<?=alt_row()?>">
-<td><a href="view.php?doc_id=<?=$doc_id?>"><?=$name?></a> • <a href="">View Archived</a></td><?=$columns?>
+<td><a href="view.php?doc_id=<?=$doc_id?>"><?=$name?></a> • <a href="<?=$gen_path_trans?>">View Exported</a></td><?=$columns?>
 </tr>
 <?php
 	}
