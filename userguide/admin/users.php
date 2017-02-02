@@ -71,8 +71,7 @@ if (isset($_GET['reset']) and intval($_GET['reset']) != 0) {
  		$new_password = generate_password();
  		$hashed_pass = sha1($new_password);
 
- 		db_query('UPDATE ' . DB_USERS . "
- 			SET user_password = ?
+ 		db_query('UPDATE ' . DB_USERS . " SET user_password = ?
  			WHERE user_id = ?", array($hashed_pass, $reset_id));
 
  		if (reset_password_email($reset_name, $reset_email, $new_password)) {
@@ -126,11 +125,8 @@ if (isset($_POST['new_user_name']) and isset($_POST['new_user_role'])
 		$roles_to_db = array_flip($db_roles);
 		$new_user_role = $roles_to_db[$new_user_role];
 
-		db_query('
-			INSERT INTO ' . DB_USERS . '
-			(username, user_password, user_role) ' . "
-			VALUES (?, ?, ?)", array($new_user_name, $hashed_pass, $new_user_role));
-
+		db_query('INSERT INTO ' . DB_USERS . ' (username, email, user_password, user_role) ' . "
+			VALUES (?, ?, ?, ?)", array($new_user_name, $new_user_email, $hashed_pass, $new_user_role));
 
 		$status = '';
 		if ($new_user_email) {
@@ -159,7 +155,7 @@ if (isset($_POST['new_user_name']) and isset($_POST['new_user_role'])
 <h1>Users</h1>
 <table class="list">
 <tr>
-<th style="width:20px">&nbsp;</th><th>Name</th><th style="width:5%">Role</th>
+<th style="width:20px">&nbsp;</th><th>Name</th><th>Email</th><th style="width:5%">Role</th>
 <th style="width:5%">Edits</th><th style="width:5%">Translations</th><th style="width:10%">Options</th>
 </tr>
 <?php
@@ -170,6 +166,7 @@ while ($row = db_fetch($req)) {
 <tr class="<?=alt_row()?>">
 <td>&nbsp;</td>
 <td><?=htmlspecialchars($row['username'])?></td>
+<td><?=htmlspecialchars($row['email'])?></td>
 <td>Administrator</td><td><?=$row['num_edits']?></td>
 <td><?=$row['num_translations']?></td>
 <td>&nbsp;</td>
@@ -180,6 +177,7 @@ while ($row = db_fetch($req)) {
 <tr class="<?=alt_row()?>">
 <td><input type="checkbox" name="del_list[<?=$row['user_id']?>]" /></td>
 <td><?=htmlspecialchars($row['username'])?></td>
+<td><?=htmlspecialchars($row['email'])?></td>
 <td>
 <select name="user_role[<?=$row['user_id']?>]">
 <?php
@@ -200,7 +198,7 @@ while ($row = db_fetch($req)) {
 }
 ?>
 <tr class="bottom">
-<td colspan="6">
+<td colspan="7">
 <input type="submit" name="submit_roles" value="Update roles" />
 <input type="submit" name="delete_selection" value="Delete selection" />
 </td>
@@ -223,10 +221,9 @@ foreach ($roles_names as $role_id => $role_name) {
 }
 ?>
 </select><br/>
-<label for="new_user_email">E-mail:</label>
+<label for="new_user_email">Email:</label>
 <input type="text" name="new_user_email" id="new_user_email"
 	value="<?=$new_user_email?>" size="32" /><br/>
-<em>(Optional) If filled, the login information will be emailed to the new user.</em><br/>
 <input type="submit" name="add_user" value="Add" />
 </dd>
 </dl>

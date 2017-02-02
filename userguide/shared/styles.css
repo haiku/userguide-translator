@@ -470,7 +470,7 @@ input[type=submit]:active, input[type=button]:active {
 	border-right: 1px solid #C2C2C2;
 }
 
-input[type=text], input[type=password] {
+input[type=text], input[type=password], input[type=email] {
 	font-size: inherit;
 	border-top: 1px solid #818181;
 	border-left: 1px solid #818181;
