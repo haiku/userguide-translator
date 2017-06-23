@@ -107,7 +107,7 @@ if ($sel_lang) { // Specific status page
 } else { // Multilanguage status page
 ?>
 <br/>
-<table class="list">
+<table class="list compact">
 <tr>
 <th>English (original)</th><?php
 	$sql = 'SELECT doc_id, name, strings_count, path_translations';

@@ -165,7 +165,7 @@ table.index a:hover, table.index a:active {
 	color: #ff4500;
 }
 
-table.compact a {
+form table.compact a {
 	font-weight: normal;
 }
 /*
@@ -254,15 +254,12 @@ li {
 }
 td {
 	vertical-align: top;
-}
-td.onelinetop {
-	vertical-align: top;
 	white-space: nowrap;
 }
 tt {
-    	background-color: #e2e2e2;
-    	font-size: 1.0em;
-    	font-family: monospace;
+    background-color: #e2e2e2;
+    font-size: 1.0em;
+    font-family: monospace;
 }
 pre.terminal {			/* Terminal output*/
 	border-color: #ffb11f;
