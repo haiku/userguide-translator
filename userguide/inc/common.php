@@ -1,13 +1,8 @@
 <?php
-if (PHP_VERSION_ID < 50400) {
+if (PHP_VERSION_ID < 50500) {
 	print("<h1>Error: PHP version too old.</h1>Need <code>5.5.0</code>, have <code>" . phpversion() .
 		"</code>.<br>Please contact a sysadmin.");
 	exit(1);
-}
-if (!function_exists("array_column")) {
-	function array_column($array,$column_name) {
-		return array_map(function($element) use($column_name){return $element[$column_name];}, $array);
-	}
 }
 
 if (!isset($path_prefix))
