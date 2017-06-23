@@ -108,7 +108,7 @@ if ($sel_lang) { // Specific status page
 ?>
 <br/>
 <table class="list compact">
-<tr>
+<thead><tr>
 <th>English (original)</th><?php
 	$sql = 'SELECT doc_id, name, strings_count, path_translations';
 	$count_langs = count($language_names);
@@ -116,7 +116,7 @@ if ($sel_lang) { // Specific status page
 		$sql .= ", count_$code, count_fuzzy_$code";
 		echo "<th>$name</th>";
 	}
-	echo "\n</tr>\n";
+	echo "\n</tr></thead>\n";
 	$sql .= ' FROM ' . DB_DOCS . ' ORDER BY name ASC';
 
 	$req = db_query($sql);

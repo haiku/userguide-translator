@@ -510,9 +510,7 @@ function update_translations($node, $tags) {
 
 				if ($id_attr == 0 and $id_cont == 0) {
 					// New block
-					db_query('
-						INSERT INTO '. DB_STRINGS . '
-						(doc_id, source_md5) ' . "
+					db_query('INSERT INTO '. DB_STRINGS . ' (doc_id, source_md5) ' . "
 						VALUES (?, ?)", array($doc_id, $md5));
 					$id = db_insert_id();
 					$blocks_md5[$md5] = $id;
@@ -520,9 +518,7 @@ function update_translations($node, $tags) {
 				} else if($id_cont != 0) {
 					// Block text already in the DB
 					$child->setAttribute(ATTR_TRANS_ID, $id_cont);
-					db_query('
-						UPDATE ' . DB_STRINGS . "
-						SET unused_since = NULL
+					db_query('UPDATE ' . DB_STRINGS . " SET unused_since = NULL
 						WHERE string_id = ?", array($id_cont));
 				} else {
 					// ID in the DB, but the block was modified
@@ -532,9 +528,7 @@ function update_translations($node, $tags) {
 					$up_to = "'$md5', " .
 						$r_norm . (($fuzzy and $r_to_fuzzy) ? ', ' . $r_to_fuzzy : '');
 
-					db_query('
-					INSERT INTO ' . DB_STRINGS . "
-					($update)
+					db_query('INSERT INTO ' . DB_STRINGS . " ($update)
 						SELECT $up_to FROM " . DB_STRINGS . "
 						WHERE string_id = ?", array($id_attr));
 					$id = db_insert_id();
