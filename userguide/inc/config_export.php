@@ -59,6 +59,8 @@ function document_hook($path_original, $path_translations, $doc_id, $lang_code, 
 		$langs['gb'] = 'English';
 	}
 
+	asort($langs, SORT_STRING);
+
 	$orig_items = explode('/', $path_original);
 	$trans_items = explode('/', $path_translations);
 	$count = count($orig_items);
