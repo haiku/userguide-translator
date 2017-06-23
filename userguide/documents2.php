@@ -78,7 +78,6 @@ if ($sel_lang) { // Specific status page
 		$path_trans = 'view.php?doc_id=' . $doc_id . '&amp;l=' . $sel_lang;
 		$name = $row['name'] ? $row['name'] : $row['path_original'];
 		$name = htmlspecialchars($name);
-		$gen_path_trans = REF_DIR . '/' . str_replace('{LANG}', $sel_lang, $row['path_translations']);
 		$translate_path = 'translate.php?doc_id=' . $doc_id . '&amp;l=' . $sel_lang;
 
 		$count = intval($row['strings_count']);
@@ -91,7 +90,7 @@ if ($sel_lang) { // Specific status page
 ?>
 <tr>
 <td><?=$name?></td>
-<td><a href="<?=$path_trans?>">View</a> • <a href="<?=$gen_path_trans?>">View Exported</a>
+<td><a href="<?=$path_trans?>">View</a>
 <?php if ($count) { ?>• <a href="<?=$translate_path?>">Translate</a> (Progress: <?=$status?>) <?php } ?>
 </td>
 </tr>
@@ -118,7 +117,8 @@ if ($sel_lang) { // Specific status page
 		$doc_id = $row['doc_id'];
 		$name = htmlspecialchars($row['name']);
 		$path = 'view.php?doc_id=' . $doc_id;
-		$gen_path_trans = REF_DIR . '/' . str_replace('{LANG}', "en", $row['path_translations']);
+		$path_edit = 'edit.php?doc_id=' . $doc_id;
+		$block_edit = 'block_edit.php?doc_id=' . $doc_id;
 		$count = intval($row['strings_count']);
 		$columns = '';
 		if ($count) {
@@ -137,7 +137,9 @@ if ($sel_lang) { // Specific status page
 		}
 ?>
 <tr>
-<td><a href="view.php?doc_id=<?=$doc_id?>"><?=$name?></a> • <a href="<?=$gen_path_trans?>">View Exported</a></td><?=$columns?>
+<td><a href="view.php?doc_id=<?=$doc_id?>"><?=$name?></a><br>
+<a class="c" href="<?=$block_edit?>">Block Edit</a> •
+<a class="c" href="<?=$path_edit?>">Full Edit</a></td></td><?=$columns?>
 </tr>
 <?php
 	}
