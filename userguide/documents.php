@@ -63,7 +63,9 @@ if (!$sel_lang_name) // We haven't found the specified language code
 if ($sel_lang) { // Specific status page
 ?>
 <br/>
-<table class="list">
+
+<link rel="stylesheet" href="shared/3rdparty/tablesort.css">
+<table class="list" id="documents">
 <thead><tr>
 <th>Document</th><th><?=$sel_lang_name?> (<?=$sel_loc_name?>)</th>
 </tr></thead>
@@ -97,7 +99,11 @@ if ($sel_lang) { // Specific status page
 </tr>
 <?php
 	}
-	echo '</tbody></table>';
+?>
+</tbody></table>
+<script src="shared/3rdparty/tablesort.min.js"></script>
+<script>new Tablesort(document.getElementById('documents'));</script>
+<?php
 } else { // Multilanguage status page
 ?>
 <br/>
@@ -138,7 +144,7 @@ if ($sel_lang) { // Specific status page
 		}
 ?>
 <tr>
-<td><a href="view.php?doc_id=<?=$doc_id?>"><?=$name?></a><br>
+<td><a href="view.php?doc_id=<?=$doc_id?>"><?=$name?></a><br/>
 <a class="c" href="<?=$block_edit?>">Block Edit</a> •
 <a class="c" href="<?=$path_edit?>">Full Edit</a></td></td><?=$columns?>
 </tr>
