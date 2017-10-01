@@ -61,6 +61,8 @@ if (isset($_SESSION['exp_cur_lang']) and isset($_SESSION['exp_langs_loc'])
 			@$doc->load('../' . REF_DIR . '/' . $data['o'])
 				or error_box($title, "Unable to load $data[o] !");
 
+		html_inject_viewport($doc);
+
 		$file_path = '';
 		if ($lang_code) {
 			html_set_lang($doc, $lang_code);

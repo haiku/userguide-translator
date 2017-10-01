@@ -150,6 +150,24 @@ function html_set_lang($doc, $lang) {
 	$doc->getElementsByTagName('html')->item(0)->setAttribute('xml:lang', $htmllang);
 }
 
+function append_sibling(DOMNode $new_node, DOMNode $ref) {
+	if ($ref->nextSibling)
+		return $ref->parentNode->insertBefore($new_node, $ref->nextSibling);
+
+	return $ref->parentNode->appendChild($newnode);
+}
+
+function html_inject_viewport($doc) {
+	// Inject <meta viewport>
+	$node = $doc->getElementsByTagName('link')->item(0);
+	$node = append_sibling($doc->createTextNode("\n\t"), $node->previousSibling->previousSibling);
+	$viewport = $doc->createElement('meta');
+	$viewport->setAttribute('name', 'viewport');
+	$viewport->setAttribute('content', 'width=device-width, initial-scale=1.0');
+	$node = append_sibling($viewport, $node);
+	$node = append_sibling($doc->createTextNode("\t"), $node);
+}
+
 function db_query($query, $args = array(), $die_if_error = true) {
 	global $db_h;
 	$result = $db_h->prepare($query);

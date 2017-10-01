@@ -497,7 +497,7 @@ EOD;
 function update_translations($node, $tags) {
 	global $r_norm, $r_fuzzy, $r_to_fuzzy, $doc_id, $blocks_md5;
 	foreach ($node->childNodes as $child) {
-		if ($child instanceOf DOMElement and isset($tags[$child->tagName])) {
+		if ($child instanceOf DOMElement && isset($tags[$child->tagName])) {
 			if (is_array($tags[$child->tagName])) {
 				update_translations($child, $tags[$child->tagName]);
 			} else if (trim($child->nodeValue, "  \t\n\r\0\x0B") != '') {
@@ -508,14 +508,14 @@ function update_translations($node, $tags) {
 					intval($child->getAttribute(ATTR_TRANS_ID)) : 0);
 				$id_cont = (isset($blocks_md5[$md5]) ? $blocks_md5[$md5] : 0);
 
-				if ($id_attr == 0 and $id_cont == 0) {
+				if ($id_attr == 0 && $id_cont == 0) {
 					// New block
 					db_query('INSERT INTO '. DB_STRINGS . ' (doc_id, source_md5) ' . "
 						VALUES (?, ?)", array($doc_id, $md5));
 					$id = db_insert_id();
 					$blocks_md5[$md5] = $id;
 					$child->setAttribute(ATTR_TRANS_ID, $id);
-				} else if($id_cont != 0) {
+				} else if ($id_cont != 0) {
 					// Block text already in the DB
 					$child->setAttribute(ATTR_TRANS_ID, $id_cont);
 					db_query('UPDATE ' . DB_STRINGS . " SET unused_since = NULL

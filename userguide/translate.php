@@ -311,13 +311,6 @@ function extract_tags($text) {
 	return $tags;
 }
 
-function append_sibling(DOMNode $new_node, DOMNode $ref) {
-	if ($ref->nextSibling)
-		return $ref->parentNode->insertBefore($new_node, $ref->nextSibling);
-
-	return $ref->parentNode->appendChild($newnode);
-}
-
 function update_id($id) {
 	static $lang_codes = false;
 

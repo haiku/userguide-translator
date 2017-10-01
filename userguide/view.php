@@ -70,6 +70,7 @@ $base->setAttribute('href', $base_url . '/' . EXPORT_DIR . '/' .
 $node = append_sibling($base, $node);
 $node = append_sibling($doc->createTextNode("\t"), $node);
 
+html_inject_viewport($doc);
 html_set_lang($doc, $lang);
 
 replace_translations($doc, $doc);
@@ -105,11 +106,3 @@ function replace_translations($doc, $node) {
 		}
 	}
 }
-
-function append_sibling(DOMNode $new_node, DOMNode $ref) {
-	if ($ref->nextSibling)
-		return $ref->parentNode->insertBefore($new_node, $ref->nextSibling);
-
-	return $ref->parentNode->appendChild($newnode);
-}
-
