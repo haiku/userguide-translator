@@ -306,10 +306,3 @@ function xml_error_handler($errno, $errstr, $errfile, $errline) {
 
 	$xml_msg .= htmlspecialchars_decode($err) . "\n";
 }
-
-function append_sibling(DOMNode $new_node, DOMNode $ref) {
-	if ($ref->nextSibling)
-		return $ref->parentNode->insertBefore($new_node, $ref->nextSibling);
-
-	return $ref->parentNode->appendChild($newnode);
-}
