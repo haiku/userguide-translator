@@ -63,6 +63,7 @@ if (isset($_SESSION['exp_cur_lang']) and isset($_SESSION['exp_langs_loc'])
 
 		$file_path = '';
 		if ($lang_code) {
+			html_set_lang($doc, $lang_code);
 			replace_translations($doc, $doc, $lang_code, $data['s']);
 			$file_path = '../' . EXPORT_DIR . '/' . str_replace('{LANG}', $lang_code, $data['t']);
 		} else {

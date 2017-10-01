@@ -143,6 +143,13 @@ function validate_lang($lang) {
 	return $lang;
 }
 
+function html_set_lang($doc, $lang) {
+	// Set the lang attributes in the <html> tag
+	$htmllang = str_replace('_', '-', $lang);
+	$doc->getElementsByTagName('html')->item(0)->setAttribute('lang', $htmllang);
+	$doc->getElementsByTagName('html')->item(0)->setAttribute('xml:lang', $htmllang);
+}
+
 function db_query($query, $args = array(), $die_if_error = true) {
 	global $db_h;
 	$result = $db_h->prepare($query);

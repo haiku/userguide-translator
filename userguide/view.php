@@ -70,11 +70,7 @@ $base->setAttribute('href', $base_url . '/' . EXPORT_DIR . '/' .
 $node = append_sibling($base, $node);
 $node = append_sibling($doc->createTextNode("\t"), $node);
 
-// Set the lang attributes in the <html> tag
-$doc->getElementsByTagName('html')->item(0)->setAttribute('lang',
-	$lang);
-$doc->getElementsByTagName('html')->item(0)->setAttribute('xml:lang',
-	$lang);
+html_set_lang($doc, $lang);
 
 replace_translations($doc, $doc);
 

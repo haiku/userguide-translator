@@ -185,11 +185,7 @@ append_js_code($head, $js);
 // Include the JavaScript translation helper
 append_js_file($head, $base_url . '/shared/translate_tool.js');
 
-// Set the lang attributes in the <html> tag
-$doc->getElementsByTagName('html')->item(0)->setAttribute('lang',
-	$lang);
-$doc->getElementsByTagName('html')->item(0)->setAttribute('xml:lang',
-	$lang);
+html_set_lang($doc, $lang);
 
 echo $doc->saveXML();
 
