@@ -165,7 +165,6 @@ function html_inject_viewport($doc) {
 	$viewport->setAttribute('name', 'viewport');
 	$viewport->setAttribute('content', 'width=device-width, initial-scale=1.0');
 	$node = append_sibling($viewport, $node);
-	$node = append_sibling($doc->createTextNode("\t"), $node);
 }
 
 function db_query($query, $args = array(), $die_if_error = true) {
