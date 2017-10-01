@@ -51,6 +51,8 @@ function git_log($thepath) {
 		if (!$entry)
 			continue;
 		$entry = explode("\t\t\t\t", $entry);
+		if (count($entry) < 3)
+			continue;
 		$revs[$at]['commit'] = $entry[0];
 		$revs[$at]['date'] = $entry[1];
 		$revs[$at]['msg'] = $entry[2];
