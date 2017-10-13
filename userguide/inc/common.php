@@ -61,12 +61,6 @@ try {
 	error_box('Failed to connect to the database!',
 		'<b>Failed to connect to the database!</b><br>' . $e->getMessage());
 }
-// Add the 'email' column to the DB if it doesn't exist already
-$req = db_query("SHOW COLUMNS FROM " . DB_USERS . " LIKE 'email'");
-$result = db_fetch($req);
-if (!$result || !$result[0]) {
-	db_query("ALTER TABLE " . DB_USERS . " ADD COLUMN email VARCHAR(80) AFTER real_name");
-}
 
 // Be paranoid
 unset($db_server, $db_username, $db_password, $db_base_name);

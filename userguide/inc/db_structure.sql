@@ -46,7 +46,7 @@ CREATE TABLE `translate_docs` (
   `is_dirty_pt_PT` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`doc_id`),
   UNIQUE KEY `path_original` (`path_original`)
-) ENGINE=MyISAM AUTO_INCREMENT=104 DEFAULT CHARSET=utf8;
+) ENGINE=Aria AUTO_INCREMENT=104 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `translate_langs`
@@ -60,7 +60,7 @@ CREATE TABLE `translate_langs` (
   `loc_name` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `is_disabled` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`lang_code`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=Aria DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `translate_log`
@@ -78,7 +78,7 @@ CREATE TABLE `translate_log` (
   `log_trans_lang` char(5) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL,
   `log_del_doc_title` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`log_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=8182 DEFAULT CHARSET=utf8;
+) ENGINE=Aria AUTO_INCREMENT=8182 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `translate_resources`
@@ -92,7 +92,7 @@ CREATE TABLE `translate_resources` (
   `path_translated` varchar(256) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`resource_id`),
   UNIQUE KEY `path_untranslated` (`path_untranslated`)
-) ENGINE=MyISAM AUTO_INCREMENT=412 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=Aria AUTO_INCREMENT=412 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- Table structure for table `translate_strings`
@@ -127,7 +127,7 @@ CREATE TABLE `translate_strings` (
   `is_fuzzy_pt_PT` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`string_id`),
   UNIQUE KEY `doc_md5` (`doc_id`,`source_md5`)
-) ENGINE=MyISAM AUTO_INCREMENT=4596 DEFAULT CHARSET=utf8;
+) ENGINE=Aria AUTO_INCREMENT=4596 DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `translate_users`
@@ -139,10 +139,11 @@ CREATE TABLE `translate_users` (
   `user_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `real_name` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
+  `email` varchar(80) DEFAULT NULL,
   `user_password` char(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `user_role` enum('undef','admin','author','lmanager','translator') CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'undef',
   `num_edits` int(10) unsigned NOT NULL DEFAULT '0',
   `num_translations` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=MyISAM AUTO_INCREMENT=66 DEFAULT CHARSET=utf8;
+) ENGINE=Aria AUTO_INCREMENT=66 DEFAULT CHARSET=utf8;
