@@ -138,8 +138,8 @@ $req = db_query('
 $js = '';
 $js .= 'const base_url = \'' . str_replace("'", "\'", $base_url) . "';\n";
 $js .= 'const base_local = \'' . str_replace("'", "\'", $path_trans) . "';\n";
-$js .= 'const lang =\'' . str_replace("'", "\'", $lang) . "';\n";
-$js .= 'const lang_name =\'' . str_replace("'", "\'", $lang_name) . "';\n";
+$js .= 'const lang = window.lang = \'' . str_replace("'", "\'", $lang) . "';\n";
+$js .= 'const lang_name = window.lang_name = \'' . str_replace("'", "\'", $lang_name) . "';\n";
 $js .= "const doc_id = $doc_id;\n";
 $js .= "var source_strings = new Array();\n";
 $js .= "var translated_strings = new Array();\n";
