@@ -121,7 +121,6 @@ function endEditionEvent(clickOK) {
 		window.original_text = source_strings[id];
 		window.translated_text = translated_strings[id];
 		window.setTimeout(edit_window.refreshAll, 0);
-
 	} else {
 		edit_window.close();
 		edit_window = null;

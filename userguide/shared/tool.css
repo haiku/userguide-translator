@@ -1,0 +1,96 @@
+/*
+ * Copyright 2008-2017, Haiku. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Authors:
+ *		Augustin Cavalier <waddlesplash>
+ *		Vincent Duvert <vincent.duvert@free.fr>
+ */
+
+body {
+	background-color: lightgray;
+	overflow: hidden;
+	font-family: Verdana, Arial, sans-sherif;
+	font-size: .9em;
+}
+
+textarea, input, button {
+	font-family: Verdana, Arial, sans-sherif;
+	font-size: .9em;
+}
+
+#info {
+	position: absolute;
+	top: 2px;
+	right: 5px;
+	font-size: 80%;
+	text-align: right;
+}
+
+#info2 {
+	position: absolute;
+	top: 15px;
+	right: 5px;
+	font-size: 80%;
+	text-align: right;
+}
+
+#topleft {
+	position: absolute;
+	left: 5px;
+	right: 50%;
+	top: 5px;
+	height: 30px;
+	margin-right: 5px;
+	font-weight: bold;
+}
+
+#topright {
+	position: absolute;
+	left: 50%;
+	right: 5px;
+	top: 5px;
+	height: 30px;
+	margin-left: 5px;
+	font-weight: bold;
+}
+
+#left {
+	position: absolute;
+	left: 5px;
+	right: 50%;
+	top: 35px;
+	bottom: 35px;
+	margin-right: 5px;
+}
+
+#right {
+	position: absolute;
+	left: 50%;
+	right: 5px;
+	top: 35px;
+	bottom: 35px;
+	margin-left: 5px;
+}
+
+#original, #translated, #modified {
+	width: 99%;
+	height: 99%;
+}
+
+#original {
+	border-color: #b6b6b6;
+	border-width: 1px;
+	border-style: solid;
+	background-color: #e6e6e6;
+}
+
+#bottom {
+	position: absolute;
+	left: 10px;
+	right: 10px;
+	height:30px;
+	bottom: 0;
+	text-align: right;
+	overflow: hidden;
+}
