@@ -71,9 +71,8 @@ if ($sel_lang) { // Specific status page
 </tr></thead>
 <tbody>
 <?php
-	$req = db_query('
-		SELECT doc_id, name, path_original, path_translations, strings_count, ' . "
-			count_${sel_lang}, count_fuzzy_${sel_lang} FROM " . DB_DOCS . '
+	$req = db_query('SELECT doc_id, name, path_original, path_translations, strings_count, ' . "
+			\"count_${sel_lang}\", \"count_fuzzy_${sel_lang}\" FROM " . DB_DOCS . '
 		ORDER BY name ASC');
 	while ($row = db_fetch($req)) {
 		$doc_id = $row['doc_id'];
@@ -113,7 +112,7 @@ if ($sel_lang) { // Specific status page
 	$sql = 'SELECT doc_id, name, strings_count, path_translations';
 	$count_langs = count($language_names);
 	foreach($language_names as $code => $name) {
-		$sql .= ", count_$code, count_fuzzy_$code";
+		$sql .= ", \"count_$code\", \"count_fuzzy_$code\"";
 		echo "<th>$name</th>";
 	}
 	echo "\n</tr></thead>\n";

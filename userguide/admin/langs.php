@@ -15,16 +15,11 @@ if (isset($_GET['del']) and strlen($del) >= 2 and strlen($del) <= 5) {
 			WHERE lang_code = ?", array($lang_code));
 
 		if (db_num_rows($result) > 0) {
-			db_query('ALTER TABLE ' . DB_DOCS . "
-				DROP `count_$lang_code`");
-			db_query('ALTER TABLE ' . DB_DOCS . "
-				DROP `count_fuzzy_$lang_code`");
-			db_query('ALTER TABLE ' . DB_DOCS . "
-				DROP `is_dirty_$lang_code`");
-			db_query('ALTER TABLE ' . DB_STRINGS . "
-				DROP `translation_$lang_code`");
-			db_query('ALTER TABLE ' . DB_STRINGS . "
-				DROP `is_fuzzy_$lang_code`");
+			db_query('ALTER TABLE ' . DB_DOCS . " DROP \"count_$lang_code\"");
+			db_query('ALTER TABLE ' . DB_DOCS . " DROP \"count_fuzzy_$lang_code\"");
+			db_query('ALTER TABLE ' . DB_DOCS . " DROP \"is_dirty_$lang_code\"");
+			db_query('ALTER TABLE ' . DB_STRINGS . " DROP \"translation_$lang_code\"");
+			db_query('ALTER TABLE ' . DB_STRINGS . " DROP \"is_fuzzy_$lang_code\"");
 		}
 		redirect('langs.php');
 	} else if (isset($_POST['confirm_cancel'])) {
@@ -49,8 +44,7 @@ if (isset($_POST['update_status'])) {
 
 	db_query('UPDATE ' . DB_LANGS . ' SET is_disabled = 0 WHERE TRUE');
 	if (count($dis_list)) {
-		db_query('
-			UPDATE ' . DB_LANGS . '
+		db_query('UPDATE ' . DB_LANGS . '
 			SET is_disabled = 1
 			WHERE lang_code = ' . implode(' OR lang_code = ', $dis_list));
 	}
@@ -66,20 +60,19 @@ if (isset($_POST['update_status'])) {
 
 		$lang_code = validate_lang($lang_code);
 
-		db_query('
-			INSERT INTO ' . DB_LANGS . '
+		db_query('INSERT INTO ' . DB_LANGS . '
 			(lang_code, lang_name, loc_name) ' . "
 			VALUES (?, ?, ?)", array($lang_code, $lang_name, $lang_loc_name));
 		db_query('ALTER TABLE ' . DB_DOCS . "
-			ADD `count_$lang_code` INT UNSIGNED NOT NULL DEFAULT '0'");
+			ADD \"count_$lang_code\" INT NOT NULL DEFAULT '0'");
 		db_query('ALTER TABLE ' . DB_DOCS . "
-			ADD `count_fuzzy_$lang_code` INT UNSIGNED NOT NULL DEFAULT '0'");
+			ADD \"count_fuzzy_$lang_code\" INT NOT NULL DEFAULT '0'");
 		db_query('ALTER TABLE ' . DB_DOCS . "
-			ADD `is_dirty_$lang_code` BOOLEAN NOT NULL DEFAULT '1'");
+			ADD \"is_dirty_$lang_code\" smallint NOT NULL DEFAULT '1'");
 		db_query('ALTER TABLE ' . DB_STRINGS . "
-			ADD `translation_$lang_code` TEXT collate utf8_bin NOT NULL");
+			ADD \"translation_$lang_code\" TEXT NOT NULL DEFAULT ''");
 		db_query('ALTER TABLE ' . DB_STRINGS . "
-			ADD `is_fuzzy_$lang_code` BOOL NOT NULL DEFAULT '0'");
+			ADD \"is_fuzzy_$lang_code\" smallint NOT NULL DEFAULT '0'");
 
 		$lang_code = '';
 		$lang_name = '';
@@ -87,8 +80,7 @@ if (isset($_POST['update_status'])) {
 
 		echo '<div class="box-info">New language added successfully.</div>';
 	} else {
-		echo '<div class="box-stop">Adding language failed: Incorrect ' .
-		'parameters.</div>';
+		echo '<div class="box-stop">Adding language failed: Incorrect parameters.</div>';
 	}
 }
 ?>

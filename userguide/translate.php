@@ -50,9 +50,8 @@ if (isset($_POST['translate_doc']) and isset($_POST['translate_string'])
 	if (!check_xml_tags($text, $source_text))
 		die('diffxml');
 
-	db_query('
-		UPDATE ' . DB_STRINGS . "
-		SET translation_$lang=?, is_fuzzy_$lang = ?
+	db_query('UPDATE ' . DB_STRINGS . "
+		SET \"translation_$lang\"=?, \"is_fuzzy_$lang\" = ?
 		WHERE source_md5 = ?", array($text, $is_fuzzy, $orig_md5));
 
 	$req = db_query('SELECT doc_id FROM ' . DB_STRINGS . " WHERE source_md5 = ?", array($orig_md5));
@@ -64,30 +63,32 @@ if (isset($_POST['translate_doc']) and isset($_POST['translate_string'])
 	}
 
 	$ids_list = implode(', ', $updated_ids);
-	db_query('
-		UPDATE ' . DB_DOCS . "
-		SET is_dirty_$lang = 1
+	db_query('UPDATE ' . DB_DOCS . "
+		SET \"is_dirty_$lang\" = 1
 		WHERE doc_id IN ($ids_list)");
 
 	// Log
 	$time = time();
 	$delay = $time - 5 * 60;
-	$result = db_query('
-		UPDATE ' . DB_LOG . '
-		SET log_trans_number = log_trans_number + 1' . "
+	$result = db_query('SELECT log_id FROM ' . DB_LOG . "
 		WHERE log_user = ? AND log_time > ? AND log_doc = ?
-			AND log_action = 'trans' AND log_trans_lang = ? LIMIT 1",
+		AND log_action = 'trans' AND log_trans_lang = ? LIMIT 1",
 		array($user_id, $delay, $doc_id, $lang));
 
-	if (!db_num_rows($result))
+	if (!db_num_rows($result)) {
 		db_query('
 			INSERT INTO ' . DB_LOG . '
 			(log_user, log_time, log_action, log_doc, log_trans_number,
 				log_trans_lang) ' . "
 			VALUES (?, ?, ?, ?, ?, ?)", array($user_id, $time, 'trans', $doc_id, 1, $lang));
+	} else {
+		$row = db_fetch($result);
+		db_query('UPDATE ' . DB_LOG . '
+			SET log_trans_number = log_trans_number + 1 WHERE log_id = ?',
+			array($row['log_id']));
+	}
 
-	db_query('
-		UPDATE ' . DB_USERS . '
+	db_query('UPDATE ' . DB_USERS . '
 		SET num_translations = num_translations + 1 ' . "
 		WHERE user_id = ?", array($user_id));
 
@@ -128,8 +129,7 @@ $doc->load(REF_DIR . '/' . $path_original)
 $col_name = 'translation_' . $lang;
 $col_fuzzy = 'is_fuzzy_' . $lang;
 
-$req = db_query('
-	SELECT string_id, ' . $col_name  . ', ' . $col_fuzzy . '
+$req = db_query('SELECT string_id, "' . $col_name  . '", "' . $col_fuzzy . '"
 	FROM ' . DB_STRINGS . "
 	WHERE doc_id = ?" . '
 	ORDER BY string_id', array($doc_id));
@@ -326,28 +326,26 @@ function update_id($id) {
 	$first = true;
 
 	foreach ($lang_codes as $lang_code) {
-		$req = db_query('
-			SELECT COUNT(*) FROM ' . DB_STRINGS . "
-			WHERE doc_id = ? AND `translation_$lang_code` <> ''
-			AND unused_since IS NULL AND is_fuzzy_$lang_code = 0",
+		$req = db_query('SELECT COUNT(*) FROM ' . DB_STRINGS . "
+			WHERE doc_id = ? AND \"translation_$lang_code\" <> ''
+			AND unused_since IS NULL AND \"is_fuzzy_$lang_code\" = 0",
 		array($id));
 
 		$row = db_fetch($req);
-		$count = $row['COUNT(*)'];
+		$count = $row['count'];
 		db_free($req);
 
-		$req = db_query('
-			SELECT COUNT(*) FROM ' . DB_STRINGS . "
-			WHERE doc_id = ? AND `translation_$lang_code` <> ''
-			AND unused_since IS NULL AND is_fuzzy_$lang_code = 1",
+		$req = db_query('SELECT COUNT(*) FROM ' . DB_STRINGS . "
+			WHERE doc_id = ? AND \"translation_$lang_code\" <> ''
+			AND unused_since IS NULL AND \"is_fuzzy_$lang_code\" = 1",
 		array($id));
 
 		$row = db_fetch($req);
-		$fuzzy = $row['COUNT(*)'];
+		$fuzzy = $row['count'];
 		db_free($req);
 
 		$sql .= ($first ? '' : ', ');
-		$sql .= "count_$lang_code=$count, count_fuzzy_$lang_code=$fuzzy";
+		$sql .= "\"count_$lang_code\"=$count, \"count_fuzzy_$lang_code\"=$fuzzy";
 
 		$first = false;
 	}

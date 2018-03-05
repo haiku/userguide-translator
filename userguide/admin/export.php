@@ -16,20 +16,17 @@ if (isset($_SESSION['exp_cur_lang']) and isset($_SESSION['exp_langs_loc'])
 	and isset($_SESSION['exp_langs'])) {
 
 	$lang_code = $_SESSION['exp_cur_lang'];
-	$lang_name = ($lang_code ? $_SESSION['exp_langs'][$lang_code] : '');
-	$dirty_column = 'is_dirty' . ($lang_code ? '_' . $lang_code : '');
+	$dirty_column = '"is_dirty' . ($lang_code ? '_' . $lang_code : '') . '"';
 	$documents = array();
 	$doc_ids = '';
 
 	if ($lang_code) {
-		$req = db_query('
-			SELECT doc_id, path_original, path_translations, strings_count,
-			count_' . $lang_code . ', count_fuzzy_' . $lang_code . '
+		$req = db_query('SELECT doc_id, path_original, path_translations, strings_count,
+			"count_' . $lang_code . '", "count_fuzzy_' . $lang_code . '"
 			FROM ' . DB_DOCS . "
 			WHERE is_disabled = 0 AND $dirty_column = 1");
 	} else {
-		$req = db_query('
-			SELECT doc_id, path_original, path_translations
+		$req = db_query('SELECT doc_id, path_original, path_translations
 			FROM ' . DB_DOCS . "
 			WHERE is_disabled = 0 AND $dirty_column = 1");
 	}
@@ -44,10 +41,10 @@ if (isset($_SESSION['exp_cur_lang']) and isset($_SESSION['exp_langs_loc'])
 
 	// Non-English: load the translations
 	if ($lang_code and $doc_ids) {
-		$req = db_query('
-			SELECT doc_id, source_md5, string_id, translation_' . $lang_code . '
+		$req = db_query('SELECT doc_id, source_md5, string_id, "translation_' . $lang_code . '"
 			FROM ' . DB_STRINGS . "
-			WHERE doc_id IN ($doc_ids) AND translation_$lang_code <> '' AND unused_since IS NULL AND is_fuzzy_$lang_code = 0");
+			WHERE doc_id IN ($doc_ids) AND \"translation_$lang_code\" <> '' AND
+			unused_since IS NULL AND \"is_fuzzy_$lang_code\" = 0");
 
 		$trans_by_md5 = array();
 		while ($row = db_fetch($req)) {
@@ -97,7 +94,7 @@ if (isset($_SESSION['exp_cur_lang']) and isset($_SESSION['exp_langs_loc'])
 		// all of their translations.
 
 		foreach ($_SESSION['exp_langs_loc'] as $lang => $name) {
-			$sql .= ", is_dirty_$lang = 1";
+			$sql .= ", \"is_dirty_$lang\" = 1";
 		}
 	}
 

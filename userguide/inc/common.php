@@ -54,7 +54,7 @@ $user_id = 0;
 // Connect to the DB
 $db_h = null;
 try {
-	$db_h = new PDO("mysql:host=$db_server;dbname=$db_base_name;charset=utf8",
+	$db_h = new PDO("pgsql:host=$db_server;dbname=$db_base_name;options='--client-encoding=UTF8'",
 		$db_username, $db_password);
 	$db_h->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // TODO: REMOVE!
 } catch (PDOException $e) {

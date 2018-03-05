@@ -6,8 +6,7 @@ $doc_id = (isset($_GET['doc_id']) ? intval($_GET['doc_id']) : 0);
 $lang = (isset($_GET['l']) ? validate_lang($_GET['l']) : '');
 
 if ($lang) {
-	$req = db_query('
-		SELECT lang_name FROM ' . DB_LANGS . "
+	$req = db_query('SELECT lang_name FROM ' . DB_LANGS . "
 		WHERE lang_code = ?", array($lang));
 	$row = db_fetch($req);
 	db_free($req);
@@ -15,8 +14,7 @@ if ($lang) {
 	$lang_name = $row['lang_name'];
 }
 
-$req = db_query('
-	SELECT path_original, path_translations FROM ' . DB_DOCS . "
+$req = db_query('SELECT path_original, path_translations FROM ' . DB_DOCS . "
 	WHERE doc_id = ?", array($doc_id));
 $row = db_fetch($req);
 db_free($req);
@@ -32,10 +30,8 @@ if ($lang) {
 	// Get all the translations
 	$col_name = 'translation_' . $lang;
 
-	$req = db_query('
-		SELECT string_id, ' . $col_name  . ' FROM ' . DB_STRINGS . "
-		WHERE doc_id = ?
-	", array($doc_id));
+	$req = db_query('SELECT string_id, "' . $col_name  . '" FROM ' . DB_STRINGS . "
+		WHERE doc_id = ?", array($doc_id));
 
 	$translations = array();
 	while ($row = db_fetch($req)) {

@@ -38,28 +38,26 @@ function update_id($id) {
 	$first = true;
 
 	foreach ($lang_codes as $lang_code) {
-		$req = db_query('
-			SELECT COUNT(*) FROM ' . DB_STRINGS . "
-			WHERE doc_id = ? AND `translation_$lang_code` <> ''
-			AND unused_since IS NULL AND is_fuzzy_$lang_code = 0",
+		$req = db_query('SELECT COUNT(*) FROM ' . DB_STRINGS . "
+			WHERE doc_id = ? AND \"translation_$lang_code\" <> ''
+			AND unused_since IS NULL AND \"is_fuzzy_$lang_code\" = 0",
 		array($id));
 
 		$row = db_fetch($req);
-		$count = $row['COUNT(*)'];
+		$count = $row['count'];
 		db_free($req);
 
-		$req = db_query('
-			SELECT COUNT(*) FROM ' . DB_STRINGS . "
-			WHERE doc_id = ? AND `translation_$lang_code` <> ''
-			AND unused_since IS NULL AND is_fuzzy_$lang_code = 1",
+		$req = db_query('SELECT COUNT(*) FROM ' . DB_STRINGS . "
+			WHERE doc_id = ? AND \"translation_$lang_code\" <> ''
+			AND unused_since IS NULL AND \"is_fuzzy_$lang_code\" = 1",
 		array($id));
 
 		$row = db_fetch($req);
-		$fuzzy = $row['COUNT(*)'];
+		$fuzzy = $row['count'];
 		db_free($req);
 
 		$sql .= ($first ? '' : ', ');
-		$sql .= "count_$lang_code=$count, count_fuzzy_$lang_code=$fuzzy";
+		$sql .= "\"count_$lang_code\"=$count, \"count_fuzzy_$lang_code\"=$fuzzy";
 
 		$first = false;
 	}

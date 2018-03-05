@@ -159,7 +159,7 @@ if (isset($_POST['new_user_name']) and isset($_POST['new_user_role'])
 <th style="width:5%">Edits</th><th style="width:5%">Translations</th><th style="width:10%">Options</th>
 </tr>
 <?php
-$req = db_query('SELECT * FROM ' . DB_USERS . ' ORDER BY UCASE(username)');
+$req = db_query('SELECT * FROM ' . DB_USERS . ' ORDER BY username');
 while ($row = db_fetch($req)) {
 	if ($row['user_id'] == $user_id) {
 ?>

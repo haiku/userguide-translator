@@ -37,8 +37,7 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 		die("badxml $xml_msg");
 
 	// Update the document
-	$req = db_query('
-		SELECT path_original, name FROM ' . DB_DOCS . "
+	$req = db_query('SELECT path_original, name FROM ' . DB_DOCS . "
 		WHERE doc_id = ?", array($doc_id));
 	$row = db_fetch($req);
 	db_free($req);
@@ -51,8 +50,7 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 
 	// Load all the md5
 	$blocks_md5 = array();
-	$req = db_query('
-		SELECT string_id, source_md5 FROM ' . DB_STRINGS . "
+	$req = db_query('SELECT string_id, source_md5 FROM ' . DB_STRINGS . "
 		WHERE doc_id = ?", array($doc_id));
 	while ($row = db_fetch($req)) {
 		$blocks_md5[$row['source_md5']] = $row['string_id'];
@@ -75,42 +73,36 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 		replace_block_id($doc, $doc, $string_id, $new_block, $blocks_md5[$md5])
 			or die("Unable to replace the block #$string_id with #$blocks_md5[$md5] !");
 
-		db_query('
-			UPDATE ' . DB_STRINGS . "
+		db_query('UPDATE ' . DB_STRINGS . "
 			SET unused_since = NULL
 			WHERE string_id = ?", array($blocks_md5[$md5]));
 
-		db_query('
-			UPDATE ' . DB_STRINGS . "
+		db_query('UPDATE ' . DB_STRINGS . "
 			SET unused_since = ?
 			WHERE string_id = ?", array($time, $string_id));
-
 	} else {
 		$r_norm = 'doc_id';
 		$r_fuzzy = '';
 		$r_to_fuzzy = '';
 		$req = db_query('SELECT lang_code FROM ' . DB_LANGS);
 		while ($row = db_fetch($req)) {
-			$r_norm .= ', translation_' . $row['lang_code'];
-			$r_fuzzy .= ($r_fuzzy ? ', ' : '') . 'is_fuzzy_' .
-				$row['lang_code'];
+			$r_norm .= ', "translation_' . $row['lang_code'] . '"';
+			$r_fuzzy .= ($r_fuzzy ? ', ' : '') . '"is_fuzzy_' .
+				$row['lang_code'] . '"';
 			$r_to_fuzzy .= ($r_to_fuzzy ? ', ' : '') . '1';
 		}
 
 		$fuzzy = !$_POST['dont_mark_fuzzy'];
 		$update = 'source_md5' . ($r_norm ? ', ' : '') . $r_norm . (($fuzzy and $r_fuzzy) ? ', ' . $r_fuzzy : '');
 		$up_to = "'$md5'" . ($r_norm ? ', ' : '') . $r_norm . (($fuzzy and $r_to_fuzzy) ? ', ' . $r_to_fuzzy : '');
-		db_query('
-			INSERT INTO ' . DB_STRINGS . "
-			($update)
-				SELECT $up_to FROM " . DB_STRINGS . "
-				WHERE string_id = ?", array($string_id));
+		db_query('INSERT INTO ' . DB_STRINGS . " ($update)
+			SELECT $up_to FROM " . DB_STRINGS . "
+			WHERE string_id = ?", array($string_id));
 		$new_id = db_insert_id();
 		replace_block_id($doc, $doc, $string_id, $new_block, $new_id)
 			or die('unable to replace');
 
-		db_query('
-			UPDATE ' . DB_STRINGS . "
+		db_query('UPDATE ' . DB_STRINGS . "
 			SET unused_since = ?
 			WHERE string_id = ?", array($time, $string_id));
 	}
@@ -123,20 +115,22 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 
 	// Log
 	$delay = $time - 5 * 60;
-	$result = db_query('
-		UPDATE ' . DB_LOG . '
-		SET log_trans_number = log_trans_number + 1' . "
+	$result = db_query('SELECT log_id FROM ' . DB_LOG . "
 		WHERE log_user = ? AND log_time > ? AND log_doc = ?
 			AND log_action = 'ed_block' LIMIT 1", array($user_id, $delay, $doc_id));
 
-	if (!db_num_rows($result))
-		db_query('
-			INSERT INTO ' . DB_LOG . '
+	if (!db_num_rows($result)) {
+		db_query('INSERT INTO ' . DB_LOG . '
 			(log_user, log_time, log_action, log_doc, log_trans_number) ' . "
 			VALUES (?, ?, ?, ?, ?)", array($user_id, $time, 'ed_block', $doc_id, 1));
+	} else {
+		$row = db_fetch($result);
+		db_query('UPDATE ' . DB_LOG . '
+			SET log_trans_number = log_trans_number + 1 WHERE log_id = ?',
+			array($row['log_id']));
+	}
 
-	db_query('
-		UPDATE ' . DB_USERS . '
+	db_query('UPDATE ' . DB_USERS . '
 		SET num_edits = num_edits + 1 ' . "
 		WHERE user_id = ?", array($user_id));
 

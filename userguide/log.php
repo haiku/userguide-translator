@@ -9,7 +9,7 @@ include('inc/start_html.php');
 <ul>
 <?php
 
-$db_result = db_query('SELECT count(log_id) as count FROM ' . DB_LOG . ' WHERE 1');
+$db_result = db_query('SELECT count(log_id) as count FROM ' . DB_LOG);
 
 $db_row = db_fetch($db_result);
 $num_logs = $db_row['count'];
@@ -38,7 +38,7 @@ $req = db_query('
 	LEFT JOIN ' . DB_DOCS . ' d ON l.log_doc = doc_id
 	LEFT JOIN ' . DB_LANGS . ' x ON l.log_trans_lang = lang_code ' . "
 	WHERE l.log_user = u.user_id " . '
-	ORDER BY l.log_time DESC LIMIT ' . ($page-1)*$num_per_page.', '.$num_per_page);
+	ORDER BY l.log_time DESC LIMIT ' . $num_per_page .' OFFSET '. ($page-1)*$num_per_page);
 
 $time = time();
 

@@ -236,25 +236,22 @@ Do not invalidate translations for this item</label>
 
 	$edited_doc->save($file_path) or die('Unable to save the XML document !');
 
-	$req = db_query('
-		SELECT COUNT(*) FROM ' . DB_STRINGS . "
+	$req = db_query('SELECT COUNT(*) FROM ' . DB_STRINGS . "
 		WHERE doc_id = ? AND unused_since IS NULL", array($doc_id));
 
 	$row = db_fetch($req);
-	$count = $row['COUNT(*)'];
+	$count = $row['count'];
 	db_free($req);
 
 	db_query('UPDATE ' . DB_DOCS . "
 		SET strings_count = ?, is_dirty = 1 WHERE doc_id = ?", array($count, $doc_id));
 
 	// Log
-	db_query('
-		INSERT INTO ' . DB_LOG . '
+	db_query('INSERT INTO ' . DB_LOG . '
 		(log_user, log_time, log_action, log_doc) ' . "
 		VALUES (?, ?, ?, ?)", array($user_id, $time, 'mod', $doc_id));
 
-	db_query('
-		UPDATE ' . DB_USERS . '
+	db_query('UPDATE ' . DB_USERS . '
 		SET num_edits = num_edits + 1 ' . "
 		WHERE user_id = ?", array($user_id));
 

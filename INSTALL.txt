@@ -5,7 +5,7 @@ Create config file
 
 Install database
 ----------------
-1. Install MySQL.
+1. Install PostgreSQL.
 2. Create a database and user.
 3. Import db_structure.sql into the database.
 4. Create a default user with Administrative privileges. Password is SHA1-hashed, no salt.
@@ -15,5 +15,3 @@ Install Git
 1. Install Git.
 2. mkdir source_docs && cd source_docs
 3. git init .
-
-(TODO: need info on svn->git migration.)
