@@ -8,6 +8,5 @@ $top = <<<EOD
 • <a href="docs.php">Documents</a>
 • <a href="resources.php">Resources</a>
 • <a href="export.php">Export</a>
-• <a href="logs.php">Logs</a>
 EOD;
 ?>
