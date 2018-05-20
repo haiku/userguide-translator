@@ -4,34 +4,34 @@ function git_pull($path) {
 	if (1) return; // Pull/push disabled for now.
 	$path = escapeshellarg($path);
 
-	run_command("pushd $path && git pull --ff-only 2>&1 && popd");
+	run_command("git -C $path pull --ff-only 2>&1");
 }
 function git_push($path) {
 	if (1) return; // Pull/push disabled for now.
 	$path = escapeshellarg($path);
 
-	run_command("pushd $path && git push 2>&1 && popd");
+	run_command("git -C $path push 2>&1");
 }
 
 function git_add($thepath) {
 	$path = escapeshellarg(basename($thepath));
 	$repo = escapeshellarg(dirname($thepath));
 
-	run_command("pushd $repo && git add $path 2>&1 && popd");
+	run_command("git -C $repo add $path 2>&1");
 }
 
 function git_rm($thepath) {
 	$path = escapeshellarg(basename($thepath));
 	$repo = escapeshellarg(dirname($thepath));
 
-	run_command("pushd $repo && git rm $path 2>&1 && popd");
+	run_command("git -C $repo rm $path 2>&1");
 }
 
 function git_commit($path, $comment) {
 	$path = escapeshellarg($path);
 	$comment = escapeshellarg($comment);
 
-	run_command("pushd $path && git commit -m $comment 2>&1 && popd");
+	run_command("git -C $path commit -m $comment 2>&1");
 }
 
 function git_log($thepath) {
@@ -39,7 +39,7 @@ function git_log($thepath) {
 	$repo = escapeshellarg(dirname($thepath));
 	git_pull($thepath);
 
-	$data = run_command("pushd $repo && git log --format=\"%H\t\t\t\t%aI\t\t\t\t%s\" $path && popd");
+	$data = run_command("git -C $repo log --format=\"%H\t\t\t\t%aI\t\t\t\t%s\" $path");
 
 	$entries = explode("\n", $data);
 	if (!$entries)
@@ -66,7 +66,7 @@ function git_cat($thepath, $commit) {
 	$path = escapeshellarg(basename($thepath));
 	$repo = escapeshellarg(dirname($thepath));
 
-	$output = run_command("pushd $repo && git show $commit:./$path 2>&1 && popd");
+	$output = run_command("git -C $repo show $commit:./$path 2>&1");
 
 	if (!$output)
 		return false;
@@ -77,17 +77,17 @@ function git_cat($thepath, $commit) {
 
 function run_command($command) {
 	$return = 0;
-	ob_start();
-	passthru($command, $return);
-	$output = ob_get_clean();
+	$output = array();
+	exec($command, $output, $return);
+	$output = implode("\n", $output);
 
 	if ($return != 0) {
 		$command = htmlspecialchars($command);
 		$output = htmlspecialchars($output);
 		error_box('Git Error', <<<EOD
-An error occured during the execution of the Git command:
-<pre>$command
-$output</pre>
+An error ($return) occured during the execution of the Git command:
+<pre>$command</pre>
+<pre>$output</pre>
 Please contact a website administrator.
 EOD
 );
