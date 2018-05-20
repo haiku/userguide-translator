@@ -183,7 +183,7 @@ if (isset($_GET['src_path']))
 	$src_path = $_GET['src_path'];
 ?>
 <br/>
-<form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post" enctype="multipart/form-data">
+<form action="" method="post" enctype="multipart/form-data">
 <dl class="fieldset">
 <dt><span>Add Resource(s)</span></dt>
 <dd>

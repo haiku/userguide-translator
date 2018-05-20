@@ -298,7 +298,7 @@ $class = ($error ? 'warning' : 'no_warning');
 ?>
 </div>
 </div>
-<form action="<?=$_SERVER['REQUEST_URI']?>" method="post">
+<form action="" method="post">
 <?php
 if ($error) {
 ?>

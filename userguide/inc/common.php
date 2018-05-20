@@ -120,8 +120,7 @@ function role_needed($role) {
 	global $path_prefix, $user_role, $user_logged_in;
 	if ($user_role < $role) {
 		if (!$user_logged_in)
-			login_box('You need to be logged in in order to access this page.',
-				$_SERVER['REQUEST_URI']);
+			login_box('You need to be logged in in order to access this page.', '/');
 
 		header('Status: 403 Forbidden');
 		error_box('Access Denied',
