@@ -16,9 +16,9 @@ of the Haiku project.</p>
 <a href="https://dev.haiku-os.org/wiki/i18n">Wiki</a> and learn more on how to
 <a href="https://dev.haiku-os.org/wiki/i18n/UserGuide">get involved</a>.</p>
 <p>Or you can also browse the
-<a href="export/docs/userguide/en/contents.html">work-in-progress version of the User Guide</a> here.</p>
+<a href="/userguide/export/docs/userguide/en/contents.html">work-in-progress version of the User Guide</a> here.</p>
 <br/>
-<form action="documents.php?login" method="post">
+<form action="/userguide/documents.php?login" method="post">
 <dl class="fieldset">
 <dt><span>Login</span></dt>
 <dd>
