@@ -22,7 +22,7 @@ function start_hook() {
 		$id = intval($row['doc_id']);
 
 		$req2 = db_query('
-			SELECT DISTINCT ON (l.log_user, l.log_trans_lang)
+			SELECT DISTINCT ON (u.username, l.log_user, l.log_trans_lang)
 				u.username, u.real_name, l.log_trans_lang
 			FROM translate_log l
 				INNER JOIN translate_users u ON l.log_user = u.user_id ' . "
@@ -31,7 +31,7 @@ function start_hook() {
 		", array($id, 'trans'));
 
 		while ($row2 = db_fetch($req2)) {
-			$lang = $row2['log_trans_lang'];
+			$lang = trim($row2['log_trans_lang']);
 			$name = ($row2['real_name'] ? $row2['real_name'] : $row2['username']);
 
 			if (!isset($_SESSION['exp_doc_translators'][$id]))
