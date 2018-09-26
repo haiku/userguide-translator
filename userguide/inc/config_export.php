@@ -22,11 +22,12 @@ function start_hook() {
 		$id = intval($row['doc_id']);
 
 		$req2 = db_query('
-			SELECT DISTINCT u.username, u.real_name, l.log_trans_lang
-			FROM translate_users u, translate_log l ' . "
+			SELECT DISTINCT ON (l.log_user, l.log_trans_lang)
+				u.username, u.real_name, l.log_trans_lang
+			FROM translate_log l
+				INNER JOIN translate_users u ON l.log_user = u.user_id ' . "
 			WHERE l.log_doc = ?
 				AND l.log_action = ?
-				AND l.log_user = u.user_id
 		", array($id, 'trans'));
 
 		while ($row2 = db_fetch($req2)) {
