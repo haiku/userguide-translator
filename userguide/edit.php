@@ -220,8 +220,8 @@ Do not invalidate translations for this item</label>
 	$r_to_fuzzy = '';
 	while ($row = db_fetch($req)) {
 		$r_norm .= ', "translation_' . $row['lang_code'] . '"';
-		$r_fuzzy .= ($r_fuzzy ? ', ' : '') . 'is_fuzzy_' .
-			$row['lang_code'];
+		$r_fuzzy .= ($r_fuzzy ? ', ' : '') . '"is_fuzzy_' .
+			$row['lang_code'] . '"';
 		$r_to_fuzzy .= ($r_to_fuzzy ? ', ' : '') . '1';
 	}
 	db_free($req);
