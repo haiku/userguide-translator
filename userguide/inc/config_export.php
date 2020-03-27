@@ -92,7 +92,7 @@ function document_hook($path_original, $path_translations, $doc_id, $lang_code, 
 		$menu = <<<EOD
 
 <ul class="lang-menu">
-<li class="now"><img src="$flags_path$lang_code.png" alt="" /> $langs[$lang_code]</li>
+<li class="now">$langs[$lang_code]&nbsp;<span class="dropdown-caret">&#9660;</span></li>
 
 EOD;
 		foreach ($langs as $current_code => $name) {
@@ -105,7 +105,7 @@ EOD;
 				$url = str_replace('{LANG}', $current_code, $trans_url);
 
 			$menu .= <<<EOD
-<li><a href="$url"><img src="$flags_path$current_code.png" alt="" />$langs[$current_code]</a></li>
+<li><a href="$url">$langs[$current_code]</a></li>
 
 EOD;
 		}
