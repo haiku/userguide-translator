@@ -251,7 +251,7 @@ function generate_password() {
 
 
 function new_account_email($username, $email, $password) {
-	global $base_url;
+	global $full_base_url;
 	$to = "$email";
 	$date = date('r');
 	$subject = 'Your account on the Haiku Documentation Translate Tool';
@@ -277,14 +277,14 @@ Password: $password
 You can change your password in the settings panel.
 
 -------------------
-Haiku Documentation Translate Tool - $base_url
+Haiku Documentation Translate Tool - $full_base_url
 EOM;
 
 	return mail($to, $subject, $message, $headers);
 }
 
 function reset_password_email($username, $email, $password) {
-	global $base_url;
+	global $full_base_url;
 	$to = "$username <$email>";
 	$date = date('r');
 	$subject = 'Haiku Documentation Translate Tool — Password Reset';
@@ -309,7 +309,7 @@ Password: $password
 You can change your password in the settings panel.
 
 -------------------
-Haiku Documentation Translate Tool - $base_url
+Haiku Documentation Translate Tool - $full_base_url
 EOM;
 
 	return mail($to, $subject, $message, $headers);

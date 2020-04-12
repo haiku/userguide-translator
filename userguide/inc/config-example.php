@@ -6,7 +6,8 @@ $db_password = '';
 $db_base_name = '';
 
 // Common settings
-$base_url = 'http://i18n-next.haiku-os.org/userguide';
+$base_url = '/userguide';
+$full_base_url = 'http://i18n-next.haiku-os.org' . $base_url;
 
 $use_system_glob = true; // Disable this if it does not work
 
