@@ -35,86 +35,99 @@ function endEditionEvent(clickOK) {
 
 		translated_strings[id] = trans;
 
-		var send_ok = false;
-
 		var xml_http = new XMLHttpRequest();
 
 		var encoded_source = encodeURI(source_strings[id]).replace(/&/g, '%26').replace(/\+/g, '%2B');
 		var encoded_translation = encodeURI(trans).replace(/&/g, '%26').replace(/\+/g, '%2B');
 
-		xml_http.open('POST', base_url + '/translate.php', false);
+		xml_http.open('POST', base_url + '/translate.php', true);
+		xml_http.addEventListener("load", translateSaveFinished);
 		xml_http.setRequestHeader('Content-Type',
 			'application/x-www-form-urlencoded');
 		xml_http.send('translate_lang=' + lang + '&translate_doc=' + doc_id +
 			'&translate_string=' + id + '&translate_text=' + encoded_translation +
 			'&translate_source=' + encoded_source + '&is_fuzzy=' + (mark_fuzzy ? '1' : '0'));
 
-		edit_window.focus();
-
-		var resp = xml_http.responseText;
-
-		if (resp.substring(0, 7) == 'badxml ')
-			edit_window.alert('The server rejected the translation because of XML ' +
-				"parsing errors :\n" + xml_http.responseText.substring(3) +
-				"\n" + 'Check the XML tags used in your translation.');
-		else if (resp.substring(0, 7) == 'diffxml')
-			edit_window.alert('The server rejected the translation because the ' +
-				'XML code used in it differs from the original string.' + "\n" +
-				'Check the XML tags used in your translation.');
-		else if (resp.substring(0, 6) == 'interr')
-			edit_window.alert('The original XML code seems corrupt. Please contact ' +
-				'an administrator.' + "\n");
-		else if (resp.substring(0, 2) != 'ok')
-			edit_window.alert('There was an error sending the translation. Please ' +
-			'retry.' + "\n" + xml_http.responseText);
-		else
-			send_ok = true;
-
-		is_fuzzy[id] = mark_fuzzy;
-
-		for (var i = 0 ; i < linked_nodes[id].length ; i++) {
-			linked_nodes[id][i].innerHTML = trans;
-			linked_nodes[id][i].style.border = '1px dotted ' +
-				(send_ok ? color_translated : color_unsent);
-			linked_nodes[id][i].style.backgroundColor = null;
-
-			if (send_ok) {
-				if (mark_fuzzy) {
-					linked_nodes[id][i].style.border = '1px dotted ' + color_fuzzy;
-					linked_nodes[id][i].style.backgroundColor = bg_fuzzy;
-				} else {
-					linked_nodes[id][i].style.border = '1px dotted ' + color_translated;
-					linked_nodes[id][i].style.backgroundColor = null;
-				}
-			} else {
-				linked_nodes[id][i].style.border = '1px dotted ' + color_unsent;
-			}
-		}
-
-		if (!send_ok) {
-			edit_window.focus();
-			return;
-		}
-
-		if (edit_window.document.getElementById('auto_cont').checked) {
-			var current_id = window.edited_node.getAttribute('_internal_id');
-			while (current_id < all_nodes.length) {
-				var t_id = all_nodes[current_id].getAttribute(attr_trans_id);
-				if (translated_strings[t_id] == '') {
-					next_node = all_nodes[current_id];
-					break;
-				}
-				current_id++;
-			}
-		}
-
+		xml_http.userguide_string_id = id;
+		xml_http.userguide_trans = trans;
+		xml_http.userguide_mark_fuzzy = mark_fuzzy;
+		return;
 	} else {
 		window.edited_node.innerHTML = translated_strings[id];
 		if (window.edited_node.innerHTML == ''
 			|| window.edited_node.innerText == '')
 			window.edited_node.innerHTML = source_strings[id];
+		translateBlockDone(next_node);
+	}
+}
+
+function translateSaveFinished() {
+	edit_window.focus();
+
+	var resp = this.responseText;
+	var id = this.userguide_string_id;
+	var next_node;
+
+	var send_ok;
+	if (resp.substring(0, 7) == 'badxml ')
+		edit_window.alert('The server rejected the translation because of XML ' +
+			"parsing errors :\n" + this.responseText.substring(3) +
+			"\n" + 'Check the XML tags used in your translation.');
+	else if (resp.substring(0, 7) == 'diffxml')
+		edit_window.alert('The server rejected the translation because the ' +
+			'XML code used in it differs from the original string.' + "\n" +
+			'Check the XML tags used in your translation.');
+	else if (resp.substring(0, 6) == 'interr')
+		edit_window.alert('The original XML code seems corrupt. Please contact ' +
+			'an administrator.' + "\n");
+	else if (resp.substring(0, 2) != 'ok')
+		edit_window.alert('There was an error sending the translation. Please ' +
+		'retry.' + "\n" + this.responseText);
+	else
+		send_ok = true;
+
+	is_fuzzy[id] = this.userguide_mark_fuzzy;
+
+	for (var i = 0 ; i < linked_nodes[id].length ; i++) {
+		linked_nodes[id][i].innerHTML = this.userguide_trans;
+		linked_nodes[id][i].style.border = '1px dotted ' +
+			(send_ok ? color_translated : color_unsent);
+		linked_nodes[id][i].style.backgroundColor = null;
+
+		if (send_ok) {
+			if (this.userguide_mark_fuzzy) {
+				linked_nodes[id][i].style.border = '1px dotted ' + color_fuzzy;
+				linked_nodes[id][i].style.backgroundColor = bg_fuzzy;
+			} else {
+				linked_nodes[id][i].style.border = '1px dotted ' + color_translated;
+				linked_nodes[id][i].style.backgroundColor = null;
+			}
+		} else {
+			linked_nodes[id][i].style.border = '1px dotted ' + color_unsent;
+		}
 	}
 
+	if (!send_ok) {
+		edit_window.focus();
+		return;
+	}
+
+	if (edit_window.document.getElementById('auto_cont').checked) {
+		var current_id = window.edited_node.getAttribute('_internal_id');
+		while (current_id < all_nodes.length) {
+			var t_id = all_nodes[current_id].getAttribute(attr_trans_id);
+			if (translated_strings[t_id] == '') {
+				next_node = all_nodes[current_id];
+				break;
+			}
+			current_id++;
+		}
+	}
+
+	translateBlockDone(next_node);
+}
+
+function translateBlockDone(next_node) {
 	if (next_node) {
 		window.edited_node = next_node;
 		var id = next_node.getAttribute(attr_trans_id);
