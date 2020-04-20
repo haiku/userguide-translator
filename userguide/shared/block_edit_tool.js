@@ -23,8 +23,6 @@ function endEditionEvent(clickOK) {
 
 		source_strings[id] = new_text;
 
-		var send_ok = false;
-
 		var xml_http = new XMLHttpRequest();
 
 		var encoded_text = encodeURI(new_text).replace(/&/g, '%26');
