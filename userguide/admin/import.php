@@ -108,8 +108,10 @@ if (isset($_POST['add_documents']) and $src_path and $trans_path
 			WHERE doc_id = ?", array($num_translations, $doc_id));
 	}
 
-	git_commit('../' . REF_DIR, 'Imported documents.');
-	git_push('../' . REF_DIR);
+	if (!empty($imported)) {
+		git_commit('../' . REF_DIR, 'Imported documents.');
+		git_push('../' . REF_DIR);
+	}
 
 	include('../inc/start_html.php');
 	if (!empty($imported)) {
