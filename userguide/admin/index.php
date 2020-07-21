@@ -21,8 +21,6 @@ include('../inc/start_html.php');
 	<dd>Add, remove, modify external resources.</dd>
 <dt><a href="export.php">Export Documents</a></dt>
 	<dd>Export edited and translated documents to the repository.</dd>
-<dt><a href="logs.php">Log Viewer</a></dt>
-	<dd>View server logs.</dd>
 </dl>
 <?php
 include('../inc/end_html.php');
