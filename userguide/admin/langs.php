@@ -87,9 +87,12 @@ if (isset($_POST['update_status'])) {
 <h1>Languages</h1>
 <form action="" method="post">
 <table class="list">
+<thead>
 <tr>
 <th>English name</th><th>Localized name</th><th style="width:2em">Disabled</th><th style="width:5em">Options</th>
 </tr>
+</thead>
+<tbody>
 <?php
 $req = db_query('SELECT * FROM ' . DB_LANGS);
 if (db_num_rows($req) > 0) {
@@ -115,6 +118,7 @@ if (db_num_rows($req) > 0) {
 <input type="submit" name="update_status" value="Update status" />
 </td>
 </tr>
+</tbody>
 </table>
 <dl class="fieldset">
 <dt><span>Add new language</span></dt>

@@ -107,9 +107,12 @@ if (isset($_POST['text'])) {
 		if (!empty($blocks['add'])) {
 ?>
 <table class="list">
+<thead>
 <tr>
 <th>Added blocks</th>
 </tr>
+</thead>
+<tbody>
 <?php
 			foreach ($blocks['add'] as $added_block) {
 ?>
@@ -119,6 +122,7 @@ if (isset($_POST['text'])) {
 <?php
 			}
 ?>
+</tbody>
 </table>
 <br/>
 <?php
@@ -126,9 +130,12 @@ if (isset($_POST['text'])) {
 		if (!empty($blocks['mod'])) {
 ?>
 <table class="list" style="overflow-x:auto">
+<thead>
 <tr>
 <th>Modified blocks - Original</th><th>New</th>
 </tr>
+</thead>
+<tbody>
 <?php
 			foreach ($blocks['mod'] as $id => $modif_block) {
 				$original_block = nl2br(htmlspecialchars($modif_block['p']));
@@ -145,6 +152,7 @@ Do not invalidate translations for this item</label>
 <?php
 			}
 ?>
+</tbody>
 </table>
 <br/>
 <?php
@@ -152,9 +160,12 @@ Do not invalidate translations for this item</label>
 		if (!empty($blocks['del'])) {
 ?>
 <table class="list">
+<thead>
 <tr>
 <th>Deleted blocks</th>
 </tr>
+</thead>
+<tbody>
 <?php
 			foreach ($blocks['del'] as $del_block) {
 ?>
@@ -164,6 +175,7 @@ Do not invalidate translations for this item</label>
 <?php
 			}
 ?>
+</tbody>
 </table>
 <br/>
 <?php
