@@ -373,6 +373,11 @@ table.list {
 	width: 100%;
 }
 
+table.list thead {
+	position: sticky;
+	top: 0;
+}
+
 table.list th {
 	color: black;
 	background: -webkit-gradient(linear, left top, left bottom, from(#F7F7F7), to(#C6C6C6));
