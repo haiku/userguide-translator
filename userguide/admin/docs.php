@@ -80,9 +80,12 @@ include('../inc/start_html.php');
 <form action="" method="post">
 <h1><?=$title?></h1>
 <table class="list">
+<thead>
 <tr>
 <th>&nbsp;</th><th>Name</th><th>Source path</th><th>Translations path</th><th>Disabled</th>
 </tr>
+</thead>
+<tbody>
 <?php
 $req = db_query('SELECT doc_id, name, path_original, path_translations, is_disabled ' . '
 	FROM ' . DB_DOCS);
@@ -107,6 +110,7 @@ while ($row = db_fetch($req)) {
 <input type="submit" name="delete_selection" value="Delete selection" />
 </td>
 </tr>
+</tbody>
 </table>
 </form>
 <?php

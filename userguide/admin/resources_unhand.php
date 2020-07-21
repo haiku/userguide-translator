@@ -129,9 +129,12 @@ function select_matching() {
 </script>
 <form action="" method="post">
 <table class="list">
+<thead>
 <tr>
 <th style="width:20px">&nbsp;</th><th>File name</th>
 </tr>
+</thead>
+<tbody>
 <?php
 foreach ($unhandled_paths as $path) {
 	$path = htmlspecialchars($path);
@@ -153,6 +156,7 @@ foreach ($unhandled_paths as $path) {
 <span id="match_status"></span>
 </td>
 </tr>
+</tbody>
 </table>
 </form>
 

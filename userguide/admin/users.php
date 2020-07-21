@@ -154,10 +154,13 @@ if (isset($_POST['new_user_name']) and isset($_POST['new_user_role'])
 <form action="" method="post">
 <h1>Users</h1>
 <table class="list">
+<thead>
 <tr>
 <th style="width:20px">&nbsp;</th><th>Name</th><th>Email</th><th style="width:5%">Role</th>
 <th style="width:5%">Edits</th><th style="width:5%">Translations</th><th style="width:10%">Options</th>
 </tr>
+</thead>
+<tbody>
 <?php
 $req = db_query('SELECT * FROM ' . DB_USERS . ' ORDER BY username');
 while ($row = db_fetch($req)) {
@@ -203,6 +206,7 @@ while ($row = db_fetch($req)) {
 <input type="submit" name="delete_selection" value="Delete selection" />
 </td>
 </tr>
+</tbody>
 </table>
 </form>
 <br/>
