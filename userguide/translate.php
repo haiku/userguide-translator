@@ -162,6 +162,8 @@ $js .= get_source_strings($doc);
 
 db_free($req);
 
+$doc->loadXML(str_replace('{LANG_CODE}', $lang, $doc->saveXML()));
+
 $head = $doc->getElementsByTagName('head')->item(0);
 
 // Redirect all links of the page to the translated version

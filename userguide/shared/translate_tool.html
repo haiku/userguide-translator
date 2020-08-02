@@ -45,7 +45,7 @@ function updateEvent() {
 	}
 
 	var previous = window.opener.edited_node.innerHTML;
-	window.opener.edited_node.innerHTML = text;
+	window.opener.edited_node.innerHTML = window.opener.formatText(text);
 
 	if (window.opener.edited_node.innerText == '')
 		window.opener.edited_node.innerHTML = previous;

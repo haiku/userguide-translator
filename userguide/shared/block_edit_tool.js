@@ -38,7 +38,7 @@ function endEditionEvent(clickOK) {
 		xml_http.userguide_new_text = new_text;
 		return;
 	} else {
-		window.edited_node.innerHTML = source_strings[id];
+		window.edited_node.innerHTML = formatText(source_strings[id]);
 	}
 
 	edit_window.close();
@@ -68,7 +68,7 @@ function editSaveFinished() {
 		send_ok = true;
 
 	for (var i = 0 ; i < linked_nodes[id].length ; i++) {
-		linked_nodes[id][i].innerHTML = new_text;
+		linked_nodes[id][i].innerHTML = formatText(new_text);
 		linked_nodes[id][i].style.backgroundColor = null;
 	}
 
@@ -166,6 +166,10 @@ function setProperties(node) {
 	for (var i = 0 ; i < node.childNodes.length ; i++) {
 		setProperties(node.childNodes[i]);
 	}
+}
+
+function formatText(s) {
+	return s.replace(/\{LANG_CODE\}/g, 'en');
 }
 
 window.onload = function() {

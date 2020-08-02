@@ -44,9 +44,10 @@ function updateStatus() {
 	if (!preview_window)
 		return;
 
-	preview_window.document.write(editor.value.replace('<head>',
-		'<head><base href="' + base_dir + '" />'));
-		preview_window.document.close();
+	preview_window.document.write(editor.value
+		.replace('<head>', '<head><base href="' + base_dir + '" />')
+		.replace(/\{LANG_CODE\}/g, 'en'));
+	preview_window.document.close();
 }
 
 function togglePreview() {

@@ -53,10 +53,10 @@ function endEditionEvent(clickOK) {
 		xml_http.userguide_mark_fuzzy = mark_fuzzy;
 		return;
 	} else {
-		window.edited_node.innerHTML = translated_strings[id];
+		window.edited_node.innerHTML = formatText(translated_strings[id]);
 		if (window.edited_node.innerHTML == ''
 			|| window.edited_node.innerText == '')
-			window.edited_node.innerHTML = source_strings[id];
+			window.edited_node.innerHTML = formatText(source_strings[id]);
 		translateBlockDone(next_node);
 	}
 }
@@ -89,7 +89,7 @@ function translateSaveFinished() {
 	is_fuzzy[id] = this.userguide_mark_fuzzy;
 
 	for (var i = 0 ; i < linked_nodes[id].length ; i++) {
-		linked_nodes[id][i].innerHTML = this.userguide_trans;
+		linked_nodes[id][i].innerHTML = formatText(this.userguide_trans);
 		linked_nodes[id][i].style.border = '1px dotted ' +
 			(send_ok ? color_translated : color_unsent);
 		linked_nodes[id][i].style.backgroundColor = null;
@@ -207,10 +207,10 @@ function setProperties(node) {
 					} else if (is_fuzzy[id]) {
 						node.style.border = '1px dotted ' + color_fuzzy;
 						node.style.backgroundColor = bg_fuzzy;
-						node.innerHTML = translated_strings[id];
+						node.innerHTML = formatText(translated_strings[id]);
 					} else {
 						node.style.border = '1px dotted ' + color_translated;
-						node.innerHTML = translated_strings[id];
+						node.innerHTML = formatText(translated_strings[id]);
 					}
 
 					node.onmouseover = mouseOverEvent;
@@ -251,6 +251,10 @@ function setProperties(node) {
 	for (var i = 0 ; i < node.childNodes.length ; i++) {
 		setProperties(node.childNodes[i]);
 	}
+}
+
+function formatText(s) {
+	return s.replace(/\{LANG_CODE\}/g, lang);
 }
 
 window.onload = function() {

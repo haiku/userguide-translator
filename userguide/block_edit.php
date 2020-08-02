@@ -183,6 +183,8 @@ $js .= "const doc_id = $doc_id;\n";
 $js .= "var source_strings = new Array();\n";
 $js .= get_source_strings($doc);
 
+$doc->loadXML(str_replace('{LANG_CODE}', 'en', $doc->saveXML()));
+
 $head = $doc->getElementsByTagName('head')->item(0);
 
 // Set the base dir
