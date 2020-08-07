@@ -81,7 +81,7 @@ function document_hook($path_original, $path_translations, $doc_id, $lang_code, 
 		$orig_url = $back . implode('/', $orig_items);
 		$trans_url = $back . implode('/', $trans_items);
 
-		$generated_text = str_replace('{LANG_CODE}', ($lang_code ? $lang_code : 'en'), $generated_text);
+		$generated_text = replace_placeholders($generated_text, $lang_code);
 
 		if ($lang_code) {
 			$generated_text = preg_replace_callback('!<div class="inner"><span>.*?</span></div>!s', 'header_callback', $generated_text);
