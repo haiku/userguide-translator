@@ -71,7 +71,7 @@ html_set_lang($doc, $lang);
 
 replace_translations($doc, $doc);
 
-echo str_replace('{LANG_CODE}', ($lang ? $lang : 'en'), $doc->saveXML());
+echo replace_placeholders($doc->saveXML(), $lang);
 
 function replace_translations($doc, $node) {
 	global $translations;

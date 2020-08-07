@@ -162,7 +162,7 @@ $js .= get_source_strings($doc);
 
 db_free($req);
 
-$doc->loadXML(str_replace('{LANG_CODE}', $lang, $doc->saveXML()));
+$doc->loadXML(replace_placeholders($doc->saveXML(), $lang));
 
 $head = $doc->getElementsByTagName('head')->item(0);
 

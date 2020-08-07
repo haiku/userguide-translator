@@ -266,6 +266,10 @@ function count_str($needle, $haystack) {
 	}
 }
 
+function replace_placeholders($text, $lang = null) {
+	return str_replace('{LANG_CODE}', ($lang ? $lang : 'en'), $text);
+}
+
 function sub_glob($path, $expr, $continue) {
 	$expr = preg_quote($expr, '=');
 	$expr = '=' . str_replace('\*', '.*', $expr) . '=';
