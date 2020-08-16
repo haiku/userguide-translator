@@ -19,7 +19,6 @@ define('DB_USERS', DB_PREFIX . 'users');
 define('DB_LOG', DB_PREFIX . 'log');
 
 define('ATTR_TRANS_ID', '_translation_id'); // /!\ Also used in translate_tool
-define('ATTR_TRANSLATED', '_translated');   // same here
 
 define('ROLE_UNDEF', 0);
 define('ROLE_TRANSLATOR', 1);
