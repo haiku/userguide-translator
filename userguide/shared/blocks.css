@@ -1,0 +1,38 @@
+/*
+ * Copyright 2020 Haiku, Inc. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ */
+
+/*
+ * These styles are meant to give a visual indication of the states of blocks
+ * in block_edit and translate views, taking precedence over the page styles.
+ */
+
+img {
+	padding: 2px !important;
+}
+
+img, [_translation_id] {
+	border: 1px dotted #99cc99 !important;
+}
+
+[_translation_id][_edit_state=untranslated] {
+	border-color: #ff9999 !important;
+	background-color: #ffeeee !important;
+}
+
+[_translation_id][_edit_state=fuzzy] {
+	border-color: #ffcc00 !important;
+	background-color: #ffffcc !important;
+}
+
+[_translation_id][_edit_state=error] {
+	border-color: #ffcc00 !important;
+	background-color: #ff4444 !important;
+}
+
+img:hover, [_translation_id]:hover {
+	background-color: #eef6ff !important;
+}
+

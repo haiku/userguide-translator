@@ -1,8 +1,5 @@
 const ping_delay = 60; // in seconds
 
-const color_border = '#FF9900';
-const color_hover = '#FFFFCC';
-
 const attr_trans_id = '_translation_id';
 const attr_state = '_edit_state';
 
@@ -70,7 +67,6 @@ function editSaveFinished() {
 
 	for (var i = 0 ; i < linked_nodes[id].length ; i++) {
 		linked_nodes[id][i].innerHTML = formatText(new_text);
-		linked_nodes[id][i].style.backgroundColor = null;
 		if (send_ok) {
 			linked_nodes[id][i].removeAttribute(attr_state);
 		} else {
@@ -100,14 +96,6 @@ function pingServer() {
 	xml_http.send(null);
 
 	window.setTimeout(pingServer, ping_delay * 1000);
-}
-
-function mouseOverEvent(e) {
-	this.style.backgroundColor = color_hover;
-}
-
-function mouseOutEvent(e) {
-	this.style.backgroundColor = null;
 }
 
 function mouseClickEvent(e) {
@@ -147,9 +135,6 @@ function setProperties(node) {
 			var id = node.getAttribute(attr_trans_id);
 
 			if (source_strings[id]) {
-				node.style.border = '1px dotted ' + color_border;
-				node.onmouseover = mouseOverEvent;
-				node.onmouseout = mouseOutEvent;
 				node.onclick = mouseClickEvent;
 
 				if (linked_nodes[id] == null) {
@@ -161,10 +146,6 @@ function setProperties(node) {
 
 			return;
 		} else if (node.tagName.toLowerCase() == "img") {
-			node.style.padding = "2px";
-			node.style.border = "1px dotted " + color_border;
-			node.onmouseover = mouseOverEvent;
-			node.onmouseout = mouseOutEvent;
 			node.onclick = imgMouseClickEvent;
 		}
 	}

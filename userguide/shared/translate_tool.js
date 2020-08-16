@@ -1,12 +1,3 @@
-const color_translated = '#99CC99';
-const color_untranslated = '#FF9999';
-const color_fuzzy = '#FFCC00';
-const color_unsent = '#FFCC00';
-const color_hover = '#EEF6FF';
-
-const bg_untranslated = '#FFEEEE';
-const bg_fuzzy = '#FFFFCC';
-
 const attr_trans_id = '_translation_id';
 const attr_state = '_edit_state';
 
@@ -89,23 +80,15 @@ function translateSaveFinished() {
 
 	for (var i = 0 ; i < linked_nodes[id].length ; i++) {
 		linked_nodes[id][i].innerHTML = formatText(this.userguide_trans);
-		linked_nodes[id][i].style.border = '1px dotted ' +
-			(send_ok ? color_translated : color_unsent);
-		linked_nodes[id][i].style.backgroundColor = null;
 
 		if (send_ok) {
 			if (this.userguide_mark_fuzzy) {
 				linked_nodes[id][i].setAttribute(attr_state, 'fuzzy');
-				linked_nodes[id][i].style.border = '1px dotted ' + color_fuzzy;
-				linked_nodes[id][i].style.backgroundColor = bg_fuzzy;
 			} else {
 				linked_nodes[id][i].removeAttribute(attr_state);
-				linked_nodes[id][i].style.border = '1px dotted ' + color_translated;
-				linked_nodes[id][i].style.backgroundColor = null;
 			}
 		} else {
 			linked_nodes[id][i].setAttribute(attr_state, 'error');
-			linked_nodes[id][i].style.border = '1px dotted ' + color_unsent;
 		}
 	}
 
@@ -141,25 +124,6 @@ function translateBlockDone(next_node) {
 		edit_window = null;
 		window.edited_node = null;
 	}
-}
-
-function mouseOverEvent(e) {
-	this.style.backgroundColor = color_hover;
-}
-
-function mouseOutEvent(e) {
-	var id = this.getAttribute(attr_trans_id);
-	if (translated_strings[id] == '') {
-		this.style.backgroundColor = bg_untranslated;
-	} else if (is_fuzzy[id]) {
-		this.style.backgroundColor = bg_fuzzy;
-	} else {
-		this.style.backgroundColor = null;
-	}
-}
-
-function imgMouseOutEvent(e) {
-	this.style.backgroundColor = null;
 }
 
 function mouseClickEvent(e) {
@@ -205,20 +169,13 @@ function setProperties(node) {
 				if (node_name != "title") { // We can't touch it
 					if (translated_strings[id] == '') {
 						node.setAttribute(attr_state, 'untranslated');
-						node.style.border = '1px dotted ' + color_untranslated;
-						node.style.backgroundColor = bg_untranslated;
 					} else if (is_fuzzy[id]) {
 						node.setAttribute(attr_state, 'fuzzy');
-						node.style.border = '1px dotted ' + color_fuzzy;
-						node.style.backgroundColor = bg_fuzzy;
 						node.innerHTML = formatText(translated_strings[id]);
 					} else {
-						node.style.border = '1px dotted ' + color_translated;
 						node.innerHTML = formatText(translated_strings[id]);
 					}
 
-					node.onmouseover = mouseOverEvent;
-					node.onmouseout = mouseOutEvent;
 					node.onclick = mouseClickEvent;
 
 					node.setAttribute('_internal_id', all_nodes.length);
@@ -244,10 +201,6 @@ function setProperties(node) {
 			}
 			return;
 		} else if (node.tagName.toLowerCase() == "img") {
-			node.style.padding = "2px";
-			node.style.border = "1px dotted " + color_fuzzy;
-			node.onmouseover = mouseOverEvent;
-			node.onmouseout = imgMouseOutEvent;
 			node.onclick = imgMouseClickEvent;
 		}
 	}

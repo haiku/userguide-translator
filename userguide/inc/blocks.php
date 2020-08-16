@@ -36,6 +36,18 @@ function append_js_file($node, $file) {
 	$node->appendChild($doc->createTextNode("\n"));
 }
 
+function append_css_file($node, $file) {
+	$doc = $node->ownerDocument;
+
+	$link = $doc->createElement('link');
+	$link->setAttribute('rel', 'stylesheet');
+	$link->setAttribute('type', 'text/css');
+	$link->setAttribute('href', $file);
+
+	$node->appendChild($link);
+	$node->appendChild($doc->createTextNode("\n"));
+}
+
 function get_source_strings($node) {
 	static $used_ids = array();
 	$to_return = '';
@@ -119,6 +131,8 @@ function load_doc_with_blocks($doc_id, $lang = null) {
 
 	// Pass the script path to JavaScript
 	append_js_code($head, $js);
+
+	append_css_file($head, $base_url . '/shared/blocks.css');
 
 	if ($lang) {
 		html_set_lang($doc, $lang);
