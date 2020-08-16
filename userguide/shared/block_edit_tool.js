@@ -4,6 +4,7 @@ const color_border = '#FF9900';
 const color_hover = '#FFFFCC';
 
 const attr_trans_id = '_translation_id';
+const attr_state = '_edit_state';
 
 var edited_node = null;
 var linked_nodes = new Array();
@@ -70,6 +71,11 @@ function editSaveFinished() {
 	for (var i = 0 ; i < linked_nodes[id].length ; i++) {
 		linked_nodes[id][i].innerHTML = formatText(new_text);
 		linked_nodes[id][i].style.backgroundColor = null;
+		if (send_ok) {
+			linked_nodes[id][i].removeAttribute(attr_state);
+		} else {
+			linked_nodes[id][i].setAttribute(attr_state, 'error');
+		}
 	}
 
 	if (!send_ok) {

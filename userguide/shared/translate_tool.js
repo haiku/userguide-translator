@@ -8,8 +8,7 @@ const bg_untranslated = '#FFEEEE';
 const bg_fuzzy = '#FFFFCC';
 
 const attr_trans_id = '_translation_id';
-const attr_translated = '_translated';
-const attr_previous = '_previous';
+const attr_state = '_edit_state';
 
 var edit_window = null;
 var edited_node = null;
@@ -96,13 +95,16 @@ function translateSaveFinished() {
 
 		if (send_ok) {
 			if (this.userguide_mark_fuzzy) {
+				linked_nodes[id][i].setAttribute(attr_state, 'fuzzy');
 				linked_nodes[id][i].style.border = '1px dotted ' + color_fuzzy;
 				linked_nodes[id][i].style.backgroundColor = bg_fuzzy;
 			} else {
+				linked_nodes[id][i].removeAttribute(attr_state);
 				linked_nodes[id][i].style.border = '1px dotted ' + color_translated;
 				linked_nodes[id][i].style.backgroundColor = null;
 			}
 		} else {
+			linked_nodes[id][i].setAttribute(attr_state, 'error');
 			linked_nodes[id][i].style.border = '1px dotted ' + color_unsent;
 		}
 	}
@@ -202,9 +204,11 @@ function setProperties(node) {
 
 				if (node_name != "title") { // We can't touch it
 					if (translated_strings[id] == '') {
+						node.setAttribute(attr_state, 'untranslated');
 						node.style.border = '1px dotted ' + color_untranslated;
 						node.style.backgroundColor = bg_untranslated;
 					} else if (is_fuzzy[id]) {
+						node.setAttribute(attr_state, 'fuzzy');
 						node.style.border = '1px dotted ' + color_fuzzy;
 						node.style.backgroundColor = bg_fuzzy;
 						node.innerHTML = formatText(translated_strings[id]);
