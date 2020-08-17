@@ -4,6 +4,8 @@ require_once('inc/lock.php');
 
 role_needed(ROLE_AUTHOR);
 
+require_once('inc/blocks.php');
+
 $xml_msg = '';
 
 $time = time();
@@ -136,103 +138,15 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 
 $doc_id = (isset($_GET['doc_id']) ? intval($_GET['doc_id']) : 0);
 
-$row = lock_and_get($doc_id);
+lock_and_get($doc_id);
 
-$path_original = $row['path_original'];
-
-$doc = new DOMDocument();
-$doc->load(REF_DIR . '/' . $path_original)
-	or die('Unable to load the document.');
-
-$js = '';
-$js .= 'const base_url = \'' . str_replace("'", "\'", $base_url) . "';\n";
-$js .= 'const base_local = \'' . str_replace("'", "\'", dirname($path_original)) . "';\n";
-$js .= "const doc_id = $doc_id;\n";
-$js .= "var source_strings = new Array();\n";
-$js .= get_source_strings($doc);
-
-$doc->loadXML(replace_placeholders($doc->saveXML()));
-
+$doc = load_doc_with_blocks($doc_id);
 $head = $doc->getElementsByTagName('head')->item(0);
-
-// Set the base dir
-$metas = $doc->getElementsByTagName('meta');
-$node = $head->firstChild;
-if ($metas) {
-	foreach ($metas as $meta)
-		if ($meta->getAttribute('http-equiv') == 'content-type')
-			$node = $meta;
-}
-
-$node = append_sibling($doc->createTextNode("\n\t"), $node);
-$base = $doc->createElement('base');
-$base->setAttribute('href', $base_url . '/' . EXPORT_DIR . '/' . dirname($path_original) . '/');
-$node = append_sibling($base, $node);
-$node = append_sibling($doc->createTextNode("\t"), $node);
-
-// Pass the script path to JavaScript
-append_js_code($head, $js);
 
 // Include the JavaScript translation helper
 append_js_file($head, $base_url . '/shared/block_edit_tool.js');
 
 echo $doc->saveXML();
-
-function append_js_code($node, $code) {
-	global $doc;
-	// We are generating an XML document so the JS code should be encapsuled in a
-	// CDATA tag. However, the opening <![CDATA[ and closing ]]> must be preceded
-	// by "//" so they are treated like JS comments.
-
-	$js = $doc->createElement('script');
-	$js->setAttribute('type', 'text/JavaScript');
-
-	$js->appendChild($doc->createTextNode("\n//"));
-	$js->appendChild($doc->createCDATASection("\n$code\n//"));
-	$js->appendChild($doc->createTextNode("\n"));
-
-	$node->appendChild($js);
-	$node->appendChild($doc->createTextNode("\n"));
-}
-
-function append_js_file($node, $file) {
-	global $doc;
-
-	$js = $doc->createElement('script');
-	$js->setAttribute('type', 'text/JavaScript');
-	$js->setAttribute('src', $file);
-
-	$node->appendChild($js);
-	$node->appendChild($doc->createTextNode("\n"));
-}
-
-function get_source_strings($node) {
-	static $used_ids = array();
-	$to_return = '';
-	foreach ($node->childNodes as $child) {
-		if ($child instanceOf DOMElement) {
-			if ($child->hasAttribute(ATTR_TRANS_ID)) {
-				$id = intval($child->getAttribute(ATTR_TRANS_ID));
-				if (isset($used_ids[$id]))
-					continue;
-
-				$used_ids[$id] = true;
-
-				$text = DOMInnerHTML($child);
-
-				$text = str_replace('\\', '\\\\', $text);
-				$text = str_replace('"', '\"', $text);
-				$text = str_replace("\n", '\n', $text);
-
-				$to_return .= "source_strings[$id] = \"$text\";\n";
-			} else {
-				$to_return .= get_source_strings($child);
-			}
-		}
-	}
-
-	return $to_return;
-}
 
 function replace_block_id($doc, $node, $id, $new_block, $new_id) {
 	$found = false;
@@ -260,13 +174,4 @@ function replace_block_id($doc, $node, $id, $new_block, $new_id) {
 	}
 
 	return $found;
-}
-
-function xml_error_handler($errno, $errstr, $errfile, $errline) {
-	global $xml_msg;
-
-	$err = (preg_match('/^DOMDocument::loadXML\(\) \[.*\]: (.*)$/',
-		$errstr, $matches) ? $matches[1] : $errstr);
-
-	$xml_msg .= htmlspecialchars_decode($err) . "\n";
 }
