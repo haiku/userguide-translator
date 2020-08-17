@@ -1,7 +1,6 @@
 <?php
 require_once('inc/common.php');
-
-$edit_delay = 181; // in second, max delay between pings
+require_once('inc/lock.php');
 
 role_needed(ROLE_AUTHOR);
 
@@ -11,10 +10,7 @@ $time = time();
 
 if (isset($_GET['ping_id'])) {
 	$ping_id = intval($_GET['ping_id']);
-	db_query('
-		UPDATE ' . DB_DOCS . "
-		SET edit_time = ?
-		WHERE doc_id = ? AND edited_by = ?", array($time, $ping_id, $user_id));
+	extend_lock($ping_id);
 	exit;
 }
 
@@ -146,29 +142,7 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 
 $doc_id = (isset($_GET['doc_id']) ? intval($_GET['doc_id']) : 0);
 
-$req = db_query('
-	SELECT d.path_original, d.edited_by, d.edit_time, u.username
-	FROM ' . DB_DOCS . ' d
-	LEFT JOIN ' . DB_USERS . ' u
-		ON d.edited_by = u.user_id '. "
-	WHERE d.doc_id = ?", array($doc_id));
-
-$row = db_fetch($req);
-db_free($req);
-
-if (!$row)
-	redirect('index.php');
-if ($row['edited_by'] != $user_id and $row['edit_time'] + $edit_delay > $time) {
-	$name = (isset($row['username']) ? $row['username'] : 'NOBODY (OOPS!)');
-	$name = htmlspecialchars($name);
-	error_box('Edit', 'This document is currently edited by <b>' . $name .
-	'</b>. Please try again later.');
-}
-
-db_query('
-	UPDATE ' . DB_DOCS . "
-	SET edited_by = ?, edit_time = ?
-	WHERE doc_id = ?", array($user_id, $time, $doc_id));
+$row = lock_and_get($doc_id);
 
 $path_original = $row['path_original'];
 
