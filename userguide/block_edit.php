@@ -8,12 +8,6 @@ $xml_msg = '';
 
 $time = time();
 
-if (isset($_GET['ping_id'])) {
-	$ping_id = intval($_GET['ping_id']);
-	extend_lock($ping_id);
-	exit;
-}
-
 if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 	and isset($_POST['edit_text']) and isset($_POST['dont_mark_fuzzy'])) {
 	// Edit submitted to the database
