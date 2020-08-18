@@ -90,7 +90,7 @@ function editSaveFinished() {
 function pingServer() {
 	var xml_http = new XMLHttpRequest();
 
-	xml_http.open('GET', base_url + '/edit.php?ping_id=' + doc_id);
+	xml_http.open('GET', base_url + '/lock.php?doc_id=' + doc_id);
 	xml_http.send(null);
 
 	window.setTimeout(pingServer, ping_delay * 1000);

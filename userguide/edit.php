@@ -7,12 +7,6 @@ role_needed(ROLE_AUTHOR);
 $time = time();
 $blocks_md5 = array();
 
-if (isset($_GET['ping_id'])) {
-	$ping_id = intval($_GET['ping_id']);
-	extend_lock($ping_id);
-	exit;
-}
-
 $doc_id = (isset($_GET['doc_id']) ? intval($_GET['doc_id']) : 0);
 
 $row = lock_and_get($doc_id);
