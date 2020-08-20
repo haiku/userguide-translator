@@ -1,6 +1,9 @@
 const attr_trans_id = '_translation_id';
 const attr_state = '_edit_state';
 
+const edit_tool = '/shared/translate_tool.html';
+const edit_tool_ctx = 'TranslateBlock';
+
 var edit_window = null;
 var edited_node = null;
 var original_text;
@@ -126,35 +129,6 @@ function translateBlockDone(next_node) {
 	}
 }
 
-function mouseClickEvent(e) {
-	if (window.edited_node != null) {
-		edit_window.focus();
-		return false;
-	}
-
-	window.edited_node = this;
-
-	var id = this.getAttribute(attr_trans_id);
-
-	edit_window = window.open(base_url + '/shared/translate_tool.html',
-		'Edit Translation', 'width=650,height=400,status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=0');
-	window.original_text = source_strings[id];
-	window.translated_text = translated_strings[id];
-
-	return true;
-}
-
-function imgMouseClickEvent(e) {
-	var src = this.getAttribute("src");
-	if (base_local != '.') {
-		src = base_local + '/' + src;
-	}
-	window.open(base_url + '/res_upload.php?path=' + encodeURIComponent(src) + '&lang=' + lang,
-		src, 'width=800,height=600,status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=1');
-
-	return true;
-}
-
 function setProperties(node) {
 	if (node == null)
 		return;
@@ -175,8 +149,6 @@ function setProperties(node) {
 					} else {
 						node.innerHTML = formatText(translated_strings[id]);
 					}
-
-					node.onclick = mouseClickEvent;
 
 					node.setAttribute('_internal_id', all_nodes.length);
 					all_nodes.push(node);
@@ -200,8 +172,6 @@ function setProperties(node) {
 				}
 			}
 			return;
-		} else if (node.tagName.toLowerCase() == "img") {
-			node.onclick = imgMouseClickEvent;
 		}
 	}
 
@@ -244,4 +214,6 @@ window.onload = function() {
 
 		setProperties(new_title);
 	}
+
+	document.addEventListener('click', clickHandler);
 }

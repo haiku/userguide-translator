@@ -1,6 +1,9 @@
 const attr_trans_id = '_translation_id';
 const attr_state = '_edit_state';
 
+const edit_tool = '/shared/edit_tool.html';
+const edit_tool_ctx = 'EditBlock';
+
 var edited_node = null;
 var linked_nodes = new Array();
 var original_text;
@@ -87,34 +90,6 @@ function editSaveFinished() {
 	xml_http.send(null);
 }
 
-function mouseClickEvent(e) {
-	if (window.edited_node != null) {
-		edit_window.focus();
-		return false;
-	}
-
-	window.edited_node = this;
-
-	var id = this.getAttribute(attr_trans_id);
-
-	edit_window = window.open(base_url + '/shared/edit_tool.html',
-		'Edit Block', 'width=600,height=300,toolbar=0,status=0');
-	window.original_text = source_strings[id];
-
-	return true;
-}
-
-function imgMouseClickEvent(e) {
-	var src = this.getAttribute("src");
-	if (base_local != '.') {
-		src = base_local + '/' + src;
-	}
-	window.open(base_url + '/res_upload.php?path=' + encodeURIComponent(src),
-		src, 'width=800,height=600,status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=1');
-
-	return true;
-}
-
 function setProperties(node) {
 	if (node == null)
 		return;
@@ -124,8 +99,6 @@ function setProperties(node) {
 			var id = node.getAttribute(attr_trans_id);
 
 			if (source_strings[id]) {
-				node.onclick = mouseClickEvent;
-
 				if (linked_nodes[id] == null) {
 					linked_nodes[id] = [ node ];
 				} else {
@@ -134,8 +107,6 @@ function setProperties(node) {
 			}
 
 			return;
-		} else if (node.tagName.toLowerCase() == "img") {
-			node.onclick = imgMouseClickEvent;
 		}
 	}
 
@@ -163,4 +134,5 @@ window.onload = function() {
 	}
 
 	setProperties(document.getElementsByTagName('body')[0]);
+	document.addEventListener('click', clickHandler);
 }
