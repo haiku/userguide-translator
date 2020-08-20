@@ -210,10 +210,6 @@ function setProperties(node) {
 	}
 }
 
-function formatText(s) {
-	return s.replace(/\{LANG_CODE\}/g, lang);
-}
-
 window.onload = function() {
 	var functions_ok = 0;
 

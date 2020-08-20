@@ -1,5 +1,3 @@
-const ping_delay = 60; // in seconds
-
 const attr_trans_id = '_translation_id';
 const attr_state = '_edit_state';
 
@@ -89,15 +87,6 @@ function editSaveFinished() {
 	xml_http.send(null);
 }
 
-function pingServer() {
-	var xml_http = new XMLHttpRequest();
-
-	xml_http.open('GET', base_url + '/lock.php?doc_id=' + doc_id);
-	xml_http.send(null);
-
-	window.setTimeout(pingServer, ping_delay * 1000);
-}
-
 function mouseClickEvent(e) {
 	if (window.edited_node != null) {
 		edit_window.focus();
@@ -155,10 +144,6 @@ function setProperties(node) {
 	}
 }
 
-function formatText(s) {
-	return s.replace(/\{LANG_CODE\}/g, 'en');
-}
-
 window.onload = function() {
 	var functions_ok = 0;
 
@@ -174,7 +159,7 @@ window.onload = function() {
 			"\nBrowser known to work : Safari 4, Firefox/BeZillaBrowser 2.x, " + "3.x.");
 		return;
 	} else {
-		window.setTimeout(pingServer, ping_delay * 1000);
+		lockDocument(doc_id);
 	}
 
 	setProperties(document.getElementsByTagName('body')[0]);

@@ -132,6 +132,7 @@ function load_doc_with_blocks($doc_id, $lang = null) {
 	// Pass the script path to JavaScript
 	append_js_code($head, $js);
 
+	append_js_file($head, $base_url . '/shared/common.js');
 	append_css_file($head, $base_url . '/shared/blocks.css');
 
 	if ($lang) {
