@@ -146,7 +146,7 @@ function mouseClickEvent(e) {
 
 function imgMouseClickEvent(e) {
 	var src = this.getAttribute("src");
-	if (src != '.') {
+	if (base_local != '.') {
 		src = base_local + '/' + src;
 	}
 	window.open(base_url + '/res_upload.php?path=' + encodeURIComponent(src) + '&lang=' + lang,
