@@ -37,3 +37,55 @@ function blockClickHandler(node) {
 		window.translated_text = translated_strings[id];
 	}
 }
+
+function endEditionEvent(clickOK) {
+	if (window.edited_node == null)
+		return;
+
+	const node = window.edited_node;
+	const id = node.getAttribute(attr_trans_id);
+
+	if (clickOK) {
+		const new_text = edit_window.document.getElementById('modified').value;
+		if (new_text.trim() == '') {
+			removeBlock(node, id);
+		} else {
+			const fuzzy =
+				edit_window.document.getElementById('fuzzy_check').checked;
+			sendEdition(node, id, new_text, fuzzy);
+		}
+	} else {
+		cancelEdition(node, id);
+	}
+}
+
+function closeEditWindow() {
+	edit_window.close();
+	edit_window = null;
+	window.edited_node = null;
+}
+
+function serverRequestListener() {
+	const resp = this.responseText;
+	var send_ok = false;
+
+	if (resp.substring(0, 7) == 'badxml ')
+		edit_window.alert('The server rejected the change because of XML ' +
+			"parsing errors :\n" + resp.substring(3) +
+			"\n" + 'Check the XML tags.');
+	else if (resp.substring(0, 7) == 'diffxml')
+		edit_window.alert('The server rejected the change because the ' +
+			'XML code used in it differs from the original string.' + "\n" +
+			'Check the XML tags.');
+	else if (resp.substring(0, 6) == 'interr')
+		edit_window.alert('The original XML code seems corrupt. Please contact ' +
+			'an administrator.' + "\n");
+	else if (resp.substring(0, 2) != 'ok')
+		edit_window.alert('There was an error sending the change. Please ' +
+		'retry.' + "\n" + resp);
+	else
+		send_ok = true;
+
+	editSaveFinished(this.userguide_string_id, this.userguide_new_text,
+		this.userguide_fuzzy, send_ok);
+}

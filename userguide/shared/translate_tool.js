@@ -15,77 +15,51 @@ var title_id = 0;
 var title_insert = false;
 var first_title = null;
 
-function endEditionEvent(clickOK) {
-	if (window.edited_node == null)
-		return;
+function sendEdition(node, id, trans, mark_fuzzy) {
+	translated_strings[id] = trans;
 
-	var id = window.edited_node.getAttribute(attr_trans_id);
-	var next_node = null;
+	var xml_http = new XMLHttpRequest();
 
-	if (clickOK) {
-		var trans = edit_window.document.getElementById('translated').value;
-		var mark_fuzzy = edit_window.document.getElementById('mark_fuzzy').checked;
+	var encoded_source = encodeURI(source_strings[id]).replace(/&/g, '%26').replace(/\+/g, '%2B');
+	var encoded_translation = encodeURI(trans).replace(/&/g, '%26').replace(/\+/g, '%2B');
 
-		translated_strings[id] = trans;
+	xml_http.open('POST', base_url + '/translate.php', true);
+	xml_http.addEventListener("load", serverRequestListener);
+	xml_http.setRequestHeader('Content-Type',
+		'application/x-www-form-urlencoded');
+	xml_http.send('translate_lang=' + lang + '&translate_doc=' + doc_id +
+		'&translate_string=' + id + '&translate_text=' + encoded_translation +
+		'&translate_source=' + encoded_source + '&is_fuzzy=' + (mark_fuzzy ? '1' : '0'));
 
-		var xml_http = new XMLHttpRequest();
-
-		var encoded_source = encodeURI(source_strings[id]).replace(/&/g, '%26').replace(/\+/g, '%2B');
-		var encoded_translation = encodeURI(trans).replace(/&/g, '%26').replace(/\+/g, '%2B');
-
-		xml_http.open('POST', base_url + '/translate.php', true);
-		xml_http.addEventListener("load", translateSaveFinished);
-		xml_http.setRequestHeader('Content-Type',
-			'application/x-www-form-urlencoded');
-		xml_http.send('translate_lang=' + lang + '&translate_doc=' + doc_id +
-			'&translate_string=' + id + '&translate_text=' + encoded_translation +
-			'&translate_source=' + encoded_source + '&is_fuzzy=' + (mark_fuzzy ? '1' : '0'));
-
-		xml_http.userguide_string_id = id;
-		xml_http.userguide_trans = trans;
-		xml_http.userguide_mark_fuzzy = mark_fuzzy;
-		return;
-	} else {
-		window.edited_node.innerHTML = formatText(translated_strings[id]);
-		if (window.edited_node.innerHTML == ''
-			|| window.edited_node.innerText == '')
-			window.edited_node.innerHTML = formatText(source_strings[id]);
-		translateBlockDone(next_node);
-	}
+	xml_http.userguide_string_id = id;
+	xml_http.userguide_new_text = trans;
+	xml_http.userguide_fuzzy = mark_fuzzy;
 }
 
-function translateSaveFinished() {
+function cancelEdition(node, id) {
+	var text = translated_strings[id] == '' ? source_strings[id] : translated_strings[id];
+	node.innerHTML = formatText(text);
+	closeEditWindow();
+}
+
+function removeBlock(node, id) {
+	// TODO: currently gives an error due to empty text, but could be used
+	// to remove a translation
+	sendEdition(node, id, '', false);
+}
+
+function editSaveFinished(id, trans, fuzzy, send_ok) {
 	edit_window.focus();
 
-	var resp = this.responseText;
-	var id = this.userguide_string_id;
 	var next_node;
 
-	var send_ok;
-	if (resp.substring(0, 7) == 'badxml ')
-		edit_window.alert('The server rejected the translation because of XML ' +
-			"parsing errors :\n" + this.responseText.substring(3) +
-			"\n" + 'Check the XML tags used in your translation.');
-	else if (resp.substring(0, 7) == 'diffxml')
-		edit_window.alert('The server rejected the translation because the ' +
-			'XML code used in it differs from the original string.' + "\n" +
-			'Check the XML tags used in your translation.');
-	else if (resp.substring(0, 6) == 'interr')
-		edit_window.alert('The original XML code seems corrupt. Please contact ' +
-			'an administrator.' + "\n");
-	else if (resp.substring(0, 2) != 'ok')
-		edit_window.alert('There was an error sending the translation. Please ' +
-		'retry.' + "\n" + this.responseText);
-	else
-		send_ok = true;
-
-	is_fuzzy[id] = this.userguide_mark_fuzzy;
+	is_fuzzy[id] = fuzzy;
 
 	for (var i = 0 ; i < linked_nodes[id].length ; i++) {
-		linked_nodes[id][i].innerHTML = formatText(this.userguide_trans);
+		linked_nodes[id][i].innerHTML = formatText(trans);
 
 		if (send_ok) {
-			if (this.userguide_mark_fuzzy) {
+			if (fuzzy) {
 				linked_nodes[id][i].setAttribute(attr_state, 'fuzzy');
 			} else {
 				linked_nodes[id][i].removeAttribute(attr_state);
@@ -123,9 +97,7 @@ function translateBlockDone(next_node) {
 		window.translated_text = translated_strings[id];
 		window.setTimeout(edit_window.refreshAll, 0);
 	} else {
-		edit_window.close();
-		edit_window = null;
-		window.edited_node = null;
+		closeEditWindow();
 	}
 }
 
