@@ -1,6 +1,3 @@
-const attr_trans_id = '_translation_id';
-const attr_state = '_edit_state';
-
 const edit_tool = '/shared/translate_tool.html';
 const edit_tool_ctx = 'TranslateBlock';
 
@@ -8,7 +5,6 @@ var edit_window = null;
 var edited_node = null;
 var original_text;
 var translated_text;
-var linked_nodes = new Array();
 var all_nodes = new Array();
 
 var title_id = 0;
@@ -62,9 +58,9 @@ function editSaveFinished(id, trans, fuzzy, send_ok) {
 	trans = formatText(trans);
 	const state = getBlockState(id);
 
-	for (var i = 0 ; i < linked_nodes[id].length ; i++) {
-		linked_nodes[id][i].innerHTML = trans;
-		linked_nodes[id][i].setAttribute(attr_state, state);
+	for (const node of getBlockNodes(id)) {
+		node.innerHTML = trans;
+		node.setAttribute(attr_state, state);
 	}
 
 	if (edit_window.document.getElementById('auto_cont').checked) {
@@ -122,12 +118,6 @@ function setProperties(node) {
 					node.setAttribute(attr_state, state);
 					node.setAttribute('_internal_id', all_nodes.length);
 					all_nodes.push(node);
-
-					if (linked_nodes[id] == null) {
-						linked_nodes[id] = [ node ];
-					} else {
-						linked_nodes[id].push(node);
-					}
 				}
 
 				if (title_id == 0 && node_name == "title") {

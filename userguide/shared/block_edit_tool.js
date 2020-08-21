@@ -1,11 +1,7 @@
-const attr_trans_id = '_translation_id';
-const attr_state = '_edit_state';
-
 const edit_tool = '/shared/edit_tool.html';
 const edit_tool_ctx = 'EditBlock';
 
 var edited_node = null;
-var linked_nodes = new Array();
 var original_text;
 
 function sendEdition(node, id, new_text, not_mark) {
@@ -45,9 +41,9 @@ function editSaveFinished(id, new_text, fuzzy, send_ok) {
 	new_text = formatText(new_text);
 	const state = getBlockState(id);
 
-	for (var i = 0 ; i < linked_nodes[id].length ; i++) {
-		linked_nodes[id][i].innerHTML = new_text;
-		linked_nodes[id][i].setAttribute(attr_state, state);
+	for (const node of getBlockNodes(id)) {
+		node.innerHTML = new_text;
+		node.setAttribute(attr_state, state);
 	}
 
 	closeEditWindow();
@@ -60,31 +56,6 @@ function editSaveFinished(id, new_text, fuzzy, send_ok) {
 
 function getBlockState(id) {
 	return '';
-}
-
-function setProperties(node) {
-	if (node == null)
-		return;
-
-	if (node.getAttribute) { // Avoid special nodes
-		if (node.getAttribute(attr_trans_id) != null) {
-			var id = node.getAttribute(attr_trans_id);
-
-			if (source_strings[id]) {
-				if (linked_nodes[id] == null) {
-					linked_nodes[id] = [ node ];
-				} else {
-					linked_nodes[id].push(node);
-				}
-			}
-
-			return;
-		}
-	}
-
-	for (var i = 0 ; i < node.childNodes.length ; i++) {
-		setProperties(node.childNodes[i]);
-	}
 }
 
 window.onload = function() {
@@ -105,6 +76,5 @@ window.onload = function() {
 		lockDocument(doc_id);
 	}
 
-	setProperties(document.getElementsByTagName('body')[0]);
 	document.addEventListener('click', clickHandler);
 }

@@ -1,3 +1,6 @@
+const attr_trans_id = '_translation_id';
+const attr_state = '_edit_state';
+
 function clickHandler(e) {
 	var node = e.target;
 	if (node.nodeName.toLowerCase() == 'img') {
@@ -88,4 +91,8 @@ function serverRequestListener() {
 
 	editSaveFinished(this.userguide_string_id, this.userguide_new_text,
 		this.userguide_fuzzy, send_ok);
+}
+
+function getBlockNodes(id) {
+	return document.querySelectorAll('[' + attr_trans_id + '="' + id + '"]');
 }
