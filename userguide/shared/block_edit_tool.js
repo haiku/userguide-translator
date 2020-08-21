@@ -9,8 +9,6 @@ var linked_nodes = new Array();
 var original_text;
 
 function sendEdition(node, id, new_text, not_mark) {
-	source_strings[id] = new_text;
-
 	var xml_http = new XMLHttpRequest();
 
 	var encoded_text = encodeURI(new_text).replace(/&/g, '%26');
@@ -29,6 +27,7 @@ function sendEdition(node, id, new_text, not_mark) {
 
 function cancelEdition(node, id) {
 	node.innerHTML = formatText(source_strings[id]);
+	node.setAttribute(attr_state, getBlockState(id));
 	closeEditWindow();
 }
 
@@ -37,18 +36,18 @@ var removeBlock = cancelEdition;
 function editSaveFinished(id, new_text, fuzzy, send_ok) {
 	edit_window.focus();
 
-	for (var i = 0 ; i < linked_nodes[id].length ; i++) {
-		linked_nodes[id][i].innerHTML = formatText(new_text);
-		if (send_ok) {
-			linked_nodes[id][i].removeAttribute(attr_state);
-		} else {
-			linked_nodes[id][i].setAttribute(attr_state, 'error');
-		}
+	if (!send_ok) {
+		window.edited_node.setAttribute(attr_state, 'error');
+		return;
 	}
 
-	if (!send_ok) {
-		edit_window.focus();
-		return;
+	source_strings[id] = new_text;
+	new_text = formatText(new_text);
+	const state = getBlockState(id);
+
+	for (var i = 0 ; i < linked_nodes[id].length ; i++) {
+		linked_nodes[id][i].innerHTML = new_text;
+		linked_nodes[id][i].setAttribute(attr_state, state);
 	}
 
 	closeEditWindow();
@@ -57,6 +56,10 @@ function editSaveFinished(id, new_text, fuzzy, send_ok) {
 	xml_http = new XMLHttpRequest();
 	xml_http.open('GET', base_url + '/update_stats.php?doc_id=' + doc_id, true);
 	xml_http.send(null);
+}
+
+function getBlockState(id) {
+	return '';
 }
 
 function setProperties(node) {

@@ -16,8 +16,6 @@ var title_insert = false;
 var first_title = null;
 
 function sendEdition(node, id, trans, mark_fuzzy) {
-	translated_strings[id] = trans;
-
 	var xml_http = new XMLHttpRequest();
 
 	var encoded_source = encodeURI(source_strings[id]).replace(/&/g, '%26').replace(/\+/g, '%2B');
@@ -39,6 +37,7 @@ function sendEdition(node, id, trans, mark_fuzzy) {
 function cancelEdition(node, id) {
 	var text = translated_strings[id] == '' ? source_strings[id] : translated_strings[id];
 	node.innerHTML = formatText(text);
+	node.setAttribute(attr_state, getBlockState(id));
 	closeEditWindow();
 }
 
@@ -51,27 +50,21 @@ function removeBlock(node, id) {
 function editSaveFinished(id, trans, fuzzy, send_ok) {
 	edit_window.focus();
 
+	if (!send_ok) {
+		window.edited_node.setAttribute(attr_state, 'error');
+		return;
+	}
+
 	var next_node;
 
 	is_fuzzy[id] = fuzzy;
+	translated_strings[id] = trans;
+	trans = formatText(trans);
+	const state = getBlockState(id);
 
 	for (var i = 0 ; i < linked_nodes[id].length ; i++) {
-		linked_nodes[id][i].innerHTML = formatText(trans);
-
-		if (send_ok) {
-			if (fuzzy) {
-				linked_nodes[id][i].setAttribute(attr_state, 'fuzzy');
-			} else {
-				linked_nodes[id][i].removeAttribute(attr_state);
-			}
-		} else {
-			linked_nodes[id][i].setAttribute(attr_state, 'error');
-		}
-	}
-
-	if (!send_ok) {
-		edit_window.focus();
-		return;
+		linked_nodes[id][i].innerHTML = trans;
+		linked_nodes[id][i].setAttribute(attr_state, state);
 	}
 
 	if (edit_window.document.getElementById('auto_cont').checked) {
@@ -101,6 +94,15 @@ function translateBlockDone(next_node) {
 	}
 }
 
+function getBlockState(id) {
+	if (translated_strings[id] == '') {
+		return 'untranslated';
+	} else if (is_fuzzy[id]) {
+		return 'fuzzy';
+	}
+	return '';
+}
+
 function setProperties(node) {
 	if (node == null)
 		return;
@@ -113,15 +115,11 @@ function setProperties(node) {
 				var node_name = node.tagName.toLowerCase();
 
 				if (node_name != "title") { // We can't touch it
-					if (translated_strings[id] == '') {
-						node.setAttribute(attr_state, 'untranslated');
-					} else if (is_fuzzy[id]) {
-						node.setAttribute(attr_state, 'fuzzy');
-						node.innerHTML = formatText(translated_strings[id]);
-					} else {
+					const state = getBlockState(id);
+					if (translated_strings[id] != '') {
 						node.innerHTML = formatText(translated_strings[id]);
 					}
-
+					node.setAttribute(attr_state, state);
 					node.setAttribute('_internal_id', all_nodes.length);
 					all_nodes.push(node);
 
