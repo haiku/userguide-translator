@@ -7,10 +7,6 @@ var original_text;
 var translated_text;
 var all_nodes = new Array();
 
-var title_id = 0;
-var title_insert = false;
-var first_title = null;
-
 function sendEdition(node, id, trans, mark_fuzzy) {
 	var xml_http = new XMLHttpRequest();
 
@@ -108,28 +104,13 @@ function setProperties(node) {
 			var id = node.getAttribute(attr_trans_id);
 
 			if (source_strings[id]) {
-				var node_name = node.tagName.toLowerCase();
-
-				if (node_name != "title") { // We can't touch it
-					const state = getBlockState(id);
-					if (translated_strings[id] != '') {
-						node.innerHTML = formatText(translated_strings[id]);
-					}
-					node.setAttribute(attr_state, state);
-					node.setAttribute('_internal_id', all_nodes.length);
-					all_nodes.push(node);
+				const state = getBlockState(id);
+				if (translated_strings[id] != '') {
+					node.innerHTML = formatText(translated_strings[id]);
 				}
-
-				if (title_id == 0 && node_name == "title") {
-					title_id = id;
-					title_insert = true;
-				} else if (id == title_id) {
-					title_insert = false;
-				}
-
-				if (first_title == null && (node_name == "h1" || node_name == "h2")) {
-					first_title = node;
-				}
+				node.setAttribute(attr_state, state);
+				node.setAttribute('_internal_id', all_nodes.length);
+				all_nodes.push(node);
 			}
 			return;
 		}
@@ -156,24 +137,8 @@ window.onload = function() {
 		return;
 	}
 
+	insertUnreachableBlocks();
 	setProperties(document.getElementsByTagName('html')[0]);
-
-	if (title_insert) {
-		// The translatable text used in the <title> tag is not used anywhere else.
-		// Since the translate tool does not allow translating <title>, we must insert
-		// this text somewhere.
-		var new_title = document.createElement("h1");
-		new_title.setAttribute(attr_trans_id, title_id);
-		new_title.appendChild(document.createTextNode(source_strings[title_id]));
-
-		if (first_title != null && first_title.parentNode != null) {
-			first_title.parentNode.insertBefore(new_title, first_title);
-		} else {
-			document.body.insertBefore(new_title, document.body.firstChild);
-		}
-
-		setProperties(new_title);
-	}
 
 	document.addEventListener('click', clickHandler);
 }

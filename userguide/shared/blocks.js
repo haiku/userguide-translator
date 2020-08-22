@@ -93,6 +93,32 @@ function serverRequestListener() {
 		this.userguide_fuzzy, send_ok);
 }
 
-function getBlockNodes(id) {
-	return document.querySelectorAll('[' + attr_trans_id + '="' + id + '"]');
+function getBlockNodes(id, root = document) {
+	return root.querySelectorAll('[' + attr_trans_id + '="' + id + '"]');
+}
+
+function insertUnreachableBlocks() {
+	// We can't click some translatable blocks (namely title), so we insert
+	// them in the document if there is no other copy.
+	var insertPoint = null;
+
+	const blocks = document.head.querySelectorAll('[' + attr_trans_id + ']');
+	for (const block of blocks) {
+		const id = block.getAttribute(attr_trans_id);
+
+		if (getBlockNodes(id, document.body).length == 0) {
+			if (insertPoint === null) {
+				insertPoint = document.querySelector('h1, h2');
+				if (insertPoint === null) {
+					insertPoint = document.body.firstChild;
+				}
+			}
+
+			var new_node = document.createElement('h1');
+			new_node.innerHTML = block.innerHTML;
+			new_node.setAttribute(attr_trans_id, id);
+			new_node.setAttribute('title', 'This is a fake header for content that the tool cannot reach. It won\'t be here in the final document.');
+			insertPoint.parentNode.insertBefore(new_node, insertPoint);
+		}
+	}
 }
