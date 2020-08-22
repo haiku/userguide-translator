@@ -76,5 +76,7 @@ window.onload = function() {
 		lockDocument(doc_id);
 	}
 
+	insertUnreachableBlocks();
+
 	document.addEventListener('click', clickHandler);
 }
