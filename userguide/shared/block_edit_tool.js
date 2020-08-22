@@ -5,16 +5,15 @@ var edited_node = null;
 var original_text;
 
 function sendEdition(node, id, new_text, not_mark) {
-	var xml_http = new XMLHttpRequest();
-
-	var encoded_text = encodeURI(new_text).replace(/&/g, '%26');
-
-	xml_http.open('POST', base_url + '/block_edit.php', true);
-	xml_http.setRequestHeader('Content-Type',
-		'application/x-www-form-urlencoded');
-	xml_http.addEventListener("load", serverRequestListener);
-	xml_http.send('edit_doc=' + doc_id + '&edit_string=' + id +
-		'&edit_text=' + encoded_text + '&dont_mark_fuzzy=' + (not_mark ? '1' : '0'));
+	var xml_http = HTTPRequest('POST', 'block_edit.php',
+		{
+			edit_doc: doc_id,
+			edit_string: id,
+			edit_text: new_text,
+			dont_mark_fuzzy: (not_mark ? '1' : '0'),
+		} , {
+			load: serverRequestListener,
+		});
 
 	xml_http.userguide_string_id = id;
 	xml_http.userguide_new_text = new_text;
@@ -49,9 +48,7 @@ function editSaveFinished(id, new_text, fuzzy, send_ok) {
 	closeEditWindow();
 
 	// Refresh the statistics
-	xml_http = new XMLHttpRequest();
-	xml_http.open('GET', base_url + '/update_stats.php?doc_id=' + doc_id, true);
-	xml_http.send(null);
+	HTTPRequest('GET', 'update_stats.php', {doc_id: doc_id});
 }
 
 function getBlockState(id) {
@@ -64,13 +61,13 @@ window.onload = function() {
 	if (window.XMLHttpRequest)
 		functions_ok++;
 
-	if (encodeURI)
+	if (Object.entries)
 		functions_ok++;
 
 	if (functions_ok != 2) {
 		window.alert('Your browser does not support some JavaScript ' +
 			'functions which are needed for this page to work correctly. ' +
-			"\nBrowser known to work : Safari 4, Firefox/BeZillaBrowser 2.x, " + "3.x.");
+			"\nTry again with an updated modern browser.");
 		return;
 	} else {
 		lockDocument(doc_id);

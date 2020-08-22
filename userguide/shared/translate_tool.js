@@ -8,18 +8,17 @@ var translated_text;
 var all_nodes = new Array();
 
 function sendEdition(node, id, trans, mark_fuzzy) {
-	var xml_http = new XMLHttpRequest();
-
-	var encoded_source = encodeURI(source_strings[id]).replace(/&/g, '%26').replace(/\+/g, '%2B');
-	var encoded_translation = encodeURI(trans).replace(/&/g, '%26').replace(/\+/g, '%2B');
-
-	xml_http.open('POST', base_url + '/translate.php', true);
-	xml_http.addEventListener("load", serverRequestListener);
-	xml_http.setRequestHeader('Content-Type',
-		'application/x-www-form-urlencoded');
-	xml_http.send('translate_lang=' + lang + '&translate_doc=' + doc_id +
-		'&translate_string=' + id + '&translate_text=' + encoded_translation +
-		'&translate_source=' + encoded_source + '&is_fuzzy=' + (mark_fuzzy ? '1' : '0'));
+	var xml_http = HTTPRequest('POST', 'translate.php',
+		{
+			translate_lang: lang,
+			translate_doc: doc_id,
+			translate_string: id,
+			translate_text: trans,
+			translate_source: source_strings[id],
+			is_fuzzy: (mark_fuzzy ? '1' : '0'),
+		} , {
+			load: serverRequestListener,
+		});
 
 	xml_http.userguide_string_id = id;
 	xml_http.userguide_new_text = trans;
@@ -113,13 +112,13 @@ window.onload = function() {
 	if (window.XMLHttpRequest)
 		functions_ok++;
 
-	if (encodeURI)
+	if (Object.entries)
 		functions_ok++;
 
 	if (functions_ok != 2) {
 		window.alert('Your browser does not support some JavaScript ' +
 			'functions which are needed for this page to work correctly. ' +
-			"\nBrowser known to work : Safari 4, Firefox/BeZillaBrowser 2.x, " + "3.x.");
+			"\nTry again with an updated modern browser.");
 		return;
 	}
 
