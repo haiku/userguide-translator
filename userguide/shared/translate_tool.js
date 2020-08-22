@@ -95,30 +95,16 @@ function getBlockState(id) {
 	return '';
 }
 
-function setProperties(node) {
-	if (node == null)
-		return;
+function initializeNode(node) {
+	const id = node.getAttribute(attr_trans_id);
+	const state = getBlockState(id);
 
-	if (node.getAttribute) { // Avoid special nodes
-		if (node.getAttribute(attr_trans_id) != null) {
-			var id = node.getAttribute(attr_trans_id);
-
-			if (source_strings[id]) {
-				const state = getBlockState(id);
-				if (translated_strings[id] != '') {
-					node.innerHTML = formatText(translated_strings[id]);
-				}
-				node.setAttribute(attr_state, state);
-				node.setAttribute('_internal_id', all_nodes.length);
-				all_nodes.push(node);
-			}
-			return;
-		}
+	if (translated_strings[id] != '') {
+		node.innerHTML = formatText(translated_strings[id]);
 	}
-
-	for (var i = 0 ; i < node.childNodes.length ; i++) {
-		setProperties(node.childNodes[i]);
-	}
+	node.setAttribute(attr_state, state);
+	node.setAttribute('_internal_id', all_nodes.length);
+	all_nodes.push(node);
 }
 
 window.onload = function() {
@@ -138,7 +124,9 @@ window.onload = function() {
 	}
 
 	insertUnreachableBlocks();
-	setProperties(document.getElementsByTagName('html')[0]);
+	for (const node of getAllBlockNodes()) {
+		initializeNode(node);
+	}
 
 	document.addEventListener('click', clickHandler);
 }

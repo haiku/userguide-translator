@@ -97,6 +97,10 @@ function getBlockNodes(id, root = document) {
 	return root.querySelectorAll('[' + attr_trans_id + '="' + id + '"]');
 }
 
+function getAllBlockNodes(root = document) {
+	return root.querySelectorAll('[' + attr_trans_id + ']');
+}
+
 function insertUnreachableBlocks() {
 	// We can't click some translatable blocks (namely title), so we insert
 	// them in the document if there is no other copy.
