@@ -92,8 +92,8 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 		}
 
 		$fuzzy = !$_POST['dont_mark_fuzzy'];
-		$update = 'source_md5' . $r_norm . ($fuzzy ? $r_fuzzy : '');
-		$up_to = "'$md5'" . $r_norm . ($fuzzy ? $r_to_fuzzy : '');
+		$update = 'source_md5' . $r_norm . $r_fuzzy;
+		$up_to = "'$md5'" . $r_norm . ($fuzzy ? $r_to_fuzzy : $r_fuzzy);
 		db_query('INSERT INTO ' . DB_STRINGS . " ($update)
 			SELECT $up_to FROM " . DB_STRINGS . "
 			WHERE string_id = ?", array($string_id));
