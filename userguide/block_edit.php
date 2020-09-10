@@ -73,20 +73,19 @@ if (isset($_POST['edit_doc']) and isset($_POST['edit_string'])
 			SET unused_since = ?
 			WHERE string_id = ?", array($time, $string_id));
 	} else {
-		$r_norm = 'doc_id';
+		$r_norm = ', doc_id';
 		$r_fuzzy = '';
 		$r_to_fuzzy = '';
 		$req = db_query('SELECT lang_code FROM ' . DB_LANGS);
 		while ($row = db_fetch($req)) {
 			$r_norm .= ', "translation_' . $row['lang_code'] . '"';
-			$r_fuzzy .= ($r_fuzzy ? ', ' : '') . '"is_fuzzy_' .
-				$row['lang_code'] . '"';
-			$r_to_fuzzy .= ($r_to_fuzzy ? ', ' : '') . '1';
+			$r_fuzzy .= ', "is_fuzzy_' . $row['lang_code'] . '"';
+			$r_to_fuzzy .= ', 1';
 		}
 
 		$fuzzy = !$_POST['dont_mark_fuzzy'];
-		$update = 'source_md5' . ($r_norm ? ', ' : '') . $r_norm . (($fuzzy and $r_fuzzy) ? ', ' . $r_fuzzy : '');
-		$up_to = "'$md5'" . ($r_norm ? ', ' : '') . $r_norm . (($fuzzy and $r_to_fuzzy) ? ', ' . $r_to_fuzzy : '');
+		$update = 'source_md5' . $r_norm . ($fuzzy ? $r_fuzzy : '');
+		$up_to = "'$md5'" . $r_norm . ($fuzzy ? $r_to_fuzzy : '');
 		db_query('INSERT INTO ' . DB_STRINGS . " ($update)
 			SELECT $up_to FROM " . DB_STRINGS . "
 			WHERE string_id = ?", array($string_id));
