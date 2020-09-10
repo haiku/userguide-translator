@@ -497,10 +497,9 @@ function update_translations($node, $tags) {
 				} else {
 					// ID in the DB, but the block was modified
 					$fuzzy = !isset($_POST['noinval'][$id_attr]);
-					$update = 'source_md5' . $r_norm .
-						($fuzzy ? $r_fuzzy : '');
+					$update = 'source_md5' . $r_norm . $r_fuzzy;
 					$up_to = "'$md5'" . $r_norm .
-						($fuzzy ? $r_to_fuzzy : '');
+						($fuzzy ? $r_to_fuzzy : $r_fuzzy);
 
 					db_query('INSERT INTO ' . DB_STRINGS . " ($update)
 						SELECT $up_to FROM " . DB_STRINGS . "
