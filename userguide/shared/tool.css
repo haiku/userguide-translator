@@ -73,7 +73,7 @@ textarea, input, button {
 	margin-left: 5px;
 }
 
-#original, #translated, #modified {
+#original, #modified {
 	width: 99%;
 	height: 99%;
 }

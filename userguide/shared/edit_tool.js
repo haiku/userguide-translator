@@ -1,4 +1,3 @@
-const ping_delay = 60; // in seconds
 const update_delay = 500; // in ms
 
 var preview_window = null;
@@ -8,15 +7,6 @@ var update_timer = null;
 var translated_text;
 
 var count = 0;
-
-function pingServer() {
-	var xml_http = new XMLHttpRequest();
-
-	xml_http.open('GET', base_url + '/lock.php?doc_id=' + doc_id);
-	xml_http.send(null);
-
-	window.setTimeout(pingServer, ping_delay * 1000);
-}
 
 function keyDownAction() {
 	var e = event;
@@ -44,9 +34,8 @@ function updateStatus() {
 	if (!preview_window)
 		return;
 
-	preview_window.document.write(editor.value
-		.replace('<head>', '<head><base href="' + base_dir + '" />')
-		.replace(/\{LANG_CODE\}/g, 'en'));
+	preview_window.document.write(formatText(editor.value
+		.replace('<head>', '<head><base href="' + base_dir + '" />')));
 	preview_window.document.close();
 }
 
@@ -140,7 +129,7 @@ window.onload = function() {
 		window.alert('Your browser does not support XML HTTP requests. ' +
 			'You will not be protected against concurrent edits!');
 	} else {
-		window.setTimeout(pingServer, ping_delay * 1000);
+		lockDocument(doc_id);
 	}
 
 	preview_button = document.getElementById('preview');
