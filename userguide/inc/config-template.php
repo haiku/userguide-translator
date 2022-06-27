@@ -15,10 +15,9 @@ $use_system_glob = true; // Disable this if it does not work
 define('ENABLE_DEBUGGING', false);
 define('DEBUG_FILE', '/var/log/userguide/userguide.debug');
 
-define('EXPORT_DIR', 'export/docs');
-define('REF_DIR', 'source_docs');
-define('REP_DIR', 'source_repos');
-define('IMPORT_DIR', 'import');
+define('EXPORT_DIR', '%%EXPORT_DIR%%');
+define('IMPORT_DIR', '%%IMPORT_DIR%%');
+define('REF_DIR', '%%REF_DIR%%');
 
 // HTML tags whose inner HTML has to be translated
 $translate_tags = array(

@@ -16,9 +16,8 @@ define('ENABLE_DEBUGGING', false);
 define('DEBUG_FILE', '/var/log/userguide/userguide.debug');
 
 define('EXPORT_DIR', 'export/docs');
-define('REF_DIR', 'source_docs');
-define('REP_DIR', 'source_repos');
 define('IMPORT_DIR', 'import');
+define('REF_DIR', 'source_docs');
 
 // HTML tags whose inner HTML has to be translated
 $translate_tags = array(
