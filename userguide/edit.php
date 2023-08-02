@@ -26,6 +26,7 @@ $head = <<<EOD
 		const base_dir = '$base_dir/';
 	//]]>
 	</script>
+	<script type="text/JavaScript" src="shared/common.js"></script>
 	<script type="text/JavaScript" src="shared/edit_tool.js"></script>
 
 EOD;
