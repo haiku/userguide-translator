@@ -67,7 +67,7 @@ CREATE UNIQUE INDEX translate_strings_doc_md5 ON translate_strings USING btree (
 CREATE TABLE translate_users (
 	user_id SERIAL NOT NULL PRIMARY KEY,
 	username varchar(32) NOT NULL,
-	real_name varchar(32) DEFAULT ''''::varchar NOT NULL,
+	real_name varchar(32) DEFAULT ''::varchar NOT NULL,
 	email varchar(80),
 	user_password character(40) NOT NULL,
 	user_role translate_users_enum_user_role DEFAULT 'undef'::translate_users_enum_user_role NOT NULL,
