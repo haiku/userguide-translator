@@ -36,7 +36,7 @@ function selectText(text) {
 var last_update_text = '';
 
 function updateEvent() {
-	var text = document.getElementById('translated').value
+	var text = document.getElementById('modified').value
 
 	if (text == last_update_text) {
 		window.setTimeout(5000);
@@ -58,7 +58,7 @@ function refreshAll() {
 		window.opener.original_text);
 
 	document.getElementById('original').value = window.opener.original_text;
-	document.getElementById('translated').value = text;
+	document.getElementById('modified').value = text;
 
 	document.getElementById('valid_button').value =
 		'Send ' + window.opener.lang_name + ' Translation';
@@ -69,10 +69,10 @@ function refreshAll() {
 		pos = selectText(text);
 
 	if (pos)
-		document.getElementById('translated').setSelectionRange(pos[0], pos[1]);
+		document.getElementById('modified').setSelectionRange(pos[0], pos[1]);
 	else {
-		document.getElementById('translated').focus();
-		document.getElementById('translated').select();
+		document.getElementById('modified').focus();
+		document.getElementById('modified').select();
 	}
 
 	window.setTimeout(updateEvent, 500);
@@ -106,13 +106,13 @@ window.onunload = function() {
 <div id="topright">Translated text</div>
 <form action="#" method="post">
 <div id="left"><textarea id="original" readonly="readonly"></textarea></div>
-<div id="right"><textarea id="translated"></textarea></div>
+<div id="right"><textarea id="modified"></textarea></div>
 <div id="bottom">
 <label style="float:left">
 <input type="checkbox" id="auto_cont" /> Go to next block after validation
 </label>
 <label style="float:left;margin-left:2em;" title="If checked, the translation will be marked as “possibly invalid” and won’t be included into the translation until further review.">
-<input type="checkbox" id="mark_fuzzy" /> Fuzzy
+<input type="checkbox" id="fuzzy_check" /> Fuzzy
 </label>
 <input type="button" value="Cancel"
 	onclick="window.opener.endEditionEvent(false);" />

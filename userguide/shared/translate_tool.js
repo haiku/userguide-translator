@@ -1,100 +1,61 @@
-const attr_trans_id = '_translation_id';
-const attr_state = '_edit_state';
+const edit_tool = '/shared/translate_tool.html';
+const edit_tool_ctx = 'TranslateBlock';
 
 var edit_window = null;
 var edited_node = null;
 var original_text;
 var translated_text;
-var linked_nodes = new Array();
 var all_nodes = new Array();
 
-var title_id = 0;
-var title_insert = false;
-var first_title = null;
+function sendEdition(node, id, trans, mark_fuzzy) {
+	var xml_http = HTTPRequest('POST', 'translate.php',
+		{
+			translate_lang: lang,
+			translate_doc: doc_id,
+			translate_string: id,
+			translate_text: trans,
+			translate_source: source_strings[id],
+			is_fuzzy: (mark_fuzzy ? '1' : '0'),
+		} , {
+			load: serverRequestListener,
+		});
 
-function endEditionEvent(clickOK) {
-	if (window.edited_node == null)
-		return;
-
-	var id = window.edited_node.getAttribute(attr_trans_id);
-	var next_node = null;
-
-	if (clickOK) {
-		var trans = edit_window.document.getElementById('translated').value;
-		var mark_fuzzy = edit_window.document.getElementById('mark_fuzzy').checked;
-
-		translated_strings[id] = trans;
-
-		var xml_http = new XMLHttpRequest();
-
-		var encoded_source = encodeURI(source_strings[id]).replace(/&/g, '%26').replace(/\+/g, '%2B');
-		var encoded_translation = encodeURI(trans).replace(/&/g, '%26').replace(/\+/g, '%2B');
-
-		xml_http.open('POST', base_url + '/translate.php', true);
-		xml_http.addEventListener("load", translateSaveFinished);
-		xml_http.setRequestHeader('Content-Type',
-			'application/x-www-form-urlencoded');
-		xml_http.send('translate_lang=' + lang + '&translate_doc=' + doc_id +
-			'&translate_string=' + id + '&translate_text=' + encoded_translation +
-			'&translate_source=' + encoded_source + '&is_fuzzy=' + (mark_fuzzy ? '1' : '0'));
-
-		xml_http.userguide_string_id = id;
-		xml_http.userguide_trans = trans;
-		xml_http.userguide_mark_fuzzy = mark_fuzzy;
-		return;
-	} else {
-		window.edited_node.innerHTML = formatText(translated_strings[id]);
-		if (window.edited_node.innerHTML == ''
-			|| window.edited_node.innerText == '')
-			window.edited_node.innerHTML = formatText(source_strings[id]);
-		translateBlockDone(next_node);
-	}
+	xml_http.userguide_string_id = id;
+	xml_http.userguide_new_text = trans;
+	xml_http.userguide_fuzzy = mark_fuzzy;
 }
 
-function translateSaveFinished() {
+function cancelEdition(node, id) {
+	var text = translated_strings[id] == '' ? source_strings[id] : translated_strings[id];
+	node.innerHTML = formatText(text);
+	node.setAttribute(attr_state, getBlockState(id));
+	closeEditWindow();
+}
+
+function removeBlock(node, id) {
+	// TODO: currently gives an error due to empty text, but could be used
+	// to remove a translation
+	sendEdition(node, id, '', false);
+}
+
+function editSaveFinished(id, trans, fuzzy, send_ok) {
 	edit_window.focus();
 
-	var resp = this.responseText;
-	var id = this.userguide_string_id;
-	var next_node;
-
-	var send_ok;
-	if (resp.substring(0, 7) == 'badxml ')
-		edit_window.alert('The server rejected the translation because of XML ' +
-			"parsing errors :\n" + this.responseText.substring(3) +
-			"\n" + 'Check the XML tags used in your translation.');
-	else if (resp.substring(0, 7) == 'diffxml')
-		edit_window.alert('The server rejected the translation because the ' +
-			'XML code used in it differs from the original string.' + "\n" +
-			'Check the XML tags used in your translation.');
-	else if (resp.substring(0, 6) == 'interr')
-		edit_window.alert('The original XML code seems corrupt. Please contact ' +
-			'an administrator.' + "\n");
-	else if (resp.substring(0, 2) != 'ok')
-		edit_window.alert('There was an error sending the translation. Please ' +
-		'retry.' + "\n" + this.responseText);
-	else
-		send_ok = true;
-
-	is_fuzzy[id] = this.userguide_mark_fuzzy;
-
-	for (var i = 0 ; i < linked_nodes[id].length ; i++) {
-		linked_nodes[id][i].innerHTML = formatText(this.userguide_trans);
-
-		if (send_ok) {
-			if (this.userguide_mark_fuzzy) {
-				linked_nodes[id][i].setAttribute(attr_state, 'fuzzy');
-			} else {
-				linked_nodes[id][i].removeAttribute(attr_state);
-			}
-		} else {
-			linked_nodes[id][i].setAttribute(attr_state, 'error');
-		}
+	if (!send_ok) {
+		window.edited_node.setAttribute(attr_state, 'error');
+		return;
 	}
 
-	if (!send_ok) {
-		edit_window.focus();
-		return;
+	var next_node;
+
+	is_fuzzy[id] = fuzzy;
+	translated_strings[id] = trans;
+	trans = formatText(trans);
+	const state = getBlockState(id);
+
+	for (const node of getBlockNodes(id)) {
+		node.innerHTML = trans;
+		node.setAttribute(attr_state, state);
 	}
 
 	if (edit_window.document.getElementById('auto_cont').checked) {
@@ -120,98 +81,29 @@ function translateBlockDone(next_node) {
 		window.translated_text = translated_strings[id];
 		window.setTimeout(edit_window.refreshAll, 0);
 	} else {
-		edit_window.close();
-		edit_window = null;
-		window.edited_node = null;
+		closeEditWindow();
 	}
 }
 
-function mouseClickEvent(e) {
-	if (window.edited_node != null) {
-		edit_window.focus();
-		return false;
+function getBlockState(id) {
+	if (translated_strings[id] == '') {
+		return 'untranslated';
+	} else if (is_fuzzy[id]) {
+		return 'fuzzy';
 	}
-
-	window.edited_node = this;
-
-	var id = this.getAttribute(attr_trans_id);
-
-	edit_window = window.open(base_url + '/shared/translate_tool.html',
-		'Edit Translation', 'width=650,height=400,status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=0');
-	window.original_text = source_strings[id];
-	window.translated_text = translated_strings[id];
-
-	return true;
+	return '';
 }
 
-function imgMouseClickEvent(e) {
-	var src = this.getAttribute("src");
-	if (src != '.') {
-		src = base_local + '/' + src;
+function initializeNode(node) {
+	const id = node.getAttribute(attr_trans_id);
+	const state = getBlockState(id);
+
+	if (translated_strings[id] != '') {
+		node.innerHTML = formatText(translated_strings[id]);
 	}
-	window.open(base_url + '/res_upload.php?path=' + encodeURIComponent(src) + '&lang=' + lang,
-		src, 'width=800,height=600,status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=1');
-
-	return true;
-}
-
-function setProperties(node) {
-	if (node == null)
-		return;
-
-	if (node.getAttribute) { // Avoid special nodes
-		if (node.getAttribute(attr_trans_id) != null) {
-			var id = node.getAttribute(attr_trans_id);
-
-			if (source_strings[id]) {
-				var node_name = node.tagName.toLowerCase();
-
-				if (node_name != "title") { // We can't touch it
-					if (translated_strings[id] == '') {
-						node.setAttribute(attr_state, 'untranslated');
-					} else if (is_fuzzy[id]) {
-						node.setAttribute(attr_state, 'fuzzy');
-						node.innerHTML = formatText(translated_strings[id]);
-					} else {
-						node.innerHTML = formatText(translated_strings[id]);
-					}
-
-					node.onclick = mouseClickEvent;
-
-					node.setAttribute('_internal_id', all_nodes.length);
-					all_nodes.push(node);
-
-					if (linked_nodes[id] == null) {
-						linked_nodes[id] = [ node ];
-					} else {
-						linked_nodes[id].push(node);
-					}
-				}
-
-				if (title_id == 0 && node_name == "title") {
-					title_id = id;
-					title_insert = true;
-				} else if (id == title_id) {
-					title_insert = false;
-				}
-
-				if (first_title == null && (node_name == "h1" || node_name == "h2")) {
-					first_title = node;
-				}
-			}
-			return;
-		} else if (node.tagName.toLowerCase() == "img") {
-			node.onclick = imgMouseClickEvent;
-		}
-	}
-
-	for (var i = 0 ; i < node.childNodes.length ; i++) {
-		setProperties(node.childNodes[i]);
-	}
-}
-
-function formatText(s) {
-	return s.replace(/\{LANG_CODE\}/g, lang);
+	node.setAttribute(attr_state, state);
+	node.setAttribute('_internal_id', all_nodes.length);
+	all_nodes.push(node);
 }
 
 window.onload = function() {
@@ -220,32 +112,20 @@ window.onload = function() {
 	if (window.XMLHttpRequest)
 		functions_ok++;
 
-	if (encodeURI)
+	if (Object.entries)
 		functions_ok++;
 
 	if (functions_ok != 2) {
 		window.alert('Your browser does not support some JavaScript ' +
 			'functions which are needed for this page to work correctly. ' +
-			"\nBrowser known to work : Safari 4, Firefox/BeZillaBrowser 2.x, " + "3.x.");
+			"\nTry again with an updated modern browser.");
 		return;
 	}
 
-	setProperties(document.getElementsByTagName('html')[0]);
-
-	if (title_insert) {
-		// The translatable text used in the <title> tag is not used anywhere else.
-		// Since the translate tool does not allow translating <title>, we must insert
-		// this text somewhere.
-		var new_title = document.createElement("h1");
-		new_title.setAttribute(attr_trans_id, title_id);
-		new_title.appendChild(document.createTextNode(source_strings[title_id]));
-
-		if (first_title != null && first_title.parentNode != null) {
-			first_title.parentNode.insertBefore(new_title, first_title);
-		} else {
-			document.body.insertBefore(new_title, document.body.firstChild);
-		}
-
-		setProperties(new_title);
+	insertUnreachableBlocks();
+	for (const node of getAllBlockNodes()) {
+		initializeNode(node);
 	}
+
+	document.addEventListener('click', clickHandler);
 }
