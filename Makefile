@@ -1,9 +1,10 @@
-VERSION ?= 1.0-1
+VERSION ?= 1.1-2
 REGISTRY ?= ghcr.io/haiku
+ENGINE ?= podman
 
 default:
-	docker build --no-cache --tag ${REGISTRY}/userguide:${VERSION} .
+	${ENGINE} build --no-cache --tag ${REGISTRY}/userguide:${VERSION} .
 test:
-	docker run -e BASE_DOMAIN=https://i18n-next.haiku-os.org ${REGISTRY}/userguide:${VERSION}
+	${ENGINE} run -e BASE_DOMAIN=https://i18n-next.haiku-os.org ${REGISTRY}/userguide:${VERSION}
 push:
-	docker push ${REGISTRY}/userguide:${VERSION}
+	${ENGINE} push ${REGISTRY}/userguide:${VERSION}

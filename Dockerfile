@@ -1,4 +1,8 @@
-FROM docker.io/richarvey/nginx-php-fpm:latest
+#FROM docker.io/richarvey/nginx-php-fpm:latest
+# HACK to upgrade PHP to 8.2.35 for CVE-2026-109618, CVE-2026-109619
+#  https://github.com/richarvey/nginx-php-fpm/pull/308
+#  https://github.com/richarvey/nginx-php-fpm/issues/307
+FROM ghcr.io/haiku/nginx-php-fpm:3.2.0
 
 # Add application artifacts
 ADD userguide/. /var/app/userguide/
